@@ -10,3 +10,6 @@ VALUES (
     $4
 )
 RETURNING *;
+
+-- name: Reset :exec
+DELETE FROM users;
