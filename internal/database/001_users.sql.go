@@ -11,7 +11,7 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email)
+INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, hased_password)
 VALUES (
     gen_random_uuid(),
     $1,
@@ -19,16 +19,18 @@ VALUES (
     $3,
     NOW(),
     NOW(),
-    $4
+    $4,
+    $5
 )
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, hased_password
 `
 
 type CreateUserParams struct {
-	FirstName string
-	LastName  sql.NullString
-	Dob       sql.NullTime
-	Email     string
+	FirstName     string
+	LastName      sql.NullString
+	Dob           sql.NullTime
+	Email         string
+	HasedPassword string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -37,6 +39,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.LastName,
 		arg.Dob,
 		arg.Email,
+		arg.HasedPassword,
 	)
 	var i User
 	err := row.Scan(
@@ -47,6 +50,29 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
+		&i.HasedPassword,
+	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, hased_password
+FROM users
+WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Dob,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.HasedPassword,
 	)
 	return i, err
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gh4rris/ar-united/internal/auth"
 	"github.com/gh4rris/ar-united/internal/database"
 	"github.com/google/uuid"
 )
@@ -26,6 +27,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		LastName  string     `json:"last_name"`
 		DOB       *time.Time `json:"dob"`
 		Email     string     `json:"email"`
+		Password  string     `json:"password"`
 	}
 	type response struct {
 		User
@@ -35,6 +37,12 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 	params := parameters{}
 	if err := decoder.Decode(&params); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
+		return
+	}
+
+	hashedPassword, err := auth.HashPassword(params.Password)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
 		return
 	}
 
@@ -53,7 +61,8 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 			Time:  DOB,
 			Valid: params.DOB != nil,
 		},
-		Email: params.Email,
+		Email:         params.Email,
+		HasedPassword: hashedPassword,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
