@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gh4rris/ar-united/internal/auth"
 	"github.com/gh4rris/ar-united/internal/database"
 	"github.com/google/uuid"
 )
@@ -25,6 +26,18 @@ func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) 
 
 	type response struct {
 		Post
+	}
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
+		return
+	}
+
+	_, err = auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
