@@ -64,8 +64,8 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		User: User{
 			ID:        user.ID,
 			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			DOB:       user.Dob,
+			LastName:  user.LastName.String,
+			DOB:       user.Dob.Time,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,

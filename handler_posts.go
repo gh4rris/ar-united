@@ -110,3 +110,42 @@ func (cfg *apiConfig) handlerGetPost(w http.ResponseWriter, r *http.Request) {
 		UserID:    dbPost.UserID,
 	})
 }
+
+func (cfg *apiConfig) handlerDeletePost(w http.ResponseWriter, r *http.Request) {
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		return
+	}
+
+	stringID := r.PathValue("postID")
+	postID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid post ID", err)
+		return
+	}
+
+	post, err := cfg.db.GetPost(r.Context(), postID)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Couldn't get post", err)
+		return
+	}
+
+	if post.UserID != userID {
+		respondWithError(w, http.StatusForbidden, "You can't delete this post", err)
+		return
+	}
+
+	if err = cfg.db.DeletePost(r.Context(), postID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't delete post", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
