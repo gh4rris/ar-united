@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type Group struct {
+	ID          uuid.UUID
+	Name        string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	AdminID     uuid.UUID
+	Description sql.NullString
+}
+
 type Post struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
@@ -37,4 +46,9 @@ type User struct {
 	UpdatedAt     time.Time
 	Email         string
 	HasedPassword string
+}
+
+type UsersGroup struct {
+	UserID  uuid.UUID
+	GroupID uuid.UUID
 }
