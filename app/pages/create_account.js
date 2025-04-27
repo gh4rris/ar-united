@@ -4,27 +4,27 @@ export default function CreateAccount() {
     return `
     <p>Create an account and join the network of animal rights activists today!</p>
     <form id="create-acc-form">
-        <div id="fname-create-acc">
+        <div id="fname-create-box">
           <label for="fname-input-create">First name:</label>
           <input type="text" name="first_name" id="fname-input-create" required >
         </div>
-        <div id="lname-create-acc">
+        <div id="lname-create-box">
           <label for="lname-input-create">Last name:</label>
           <input type="text" name="last_name" id="lname-input-create">
         </div>
-        <div id="dob-create-acc">
+        <div id="dob-create-box">
           <label for="dob-input-create">Date of birth:</label>
           <input type="date" name="dob" id="dob-input-create" >
         </div>
-        <div id="email-create-acc">
+        <div id="email-create-box">
           <label for="email-input-create">Email:</label>
           <input type="email" name="email" id="email-input-create" placeholder="example@email.com" required />
         </div>
-        <div id="password-create-acc">
+        <div id="password-create-box">
           <label for="password-input-create">Password:</label>
           <input type="password" name="password" id="password-input-create" required />
         </div>
-        <div id="re-password-create-acc">
+        <div id="re-password-create-box">
           <label for="re-password-input-create">Re-enter password:</label>
           <input type="password" name="re_password" id="re-password-input-create" required />
         </div>

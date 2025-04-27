@@ -1,7 +1,8 @@
 const routes = {
     '/': () => import('./pages/home.js'),
     '/login': () => import('./pages/login.js'),
-    '/create_account': () => import('./pages/create_account.js')
+    '/create_account': () => import('./pages/create_account.js'),
+    '/profile': () => import('./pages/profile.js')
 };
 
 const appElement = document.getElementById('app');
@@ -35,6 +36,8 @@ async function renderPage() {
             module.loginEvents();
         } else if (typeof(module.createAccountEvents) === 'function') {
             module.createAccountEvents();
+        } else if (typeof(module.profileEvents) === 'function') {
+            module.profileEvents();
         }
     } else {
         appElement.innerHTML = `

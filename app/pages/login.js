@@ -4,11 +4,11 @@ export default function Login() {
     return `
     <p>Enter your email and password</p>
     <form id="login-form">
-        <div id="email-login">
+        <div id="email-login-box">
           <label for="email-input-login">Email:</label>
           <input type="email" name="email" id="email-input-login" placeholder="example@email.com" required />
         </div>
-        <div id="password-login">
+        <div id="password-login-box">
           <label for="password-input-login">Password:</label>
           <input type="password" name="password" id="password-input-login" required />
         </div>
@@ -25,14 +25,15 @@ export function loginEvents() {
       const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data)
       });
 
       const responseData = await response.json();
+      localStorage.setItem('user', JSON.stringify(responseData.user));
+      localStorage.setItem('accessToken', responseData.token);
       console.log(responseData)
-      console.log(`My access: ${responseData.token}`)
-      console.log(`My refresh: ${responseData.refresh_token}`)
     })
 }
