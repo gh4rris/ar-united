@@ -14,6 +14,14 @@ function main() {
             navigateTo(e.target.href);
         }
     })
+    const logout = document.getElementById('logout');
+    logout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        history.replaceState(null, '', '/');
+        await renderPage();
+    })
     
     window.addEventListener('popstate', renderPage);
     document.addEventListener('DOMContentLoaded', renderPage);
@@ -27,7 +35,15 @@ async function navigateTo(url) {
 
 async function renderPage() {
     const path = window.location.pathname;
+    console.log(path)
     const loader = routes[path];
+    const token = localStorage.getItem('accessToken');
+    if (path === '/profile') {
+        if (!token) {
+            window.location.replace('/app');
+            return
+        }
+    }
 
     if (loader) {
         const module = await loader();

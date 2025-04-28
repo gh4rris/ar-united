@@ -30,7 +30,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		Password  string     `json:"password"`
 	}
 	type response struct {
-		User
+		User User `json:"user"`
 	}
 
 	decoder := json.NewDecoder(r.Body)

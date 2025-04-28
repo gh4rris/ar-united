@@ -43,7 +43,6 @@ export function createAccountEvents() {
         }
         delete(data.re_password);
         data.dob += 'T00:00:00Z';
-        console.log(data);
         const response = await fetch(`${API_BASE_URL}/api/users`, {
             method: 'POST',
             headers: {
