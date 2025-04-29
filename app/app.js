@@ -5,7 +5,6 @@ const routes = {
     '/profile': () => import('./pages/profile.js')
 };
 
-const appElement = document.getElementById('app');
 
 function main() {
     document.addEventListener('click', e => {
@@ -25,7 +24,7 @@ function main() {
     
     window.addEventListener('popstate', renderPage);
     document.addEventListener('DOMContentLoaded', renderPage);
-    navigateTo('/');
+    navigateTo(window.location.pathname);
 }
 
 async function navigateTo(url) {
@@ -34,19 +33,20 @@ async function navigateTo(url) {
 }
 
 async function renderPage() {
+    const appElement = document.getElementById('app');
     const path = window.location.pathname;
-    console.log(path)
     const loader = routes[path];
     const token = localStorage.getItem('accessToken');
     if (path === '/profile') {
         if (!token) {
-            window.location.replace('/app');
+            window.location.replace('/');
             return
         }
     }
 
     if (loader) {
         const module = await loader();
+        
         appElement.innerHTML = module.default();
         if (typeof(module.loginEvents) === 'function') {
             module.loginEvents();

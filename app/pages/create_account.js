@@ -39,19 +39,26 @@ export function createAccountEvents() {
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
         if (data.password != data.re_password) {
-            throw console.error('passwords not the same');
+            console.error('passwords not the same');
         }
         delete(data.re_password);
         data.dob += 'T00:00:00Z';
-        const response = await fetch(`${API_BASE_URL}/api/users`, {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         });
-
+        if (!response.ok) {
+          throw new Error("couldn't create user");
+        }
         const responseData = await response.json();
         console.log(responseData);
+        }
+        catch(error) {
+          console.error(error);
+        }
     })
 }

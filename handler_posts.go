@@ -11,11 +11,11 @@ import (
 )
 
 type Post struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Body      string
-	UserID    uuid.UUID
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Body      string    `json:"body"`
+	UserID    uuid.UUID `json:"user_id"`
 }
 
 func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +25,7 @@ func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) 
 	}
 
 	type response struct {
-		Post
+		Post Post `json:"post"`
 	}
 
 	token, err := auth.GetBearerToken(r.Header)
@@ -109,6 +109,34 @@ func (cfg *apiConfig) handlerGetPost(w http.ResponseWriter, r *http.Request) {
 		Body:      dbPost.Body,
 		UserID:    dbPost.UserID,
 	})
+}
+
+func (cfg *apiConfig) handlerGetUserPosts(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("userID")
+	userID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	dbPosts, err := cfg.db.GetUserPosts(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve posts", err)
+		return
+	}
+
+	posts := []Post{}
+	for _, post := range dbPosts {
+		posts = append(posts, Post{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			UpdatedAt: post.UpdatedAt,
+			Body:      post.Body,
+			UserID:    post.UserID,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, posts)
 }
 
 func (cfg *apiConfig) handlerDeletePost(w http.ResponseWriter, r *http.Request) {

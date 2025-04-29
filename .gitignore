@@ -1,3 +1,4 @@
 out
 .env
 /assets
+node_modules/

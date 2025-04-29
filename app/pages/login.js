@@ -22,18 +22,24 @@ export function loginEvents() {
       e.preventDefault();
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
-      const response = await fetch(`${API_BASE_URL}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
 
-      const responseData = await response.json();
-      localStorage.setItem('user', JSON.stringify(responseData.user));
-      localStorage.setItem('accessToken', responseData.token);
-      console.log(responseData)
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+          throw new Error("couldn't fetch login data");
+        }
+        const responseData = await response.json();
+        localStorage.setItem('user', JSON.stringify(responseData.user));
+        localStorage.setItem('accessToken', responseData.token);
+      }
+      catch(error) {
+        console.error(error);
+      }
     })
 }
