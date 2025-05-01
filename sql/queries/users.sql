@@ -19,9 +19,15 @@ WHERE email = $1;
 
 -- name: UpdateUser :one
 UPDATE users
-SET updated_at = NOW(), email = $2, hased_password = $3
+SET first_name = $2, last_name = $3, email = $4,
+updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: UpdatePassword :exec
+UPDATE users
+SET hased_password = $2, updated_at = NOW()
+WHERE id = $1;
 
 -- name: Reset :exec
 DELETE FROM users;

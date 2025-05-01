@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config.js";
+import { userLogin } from "./login.js";
 
 export default function CreateAccount() {
     return `
@@ -28,7 +29,7 @@ export default function CreateAccount() {
           <label for="re-password-input-create">Re-enter password:</label>
           <input type="password" name="re_password" id="re-password-input-create" required />
         </div>
-        <button type="submit" id="submit-button-create">Create Account</button>
+        <button type="submit" id="submit-btn-create">Create Account</button>
       </form>`
 }
 
@@ -40,9 +41,11 @@ export function createAccountEvents() {
         const data = Object.fromEntries(formData.entries());
         if (data.password != data.re_password) {
             console.error('passwords not the same');
+            return
         }
         delete(data.re_password);
         data.dob += 'T00:00:00Z';
+        
         try {
           const response = await fetch(`${API_BASE_URL}/api/users`, {
             method: 'POST',
@@ -55,7 +58,8 @@ export function createAccountEvents() {
           throw new Error("couldn't create user");
         }
         const responseData = await response.json();
-        console.log(responseData);
+        const loginData = {'email': responseData.user.email, 'password': data.password}
+        await userLogin(loginData);
         }
         catch(error) {
           console.error(error);

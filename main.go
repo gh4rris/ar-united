@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"sync/atomic"
 
 	"github.com/gh4rris/ar-united/internal/database"
@@ -14,6 +13,7 @@ import (
 )
 
 type apiConfig struct {
+	filepathRoot   string
 	fileserverHits atomic.Int32
 	db             *database.Queries
 	platform       string
@@ -51,6 +51,7 @@ func main() {
 	dbQueries := database.New(db)
 
 	apiCfg := apiConfig{
+		filepathRoot:   filepathRoot,
 		fileserverHits: atomic.Int32{},
 		db:             dbQueries,
 		platform:       platform,
@@ -61,10 +62,8 @@ func main() {
 	appHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
 	mux.Handle("/app/", apiCfg.middlewareMetricsInc(appHandler))
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, filepath.Join(filepathRoot, "index.html"))
-	})
-
+	mux.HandleFunc("/", apiCfg.handlerServeHTTP)
+	mux.HandleFunc("GET /api/validate-token", apiCfg.handlerValidateToken)
 	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 
 	mux.HandleFunc("POST /api/login", apiCfg.handlerLogin)
@@ -73,8 +72,8 @@ func main() {
 
 	mux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
 	mux.HandleFunc("PUT /api/users", apiCfg.handlerUpdateUser)
-	mux.HandleFunc("GET /api/users/{groupID}", apiCfg.handlerGroupMembers)
 	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerGetUserPosts)
+	mux.HandleFunc("GET /api/users/{userID}/groups", apiCfg.handlerUserGroups)
 
 	mux.HandleFunc("POST /api/posts", apiCfg.handlerCreatePost)
 	mux.HandleFunc("GET /api/posts", apiCfg.handlerGetPosts)
@@ -83,7 +82,7 @@ func main() {
 
 	mux.HandleFunc("POST /api/groups", apiCfg.handlerCreateGroup)
 	mux.HandleFunc("POST /api/groups/{groupID}", apiCfg.handlerJoinGroup)
-	mux.HandleFunc("GET /api/groups/{userID}", apiCfg.handlerUserGroups)
+	mux.HandleFunc("GET /api/groups/{groupID}/users", apiCfg.handlerGroupMembers)
 
 	mux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)

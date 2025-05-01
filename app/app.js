@@ -1,10 +1,14 @@
+import { API_BASE_URL } from './config.js';
+
 const routes = {
     '/': () => import('./pages/home.js'),
     '/login': () => import('./pages/login.js'),
     '/create_account': () => import('./pages/create_account.js'),
-    '/profile': () => import('./pages/profile.js')
+    '/profile': () => import('./pages/profile.js'),
+    '/edit_profile': () => import('./pages/edit_profile.js')
 };
 
+main();
 
 function main() {
     document.addEventListener('click', e => {
@@ -23,7 +27,6 @@ function main() {
     })
     
     window.addEventListener('popstate', renderPage);
-    document.addEventListener('DOMContentLoaded', renderPage);
     navigateTo(window.location.pathname);
 }
 
@@ -37,9 +40,20 @@ async function renderPage() {
     const path = window.location.pathname;
     const loader = routes[path];
     const token = localStorage.getItem('accessToken');
-    if (path === '/profile') {
+    if (['/profile', '/edit_profile'].includes(path)) {
         if (!token) {
             window.location.replace('/');
+            return
+        }
+        const valid = await validateToken();
+        if (!valid) {
+            window.location.replace('/');
+            return
+        }
+    } else if (path === '/login' && token) {
+        const valid = await validateToken();
+        if (valid) {
+            window.location.replace('/profile');
             return
         }
     }
@@ -54,6 +68,8 @@ async function renderPage() {
             module.createAccountEvents();
         } else if (typeof(module.profileEvents) === 'function') {
             module.profileEvents();
+        } else if (typeof(module.editProfileEvents) === 'function') {
+            module.editProfileEvents();
         }
     } else {
         appElement.innerHTML = `
@@ -62,4 +78,20 @@ async function renderPage() {
     }
 }
 
-main();
+async function validateToken() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/validate-token`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("invalid access token");
+        }
+        return response.ok
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
