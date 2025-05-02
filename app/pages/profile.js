@@ -26,14 +26,28 @@ export async function profileEvents() {
         insertPost(posts[i].id, posts[i].body);
     }
     postBtn.addEventListener('click', async function(e) {
+        await validateToken();
         const value = e.target.previousElementSibling.value;
         await newPost(value);
     });
         
 }
 
+async function getUserPosts() {
+    const userID = JSON.parse(localStorage.user).id
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/users/${userID}/posts`);
+        if (!response.ok) {
+            throw new Error("couldn't get user posts")
+        }
+        return await response.json();
+    }
+    catch(error) {
+        console.error(error);
+    }
+}
+
 async function newPost(value) {
-    await validateToken();
     try {
         const response = await fetch(`${API_BASE_URL}/api/posts`, {
             method: 'POST',
@@ -68,16 +82,3 @@ function insertPost(id, body) {
     }
 }
 
-async function getUserPosts() {
-    const userID = JSON.parse(localStorage.user).id
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/users/${userID}/posts`);
-        if (!response.ok) {
-            throw new Error("couldn't get user posts")
-        }
-        return await response.json();
-    }
-    catch(error) {
-        console.error(error);
-    }
-}

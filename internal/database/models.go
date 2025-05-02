@@ -11,6 +11,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type Friend struct {
+	UserIDA uuid.UUID
+	UserIDB uuid.UUID
+}
+
 type Group struct {
 	ID          uuid.UUID
 	Name        string

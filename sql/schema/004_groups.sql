@@ -15,5 +15,5 @@ CREATE TABLE users_groups (
 );
 
 -- +goose Down
-DROP TABLE groups;
 DROP TABLE users_groups;
+DROP TABLE groups;

@@ -111,7 +111,7 @@ func (cfg *apiConfig) handlerGetPost(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (cfg *apiConfig) handlerGetUserPosts(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerUserPosts(w http.ResponseWriter, r *http.Request) {
 	stringID := r.PathValue("userID")
 	userID, err := uuid.Parse(stringID)
 	if err != nil {

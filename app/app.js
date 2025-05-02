@@ -26,8 +26,9 @@ function main() {
         await renderPage();
         await revokeRefreshToken();
     })
-    
+
     window.addEventListener('popstate', renderPage);
+
     navigateTo(window.location.pathname);
 }
 

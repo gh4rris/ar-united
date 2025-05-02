@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config.js";
+import { validateToken } from "../app.js";
 
 export default function EditProfile() {
     return `
@@ -27,30 +28,36 @@ export function editProfileEvents() {
   document.getElementById('email-input-edit').setAttribute('value', user.email);
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
+    await validateToken();
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
-    if (user.first_name === data.first_name && user.last_name === data.last_name && user.email === data.email) {
-      window.location.assign('/profile');
-    } else {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/users`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${localStorage.accessToken}`
-          },
-          body: `{"first_name": "${data.first_name}", "last_name": "${data.last_name}",
-          "email": "${data.email}"}`
-        });
-        if (!response.ok) {
-          throw new Error("couldn't update user")
-        }
-        const responseData = await response.json();
-        localStorage.setItem('user', JSON.stringify(responseData.user));
-        window.location.assign('/profile');
-      }
-      catch(error) {
-        console.error(error);
-      }
-    }
+    await saveProfileChanges(data);
   })
+}
+
+async function saveProfileChanges(data) {
+  const user = JSON.parse(localStorage.user);
+  if (user.first_name === data.first_name && user.last_name === data.last_name && user.email === data.email) {
+    window.location.assign('/profile');
+  } else {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.accessToken}`
+        },
+        body: `{"first_name": "${data.first_name}", "last_name": "${data.last_name}",
+        "email": "${data.email}"}`
+      });
+      if (!response.ok) {
+        throw new Error("couldn't update user")
+      }
+      const responseData = await response.json();
+      localStorage.setItem('user', JSON.stringify(responseData.user));
+      window.location.assign('/profile');
+    }
+    catch(error) {
+      console.error(error);
+    }
+  }
 }
