@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './config.js';
+import { API_BASE_URL, PRIVATE_PAGES, LOGOUT_ONLY } from './config.js';
 
 const routes = {
     '/': () => import('./pages/home.js'),
@@ -24,6 +24,7 @@ function main() {
         localStorage.removeItem('accessToken');
         history.replaceState(null, '', '/');
         await renderPage();
+        await revokeRefreshToken();
     })
     
     window.addEventListener('popstate', renderPage);
@@ -40,7 +41,7 @@ async function renderPage() {
     const path = window.location.pathname;
     const loader = routes[path];
     const token = localStorage.getItem('accessToken');
-    if (['/profile', '/edit_profile'].includes(path)) {
+    if (PRIVATE_PAGES.includes(path)) {
         if (!token) {
             window.location.replace('/');
             return
@@ -50,7 +51,7 @@ async function renderPage() {
             window.location.replace('/');
             return
         }
-    } else if (path === '/login' && token) {
+    } else if (LOGOUT_ONLY.includes(path) && token) {
         const valid = await validateToken();
         if (valid) {
             window.location.replace('/profile');
@@ -62,7 +63,9 @@ async function renderPage() {
         const module = await loader();
         
         appElement.innerHTML = module.default();
-        if (typeof(module.loginEvents) === 'function') {
+        if (typeof(module.homeEvents) === 'function') {
+            module.homeEvents();
+        } else if (typeof(module.loginEvents) === 'function') {
             module.loginEvents();
         } else if (typeof(module.createAccountEvents) === 'function') {
             module.createAccountEvents();
@@ -78,7 +81,7 @@ async function renderPage() {
     }
 }
 
-async function validateToken() {
+export async function validateToken(retries=1) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/validate-token`, {
             method: 'GET',
@@ -86,6 +89,10 @@ async function validateToken() {
                 'Authorization': `Bearer ${localStorage.accessToken}`
             }
         });
+        if (retries > 0 && response.status === 401) {
+            await refreshAccessToken();
+            return await validateToken(retries - 1);
+        }
         if (!response.ok) {
             throw new Error("invalid access token");
         }
@@ -93,5 +100,38 @@ async function validateToken() {
     }
     catch(error) {
         console.log(error);
+    }
+}
+
+export async function refreshAccessToken() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/refresh`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error("couldn't refresh access token")
+        }
+        const responseData = await response.json();
+        localStorage.setItem('accessToken', responseData.token);
+        return
+    }
+    catch(error) {
+        console.error(error)
+    }
+}
+
+async function revokeRefreshToken() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/revoke`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error("coudn't revoke token")
+        }
+    }
+    catch(error) {
+        console.error(error)
     }
 }

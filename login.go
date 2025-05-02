@@ -15,9 +15,8 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}
 	type response struct {
-		User         User   `json:"user"`
-		Token        string `json:"token"`
-		RefreshToken string `json:"refresh_token"`
+		User  User   `json:"user"`
+		Token string `json:"token"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -60,6 +59,15 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refreshToken",
+		Value:    refreshToken,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Expires:  time.Now().UTC().Add(time.Hour * 24 * 60),
+	})
+
 	respondWithJson(w, http.StatusOK, response{
 		User: User{
 			ID:        user.ID,
@@ -70,7 +78,6 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
 		},
-		Token:        token,
-		RefreshToken: refreshToken,
+		Token: token,
 	})
 }

@@ -1,3 +1,4 @@
+import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
 
 export default function Profile() {
@@ -24,32 +25,34 @@ export async function profileEvents() {
     for (let i = posts.length-1; i >= 0; i--) {
         insertPost(posts[i].id, posts[i].body);
     }
-    postBtn.addEventListener('click', newPost);
+    postBtn.addEventListener('click', async function(e) {
+        const value = e.target.previousElementSibling.value;
+        await newPost(value);
+    });
         
 }
 
-async function newPost(e) {
-    const value = e.target.previousElementSibling.value;
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/posts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.accessToken}`
-                },
-                body: `{"body": "${value}", "user_id": "${JSON.parse(localStorage.user).id}"}`
-            });
-            if (!response.ok) {
-                throw new Error("couldn't make post");
-            }
-            const responseData = await response.json();
-            insertPost(responseData.post.id, responseData.post.body)
+async function newPost(value) {
+    await validateToken();
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/posts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            },
+            body: `{"body": "${value}", "user_id": "${JSON.parse(localStorage.user).id}"}`
+        });
+        if (!response.ok) {
+            throw new Error("couldn't make post");
         }
-        catch(error) {
-            console.error(error);
-        }
+        const responseData = await response.json();
+        insertPost(responseData.post.id, responseData.post.body)
     }
+    catch(error) {
+        console.error(error);
+    }
+}
 
 function insertPost(id, body) {
     const postsBox = document.getElementById('posts-box');

@@ -12,7 +12,7 @@ export default function Login() {
           <label for="password-input-login">Password:</label>
           <input type="password" name="password" id="password-input-login" required />
         </div>
-        <button type="submit" id="submit-button-login">Submit</button>
+        <button type="submit" id="submit-btn-login">Submit</button>
       </form>`;
 }
 

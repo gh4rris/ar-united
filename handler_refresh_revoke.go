@@ -9,16 +9,16 @@ import (
 
 func (cfg *apiConfig) handlerRefreshToken(w http.ResponseWriter, r *http.Request) {
 	type response struct {
-		token string
+		Token string `json:"token"`
 	}
 
-	token, err := auth.GetBearerToken(r.Header)
+	cookie, err := r.Cookie("refreshToken")
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No bearer token header", err)
+		respondWithError(w, http.StatusUnauthorized, "No cookie", err)
 		return
 	}
 
-	user, err := cfg.db.GetUserFromRefreshToken(r.Context(), token)
+	user, err := cfg.db.GetUserFromRefreshToken(r.Context(), cookie.Value)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "Couldn't get user for refresh token", err)
 		return
@@ -31,22 +31,29 @@ func (cfg *apiConfig) handlerRefreshToken(w http.ResponseWriter, r *http.Request
 	}
 
 	respondWithJson(w, http.StatusOK, response{
-		token: newToken,
+		Token: newToken,
 	})
 }
 
 func (cfg *apiConfig) handlerRevoke(w http.ResponseWriter, r *http.Request) {
-	token, err := auth.GetBearerToken(r.Header)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "no bearer token header", err)
-		return
+	cookie, err := r.Cookie("refreshToken")
+	if err == nil && cookie.Value != "" {
+		_, err = cfg.db.RevokeRefreshToken(r.Context(), cookie.Value)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Couldn't revoke token", err)
+			return
+		}
 	}
 
-	_, err = cfg.db.RevokeRefreshToken(r.Context(), token)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't revoke token", err)
-		return
-	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refreshToken",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+	})
 
 	w.WriteHeader(http.StatusNoContent)
 }
