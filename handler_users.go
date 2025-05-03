@@ -92,15 +92,9 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 		User User `json:"user"`
 	}
 
-	token, err := auth.GetBearerToken(r.Header)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
-		return
-	}
-
-	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
 	}
 
@@ -143,15 +137,9 @@ func (cfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Reque
 		Password string `json:"password"`
 	}
 
-	token, err := auth.GetBearerToken(r.Header)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
-		return
-	}
-
-	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
 	}
 

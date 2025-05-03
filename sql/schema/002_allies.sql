@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE friends (
+CREATE TABLE allies (
     requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     requestee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     requested TIMESTAMP NOT NULL,
@@ -8,4 +8,4 @@ CREATE TABLE friends (
 );
 
 -- +goose Down
-DROP TABLE friends;
+DROP TABLE allies;

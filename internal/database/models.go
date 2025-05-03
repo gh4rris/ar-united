@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Friend struct {
+type Ally struct {
 	RequesterID uuid.UUID
 	RequesteeID uuid.UUID
 	Requested   time.Time

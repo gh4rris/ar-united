@@ -29,15 +29,9 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 		Group
 	}
 
-	token, err := auth.GetBearerToken(r.Header)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
-		return
-	}
-
-	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
 	}
 
@@ -83,15 +77,9 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 }
 
 func (cfg *apiConfig) handlerJoinGroup(w http.ResponseWriter, r *http.Request) {
-	token, err := auth.GetBearerToken(r.Header)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
-		return
-	}
-
-	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Invalid JWT token", err)
+		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
 	}
 

@@ -28,15 +28,9 @@ func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) 
 		Post Post `json:"post"`
 	}
 
-	token, err := auth.GetBearerToken(r.Header)
+	_, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
-		return
-	}
-
-	_, err = auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
 	}
 

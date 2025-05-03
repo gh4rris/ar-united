@@ -29,5 +29,16 @@ UPDATE users
 SET hased_password = $2, updated_at = NOW()
 WHERE id = $1;
 
+-- name: SearchUsers :many
+SELECT *
+FROM users
+WHERE first_name ILIKE '%' || $1 || '%'
+OR last_name ILIKE '%' || $1 || '%'
+OR email ILIKE '%' || $1 || '%';
+
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = $1;
+
 -- name: Reset :exec
 DELETE FROM users;

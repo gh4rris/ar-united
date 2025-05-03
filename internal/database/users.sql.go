@@ -57,6 +57,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	return err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, first_name, last_name, dob, created_at, updated_at, email, hased_password
 FROM users
@@ -86,6 +96,46 @@ DELETE FROM users
 func (q *Queries) Reset(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, reset)
 	return err
+}
+
+const searchUsers = `-- name: SearchUsers :many
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, hased_password
+FROM users
+WHERE first_name ILIKE '%' || $1 || '%'
+OR last_name ILIKE '%' || $1 || '%'
+OR email ILIKE '%' || $1 || '%'
+`
+
+func (q *Queries) SearchUsers(ctx context.Context, dollar_1 sql.NullString) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, searchUsers, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Dob,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Email,
+			&i.HasedPassword,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updatePassword = `-- name: UpdatePassword :exec

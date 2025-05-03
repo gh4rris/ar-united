@@ -71,14 +71,17 @@ func main() {
 	mux.HandleFunc("POST /api/refresh", apiCfg.handlerRefreshToken)
 	mux.HandleFunc("POST /api/revoke", apiCfg.handlerRevoke)
 
+	mux.HandleFunc("GET /api/search/users", apiCfg.handlerSearchUsers)
+
 	mux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
 	mux.HandleFunc("PUT /api/users", apiCfg.handlerUpdateUser)
-	mux.HandleFunc("GET /api/users/{userID}/friends", apiCfg.handlerUserFriends)
+	mux.HandleFunc("GET /api/users/{userID}/allies", apiCfg.handlerUserAllies)
 	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerUserPosts)
 	mux.HandleFunc("GET /api/users/{userID}/groups", apiCfg.handlerUserGroups)
 
-	mux.HandleFunc("POST /api/friends/{friendID}", apiCfg.handlerAddFriend)
-	mux.HandleFunc("PUT /api/friends/{friendID}", apiCfg.handlerConfirmFriend)
+	mux.HandleFunc("POST /api/allies/{allyID}", apiCfg.handlerAddAlly)
+	mux.HandleFunc("PUT /api/allies/{friendID}", apiCfg.handlerConfirmAlly)
+	mux.HandleFunc("GET /api/allies/requests", apiCfg.handlerGetAllyRequests)
 
 	mux.HandleFunc("POST /api/posts", apiCfg.handlerCreatePost)
 	mux.HandleFunc("GET /api/posts", apiCfg.handlerGetPosts)
