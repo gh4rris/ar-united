@@ -5,7 +5,8 @@ const routes = {
     '/login': () => import('./pages/login.js'),
     '/create_account': () => import('./pages/create_account.js'),
     '/profile': () => import('./pages/profile.js'),
-    '/edit_profile': () => import('./pages/edit_profile.js')
+    '/edit_profile': () => import('./pages/edit_profile.js'),
+    '/search': () => import('./pages/search.js')
 };
 
 main();
@@ -26,10 +27,16 @@ function main() {
         await renderPage();
         await revokeRefreshToken();
     })
+    const searchBtn = document.getElementById('search-btn');
+    searchBtn.addEventListener('click', async () => {
+        const searchInput = document.getElementById('search-input');
+        const url = `/search?search=${encodeURIComponent(searchInput.value)}`;
+        await navigateTo(url);
+    })
 
     window.addEventListener('popstate', renderPage);
 
-    navigateTo(window.location.pathname);
+    navigateTo(window.location.url);
 }
 
 async function navigateTo(url) {
@@ -74,6 +81,8 @@ async function renderPage() {
             module.profileEvents();
         } else if (typeof(module.editProfileEvents) === 'function') {
             module.editProfileEvents();
+        } else if (typeof(module.searchEvents) === 'function') {
+            module.searchEvents();
         }
     } else {
         appElement.innerHTML = `
@@ -97,10 +106,10 @@ export async function validateToken(retries=1) {
         if (!response.ok) {
             throw new Error("invalid access token");
         }
-        return response.ok
+        return response.ok;
     }
     catch(error) {
-        console.log(error);
+        console.log(error.message);
     }
 }
 
@@ -111,14 +120,14 @@ export async function refreshAccessToken() {
             credentials: 'include'
         });
         if (!response.ok) {
-            throw new Error("couldn't refresh access token")
+            throw new Error("couldn't refresh access token");
         }
         const responseData = await response.json();
         localStorage.setItem('accessToken', responseData.token);
         return
     }
     catch(error) {
-        console.error(error)
+        console.error(error.message);
     }
 }
 
@@ -129,10 +138,10 @@ async function revokeRefreshToken() {
             credentials: 'include'
         });
         if (!response.ok) {
-            throw new Error("coudn't revoke token")
+            throw new Error("coudn't revoke token");
         }
     }
     catch(error) {
-        console.error(error)
+        console.error(error.message);
     }
 }

@@ -11,7 +11,7 @@ export default function Profile() {
             <input type="text" name="post" id="post-input" >
             <button id="post-btn">Post</button>
       </div>
-      <div id="posts-box"></div>`
+      <div id="posts-box"></div>`;
 }
 
 export async function profileEvents() {
@@ -38,7 +38,7 @@ async function getUserPosts() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${userID}/posts`);
         if (!response.ok) {
-            throw new Error("couldn't get user posts")
+            throw new Error("couldn't get user posts");
         }
         return await response.json();
     }
@@ -61,7 +61,7 @@ async function newPost(value) {
             throw new Error("couldn't make post");
         }
         const responseData = await response.json();
-        insertPost(responseData.post.id, responseData.post.body)
+        insertPost(responseData.post.id, responseData.post.body);
     }
     catch(error) {
         console.error(error);
