@@ -1,9 +1,10 @@
 -- +goose Up
 CREATE TABLE friends (
-    user_id_a UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user_id_b UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    CHECK(user_id_a < user_id_b),
-    UNIQUE(user_id_a, user_id_b)
+    requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    requestee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    requested TIMESTAMP NOT NULL,
+    confirmed TIMESTAMP,
+    UNIQUE(requester_id, requestee_id)
 );
 
 -- +goose Down

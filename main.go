@@ -73,9 +73,12 @@ func main() {
 
 	mux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
 	mux.HandleFunc("PUT /api/users", apiCfg.handlerUpdateUser)
-	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerUserPosts)
 	mux.HandleFunc("GET /api/users/{userID}/friends", apiCfg.handlerUserFriends)
+	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerUserPosts)
 	mux.HandleFunc("GET /api/users/{userID}/groups", apiCfg.handlerUserGroups)
+
+	mux.HandleFunc("POST /api/friends/{friendID}", apiCfg.handlerAddFriend)
+	mux.HandleFunc("PUT /api/friends/{friendID}", apiCfg.handlerConfirmFriend)
 
 	mux.HandleFunc("POST /api/posts", apiCfg.handlerCreatePost)
 	mux.HandleFunc("GET /api/posts", apiCfg.handlerGetPosts)

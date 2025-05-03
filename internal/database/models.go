@@ -12,8 +12,10 @@ import (
 )
 
 type Friend struct {
-	UserIDA uuid.UUID
-	UserIDB uuid.UUID
+	RequesterID uuid.UUID
+	RequesteeID uuid.UUID
+	Requested   time.Time
+	Confirmed   sql.NullTime
 }
 
 type Group struct {
