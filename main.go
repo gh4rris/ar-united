@@ -75,6 +75,7 @@ func main() {
 
 	mux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
 	mux.HandleFunc("PUT /api/users", apiCfg.handlerUpdateUser)
+	mux.HandleFunc("GET /api/users/{slugID}", apiCfg.handlerGetUserBySlug)
 	mux.HandleFunc("GET /api/users/{userID}/allies", apiCfg.handlerUserAllies)
 	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerUserPosts)
 	mux.HandleFunc("GET /api/users/{userID}/groups", apiCfg.handlerUserGroups)

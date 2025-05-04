@@ -4,7 +4,7 @@ const routes = {
     '/': () => import('./pages/home.js'),
     '/login': () => import('./pages/login.js'),
     '/create_account': () => import('./pages/create_account.js'),
-    '/profile': () => import('./pages/profile.js'),
+    '/activists': () => import('./pages/activists.js'),
     '/edit_profile': () => import('./pages/edit_profile.js'),
     '/search': () => import('./pages/search.js')
 };
@@ -33,6 +33,9 @@ function main() {
         const url = `/search?search=${encodeURIComponent(searchInput.value)}`;
         await navigateTo(url);
     })
+    const slug = localStorage.user ? JSON.parse(localStorage.user).slug : undefined;
+    const profileLink = document.getElementById('profile-link');
+    profileLink.href = slug ? `/activists/${slug}` : "/activists";
 
     window.addEventListener('popstate', renderPage);
 
@@ -46,7 +49,7 @@ async function navigateTo(url) {
 
 async function renderPage() {
     const appElement = document.getElementById('app');
-    const path = window.location.pathname;
+    const path = "/" + window.location.pathname.split("/")[1];
     const loader = routes[path];
     const token = localStorage.getItem('accessToken');
     if (PRIVATE_PAGES.includes(path)) {
@@ -62,7 +65,8 @@ async function renderPage() {
     } else if (LOGOUT_ONLY.includes(path) && token) {
         const valid = await validateToken();
         if (valid) {
-            window.location.replace('/profile');
+            const slug = JSON.parse(localStorage.user).slug;
+            window.location.replace(`/activists/${slug}`);
             return
         }
     }
@@ -77,8 +81,8 @@ async function renderPage() {
             module.loginEvents();
         } else if (typeof(module.createAccountEvents) === 'function') {
             module.createAccountEvents();
-        } else if (typeof(module.profileEvents) === 'function') {
-            module.profileEvents();
+        } else if (typeof(module.activistEvents) === 'function') {
+            module.activistEvents();
         } else if (typeof(module.editProfileEvents) === 'function') {
             module.editProfileEvents();
         } else if (typeof(module.searchEvents) === 'function') {

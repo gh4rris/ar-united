@@ -107,6 +107,31 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+const getUserBySlug = `-- name: GetUserBySlug :one
+SELECT id, first_name, last_name, email
+FROM users
+WHERE slug = $1
+`
+
+type GetUserBySlugRow struct {
+	ID        uuid.UUID
+	FirstName string
+	LastName  sql.NullString
+	Email     string
+}
+
+func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (GetUserBySlugRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserBySlug, slug)
+	var i GetUserBySlugRow
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+	)
+	return i, err
+}
+
 const reset = `-- name: Reset :exec
 DELETE FROM users
 `

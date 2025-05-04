@@ -1,7 +1,7 @@
 import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
 
-export default function Profile() {
+export default function Activist() {
     return `
     <div id="profile-box">
         <h2 id="profile-name"></h2>
@@ -14,7 +14,8 @@ export default function Profile() {
       <div id="posts-box"></div>`;
 }
 
-export async function profileEvents() {
+export async function activistEvents() {
+    getActivist();
     const user = JSON.parse(localStorage.getItem('user'));
     const nameElement = document.getElementById('profile-name');
     const emailElement = document.getElementById('profile-email');
@@ -31,6 +32,12 @@ export async function profileEvents() {
         await newPost(value);
     });
         
+}
+
+function getActivist() {
+    // const user = JSON.parse(localStorage.user);
+    const slug = window.location.pathname.split('/')[2];
+    console.log(slug)
 }
 
 async function getUserPosts() {

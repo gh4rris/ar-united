@@ -41,7 +41,10 @@ export async function userLogin(data) {
     const responseData = await response.json();
     localStorage.setItem('user', JSON.stringify(responseData.user));
     localStorage.setItem('accessToken', responseData.token);
-    window.location.assign('/profile');
+    // const profileLink = document.getElementById('profile-link');
+    const slug = JSON.parse(localStorage.user).slug;
+    // profileLink.href = `/activists/${slug}`;
+    window.location.assign(`/activists/${slug}`);
   }
   catch(error) {
     console.error(error);

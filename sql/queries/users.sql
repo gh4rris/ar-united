@@ -42,6 +42,11 @@ SELECT COUNT(slug) AS slug_count
 FROM users
 WHERE slug = $1;
 
+-- name: GetUserBySlug :one
+SELECT id, first_name, last_name, email
+FROM users
+WHERE slug = $1;
+
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;

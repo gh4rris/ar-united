@@ -177,3 +177,26 @@ func (cfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (cfg *apiConfig) handlerGetUserBySlug(w http.ResponseWriter, r *http.Request) {
+	type response struct {
+		User User `json:"user"`
+	}
+
+	slugID := r.PathValue("slugID")
+
+	user, err := cfg.db.GetUserBySlug(r.Context(), slugID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find user", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, response{
+		User: User{
+			ID:        user.ID,
+			FirstName: user.FirstName,
+			LastName:  user.LastName.String,
+			Email:     user.Email,
+		},
+	})
+}
