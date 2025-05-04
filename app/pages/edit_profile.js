@@ -38,7 +38,7 @@ export function editProfileEvents() {
 async function saveProfileChanges(data) {
   const user = JSON.parse(localStorage.user);
   if (user.first_name === data.first_name && user.last_name === data.last_name && user.email === data.email) {
-    window.location.assign('/profile');
+    window.location.assign(`/activists/${user.slug}`);
   } else {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
@@ -54,7 +54,7 @@ async function saveProfileChanges(data) {
       }
       const responseData = await response.json();
       localStorage.setItem('user', JSON.stringify(responseData.user));
-      window.location.assign('/profile');
+      window.location.assign(`/activists/${user.slug}`);
     }
     catch(error) {
       console.error(error);

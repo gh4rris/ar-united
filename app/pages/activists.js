@@ -14,34 +14,61 @@ export default function Activist() {
       <div id="posts-box"></div>`;
 }
 
+const allyActivists = `
+<div id="profile-box">
+        <h2 id="profile-name"></h2>
+        <p id="profile-email"></p>
+        <p id="profile-description">I am an animal rights activist</p>
+      <div id="posts-box"></div>`;
+
 export async function activistEvents() {
-    getActivist();
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.user);
+    const activist = await getActivist();
+    let posts = [];
+    if (!activist) {
+        window.location.replace(`/activists/${user.slug}`);
+        return
+    } else if (user.id != activist.id) {
+        const appElement = document.getElementById('app');
+        appElement.innerHTML = allyActivists;
+        posts = await getUserPosts(activist.id);
+    } else {
+        const postBtn = document.getElementById('post-btn');
+        postBtn.addEventListener('click', async function(e) {
+            await validateToken();
+            const value = e.target.previousElementSibling.value;
+            await newPost(value);
+        });
+        posts = await getUserPosts(user.id);
+    }
     const nameElement = document.getElementById('profile-name');
     const emailElement = document.getElementById('profile-email');
-    nameElement.innerText = `${user.first_name} ${user.last_name}`;
-    emailElement.innerText = user.email;
-    const postBtn = document.getElementById('post-btn');
-    const posts = await getUserPosts();
+    nameElement.innerText = `${activist.first_name} ${activist.last_name}`;
+    emailElement.innerText = activist.email;
     for (let i = posts.length-1; i >= 0; i--) {
         insertPost(posts[i].id, posts[i].body);
     }
-    postBtn.addEventListener('click', async function(e) {
-        await validateToken();
-        const value = e.target.previousElementSibling.value;
-        await newPost(value);
-    });
+    
         
 }
 
-function getActivist() {
-    // const user = JSON.parse(localStorage.user);
+async function getActivist() {
+    
     const slug = window.location.pathname.split('/')[2];
-    console.log(slug)
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/users/${slug}`);
+        if (!response.ok) {
+            throw new Error("couldn't find user");
+        }
+        const activist = await response.json();
+        return activist.user;
+    }
+    catch(error) {
+        console.error(error.message);
+    }
 }
 
-async function getUserPosts() {
-    const userID = JSON.parse(localStorage.user).id
+async function getUserPosts(userID) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${userID}/posts`);
         if (!response.ok) {
