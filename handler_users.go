@@ -19,6 +19,7 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
+	Slug      string    `json:"slug"`
 }
 
 func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +52,12 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		DOB = *params.DOB
 	}
 
+	slug, err := cfg.generateSlug(params.FirstName, params.LastName, r)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't generate slug", err)
+		return
+	}
+
 	user, err := cfg.db.CreateUser(r.Context(), database.CreateUserParams{
 		FirstName: params.FirstName,
 		LastName: sql.NullString{
@@ -61,8 +68,9 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 			Time:  DOB,
 			Valid: params.DOB != nil,
 		},
-		Email:         params.Email,
-		HasedPassword: hashedPassword,
+		Email:          params.Email,
+		Slug:           slug,
+		HashedPassword: hashedPassword,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
@@ -78,6 +86,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
+			Slug:      slug,
 		},
 	})
 }
@@ -128,6 +137,7 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
+			Slug:      user.Slug,
 		},
 	})
 }
@@ -157,8 +167,8 @@ func (cfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = cfg.db.UpdatePassword(r.Context(), database.UpdatePasswordParams{
-		ID:            userID,
-		HasedPassword: hashedPassword,
+		ID:             userID,
+		HashedPassword: hashedPassword,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't update password", err)

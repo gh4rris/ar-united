@@ -12,8 +12,21 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkSlug = `-- name: CheckSlug :one
+SELECT COUNT(slug) AS slug_count
+FROM users
+WHERE slug = $1
+`
+
+func (q *Queries) CheckSlug(ctx context.Context, slug string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, checkSlug, slug)
+	var slug_count int64
+	err := row.Scan(&slug_count)
+	return slug_count, err
+}
+
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, hased_password)
+INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password)
 VALUES (
     gen_random_uuid(),
     $1,
@@ -22,17 +35,19 @@ VALUES (
     NOW(),
     NOW(),
     $4,
-    $5
+    $5,
+    $6
 )
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, hased_password
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
 `
 
 type CreateUserParams struct {
-	FirstName     string
-	LastName      sql.NullString
-	Dob           sql.NullTime
-	Email         string
-	HasedPassword string
+	FirstName      string
+	LastName       sql.NullString
+	Dob            sql.NullTime
+	Email          string
+	Slug           string
+	HashedPassword string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -41,7 +56,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.LastName,
 		arg.Dob,
 		arg.Email,
-		arg.HasedPassword,
+		arg.Slug,
+		arg.HashedPassword,
 	)
 	var i User
 	err := row.Scan(
@@ -52,7 +68,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
-		&i.HasedPassword,
+		&i.Slug,
+		&i.HashedPassword,
 	)
 	return i, err
 }
@@ -68,7 +85,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, hased_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
 FROM users
 WHERE email = $1
 `
@@ -84,7 +101,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
-		&i.HasedPassword,
+		&i.Slug,
+		&i.HashedPassword,
 	)
 	return i, err
 }
@@ -99,7 +117,7 @@ func (q *Queries) Reset(ctx context.Context) error {
 }
 
 const searchUsers = `-- name: SearchUsers :many
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, hased_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
 FROM users
 WHERE first_name ILIKE '%' || $1 || '%'
 OR last_name ILIKE '%' || $1 || '%'
@@ -123,7 +141,8 @@ func (q *Queries) SearchUsers(ctx context.Context, dollar_1 sql.NullString) ([]U
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
-			&i.HasedPassword,
+			&i.Slug,
+			&i.HashedPassword,
 		); err != nil {
 			return nil, err
 		}
@@ -140,17 +159,17 @@ func (q *Queries) SearchUsers(ctx context.Context, dollar_1 sql.NullString) ([]U
 
 const updatePassword = `-- name: UpdatePassword :exec
 UPDATE users
-SET hased_password = $2, updated_at = NOW()
+SET hashed_password = $2, updated_at = NOW()
 WHERE id = $1
 `
 
 type UpdatePasswordParams struct {
-	ID            uuid.UUID
-	HasedPassword string
+	ID             uuid.UUID
+	HashedPassword string
 }
 
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updatePassword, arg.ID, arg.HasedPassword)
+	_, err := q.db.ExecContext(ctx, updatePassword, arg.ID, arg.HashedPassword)
 	return err
 }
 
@@ -159,7 +178,7 @@ UPDATE users
 SET first_name = $2, last_name = $3, email = $4,
 updated_at = NOW()
 WHERE id = $1
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, hased_password
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
 `
 
 type UpdateUserParams struct {
@@ -185,7 +204,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
-		&i.HasedPassword,
+		&i.Slug,
+		&i.HashedPassword,
 	)
 	return i, err
 }

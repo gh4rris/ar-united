@@ -2,25 +2,15 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"net/http"
 )
 
 func (cfg *apiConfig) handlerSearchUsers(w http.ResponseWriter, r *http.Request) {
-	type parameters struct {
-		SearchText string `json:"search_text"`
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	params := parameters{}
-	if err := decoder.Decode(&params); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
-		return
-	}
+	searchValue := r.URL.Query().Get("search")
 
 	dbUserResults, err := cfg.db.SearchUsers(r.Context(), sql.NullString{
-		String: params.SearchText,
-		Valid:  params.SearchText != "",
+		String: searchValue,
+		Valid:  searchValue != "",
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't find Users", err)

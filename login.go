@@ -32,7 +32,7 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = auth.CheckPasswordHash(user.HasedPassword, params.Password); err != nil {
+	if err = auth.CheckPasswordHash(user.HashedPassword, params.Password); err != nil {
 		respondWithError(w, http.StatusUnauthorized, "Invalid email or password", err)
 		return
 	}
@@ -77,6 +77,7 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
+			Slug:      user.Slug,
 		},
 		Token: token,
 	})

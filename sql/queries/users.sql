@@ -1,5 +1,5 @@
 -- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, hased_password)
+INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password)
 VALUES (
     gen_random_uuid(),
     $1,
@@ -8,7 +8,8 @@ VALUES (
     NOW(),
     NOW(),
     $4,
-    $5
+    $5,
+    $6
 )
 RETURNING *;
 
@@ -26,7 +27,7 @@ RETURNING *;
 
 -- name: UpdatePassword :exec
 UPDATE users
-SET hased_password = $2, updated_at = NOW()
+SET hashed_password = $2, updated_at = NOW()
 WHERE id = $1;
 
 -- name: SearchUsers :many
@@ -35,6 +36,11 @@ FROM users
 WHERE first_name ILIKE '%' || $1 || '%'
 OR last_name ILIKE '%' || $1 || '%'
 OR email ILIKE '%' || $1 || '%';
+
+-- name: CheckSlug :one
+SELECT COUNT(slug) AS slug_count
+FROM users
+WHERE slug = $1;
 
 -- name: DeleteUser :exec
 DELETE FROM users

@@ -45,14 +45,15 @@ type RefreshToken struct {
 }
 
 type User struct {
-	ID            uuid.UUID
-	FirstName     string
-	LastName      sql.NullString
-	Dob           sql.NullTime
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Email         string
-	HasedPassword string
+	ID             uuid.UUID
+	FirstName      string
+	LastName       sql.NullString
+	Dob            sql.NullTime
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Email          string
+	Slug           string
+	HashedPassword string
 }
 
 type UsersGroup struct {

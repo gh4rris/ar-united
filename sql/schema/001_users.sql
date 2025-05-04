@@ -7,7 +7,8 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    hased_password TEXT NOT NULL
+    slug TEXT NOT NULL UNIQUE,
+    hashed_password TEXT NOT NULL
 );
 
 -- +goose Down

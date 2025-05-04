@@ -64,7 +64,7 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) erro
 }
 
 const groupMembers = `-- name: GroupMembers :many
-SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.hased_password
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.slug, u.hashed_password
 FROM users_groups AS ug
 INNER JOIN users AS u
 ON ug.user_id = u.id
@@ -89,7 +89,8 @@ func (q *Queries) GroupMembers(ctx context.Context, groupID uuid.UUID) ([]User, 
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
-			&i.HasedPassword,
+			&i.Slug,
+			&i.HashedPassword,
 		); err != nil {
 			return nil, err
 		}
