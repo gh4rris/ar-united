@@ -7,6 +7,7 @@ const routes = {
     '/login': () => import('./pages/login.js'),
     '/activists': () => import('./pages/activists.js'),
     '/allies': () => import('./pages/allies.js'),
+    '/create_group': () => import('./pages/create_group.js'),
     '/search': () => import('./pages/search.js')
 };
 
@@ -88,6 +89,8 @@ async function renderPage() {
             module.activistEvents();
         } else if (typeof(module.alliesEvents) === 'function') {
             module.alliesEvents();
+        } else if (typeof(module.createGroupEvents) === 'function') {
+            module.createGroupEvents();
         } else if (typeof(module.searchEvents) === 'function') {
             module.searchEvents();
         }

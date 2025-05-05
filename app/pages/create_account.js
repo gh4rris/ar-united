@@ -45,24 +45,27 @@ export function createAccountEvents() {
         }
         delete(data.re_password);
         data.dob += 'T00:00:00Z';
-        
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/users`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-        if (!response.ok) {
-          throw new Error("couldn't create user");
-        }
-        const responseData = await response.json();
-        const loginData = {'email': responseData.user.email, 'password': data.password}
+        const accountObj = await newAccount(data);
+        const loginData = {'email': accountObj.user.email, 'password': data.password}
         await userLogin(loginData);
-        }
-        catch(error) {
-          console.error(error);
-        }
     })
+}
+
+async function newAccount(data) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+  });
+  if (!response.ok) {
+    throw new Error("couldn't create user");
+  }
+  return await response.json();
+  }
+  catch(error) {
+    console.error(error);
+  }
 }

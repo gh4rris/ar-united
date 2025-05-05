@@ -1,0 +1,45 @@
+import { API_BASE_URL } from "../config.js";
+
+export default function CreateGroup() {
+    return `
+    <form id="create-grp-form">
+        <div id="gname-create-box">
+          <label for="gname-input-create">Group name:</label>
+          <input type="text" name="name" id="gname-input-create" required >
+        </div>
+        <div id="desc-create-box">
+          <label for="desc-input-create">Description:</label>
+          <textarea name="description" id="desc-input-create" rows="5" cols="33" spellcheck="true" required></textarea>
+        </div>
+        <button type="submit" id="submit-btn-create">Create Group</button>
+      </form>`;
+}
+
+export function createGroupEvents() {
+  const form = document.getElementById('create-grp-form');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = {"name": e.target[0].value, "description": e.target[1].value};
+    const groupObj = await newGroup(data);
+    console.log(groupObj);
+  });
+}
+
+async function newGroup(data) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/groups`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.accessToken}`
+      },
+      body: `{"name": "${data.name}", "description": "${data.description}"}`
+    });
+    if (!response.ok) {
+      throw new Error("couldn't create group");
+    }
+    return await response.json();
+  }
+  catch(error) {
+    console.error(error.message);
+  }
+}

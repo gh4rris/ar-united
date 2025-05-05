@@ -26,7 +26,7 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 		Description string `json:"description"`
 	}
 	type response struct {
-		Group
+		Group Group `json:"group"`
 	}
 
 	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)

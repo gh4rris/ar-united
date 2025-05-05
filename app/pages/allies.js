@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config.js";
 
 export default function Allies() {
-    return `<div id="ally-box"></div>`
+    return `<div id="ally-box"></div>`;
 }
 
 export async function alliesEvents() {
