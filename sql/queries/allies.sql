@@ -10,9 +10,9 @@ ORDER BY u.first_name ASC;
 -- name: AddAlly :exec
 INSERT INTO allies (requester_id, requestee_id, requested)
 VALUES (
-    requester_id = $1,
-    requestee_id = $2,
-    requested = NOW()
+    $1,
+    $2,
+    NOW()
 );
 
 -- name: ConfirmAlly :exec
@@ -28,3 +28,9 @@ ON u.id = a.requester_id
 AND a.requestee_id = $1
 WHERE confirmed IS NULL
 ORDER BY requested DESC;
+
+-- name: IsAlly :one
+SELECT requester_id, requested, confirmed
+FROM allies
+WHERE (requester_id = $1 AND requestee_id = $2)
+OR (requestee_id = $1 AND requester_id = $2);

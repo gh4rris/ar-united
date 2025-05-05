@@ -16,7 +16,10 @@ export default function Activist() {
 
 const allyActivists = `
 <div id="profile-box">
-        <h2 id="profile-name"></h2>
+        <div id="name-box">
+            <h2 id="profile-name"></h2>
+            <button id="ally-btn">Add Ally</button>
+        </div>
         <p id="profile-email"></p>
         <p id="profile-description">I am an animal rights activist</p>
       <div id="posts-box"></div>`;
@@ -29,9 +32,7 @@ export async function activistEvents() {
         window.location.replace(`/activists/${user.slug}`);
         return
     } else if (user.id != activist.id) {
-        const appElement = document.getElementById('app');
-        appElement.innerHTML = allyActivists;
-        posts = await getUserPosts(activist.id);
+        posts = await activistPage(user, activist);
     } else {
         const postBtn = document.getElementById('post-btn');
         postBtn.addEventListener('click', async function(e) {
@@ -53,7 +54,6 @@ export async function activistEvents() {
 }
 
 async function getActivist() {
-    
     const slug = window.location.pathname.split('/')[2];
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${slug}`);
@@ -68,6 +68,30 @@ async function getActivist() {
     }
 }
 
+async function activistPage(user, activist) {
+    const appElement = document.getElementById('app');
+        appElement.innerHTML = allyActivists;
+        const posts = await getUserPosts(activist.id);
+        const ally = await isAlly(activist.id);
+        const allyBtn = document.getElementById('ally-btn');
+        if (ally.confirmed) {
+            allyBtn.innerText = 'Allies';
+            allyBtn.setAttribute("disabled", "");
+        } else if (ally.requester_id === user.id) {
+            allyBtn.innerText = 'Awaiting response';
+            allyBtn.setAttribute("disabled", "");
+        } else if (ally.requester_id === activist.id) {
+            allyBtn.innerText = 'Confirm Ally';
+        } else {
+            allyBtn.addEventListener('click', async() => {
+                addAlly(activist.id);
+                allyBtn.setAttribute("disabled", "");
+                allyBtn.innerText = 'Awaiting response';
+            });
+        }
+        return posts
+}
+
 async function getUserPosts(userID) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${userID}/posts`);
@@ -78,6 +102,42 @@ async function getUserPosts(userID) {
     }
     catch(error) {
         console.error(error);
+    }
+}
+
+async function isAlly(activistID) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/allies/${activistID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("couldn't check ally");
+        }
+        return await response.json();
+    }
+    catch(error) {
+        console.error(error.message);
+    }
+}
+
+async function addAlly(activistID) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/allies/${activistID}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("couldn't add ally");
+        }
+        return
+    }
+    catch(error) {
+        console.error(error.message);
     }
 }
 

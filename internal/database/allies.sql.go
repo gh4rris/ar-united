@@ -7,6 +7,8 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -14,9 +16,9 @@ import (
 const addAlly = `-- name: AddAlly :exec
 INSERT INTO allies (requester_id, requestee_id, requested)
 VALUES (
-    requester_id = $1,
-    requestee_id = $2,
-    requested = NOW()
+    $1,
+    $2,
+    NOW()
 )
 `
 
@@ -130,4 +132,29 @@ func (q *Queries) GetUserAllies(ctx context.Context, requesteeID uuid.UUID) ([]U
 		return nil, err
 	}
 	return items, nil
+}
+
+const isAlly = `-- name: IsAlly :one
+SELECT requester_id, requested, confirmed
+FROM allies
+WHERE (requester_id = $1 AND requestee_id = $2)
+OR (requestee_id = $1 AND requester_id = $2)
+`
+
+type IsAllyParams struct {
+	RequesterID uuid.UUID
+	RequesteeID uuid.UUID
+}
+
+type IsAllyRow struct {
+	RequesterID uuid.UUID
+	Requested   time.Time
+	Confirmed   sql.NullTime
+}
+
+func (q *Queries) IsAlly(ctx context.Context, arg IsAllyParams) (IsAllyRow, error) {
+	row := q.db.QueryRowContext(ctx, isAlly, arg.RequesterID, arg.RequesteeID)
+	var i IsAllyRow
+	err := row.Scan(&i.RequesterID, &i.Requested, &i.Confirmed)
+	return i, err
 }

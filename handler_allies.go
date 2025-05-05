@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gh4rris/ar-united/internal/auth"
 	"github.com/gh4rris/ar-united/internal/database"
@@ -87,7 +88,7 @@ func (cfg *apiConfig) handlerConfirmAlly(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (cfg *apiConfig) handlerGetAllyRequests(w http.ResponseWriter, r *http.Request) {
@@ -117,4 +118,45 @@ func (cfg *apiConfig) handlerGetAllyRequests(w http.ResponseWriter, r *http.Requ
 	}
 
 	respondWithJson(w, http.StatusOK, allyRequests)
+}
+
+func (cfg *apiConfig) handlerIsAlly(w http.ResponseWriter, r *http.Request) {
+	type response struct {
+		RequesterID uuid.UUID  `json:"requester_id"`
+		Requested   *time.Time `json:"requested"`
+		Confirmed   *time.Time `json:"confirmed"`
+	}
+
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, msg, err)
+		return
+	}
+
+	stringID := r.PathValue("allyID")
+	allyID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Invalid ally ID", err)
+		return
+	}
+
+	ally, err := cfg.db.IsAlly(r.Context(), database.IsAllyParams{
+		RequesterID: userID,
+		RequesteeID: allyID,
+	})
+
+	var requested *time.Time
+	if !ally.Requested.IsZero() {
+		requested = &ally.Requested
+	}
+	var confirmed *time.Time
+	if !ally.Confirmed.Time.IsZero() {
+		confirmed = &ally.Confirmed.Time
+	}
+
+	respondWithJson(w, http.StatusOK, response{
+		RequesterID: ally.RequesterID,
+		Requested:   requested,
+		Confirmed:   confirmed,
+	})
 }
