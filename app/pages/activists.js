@@ -82,11 +82,16 @@ async function activistPage(user, activist) {
             allyBtn.setAttribute("disabled", "");
         } else if (ally.requester_id === activist.id) {
             allyBtn.innerText = 'Confirm Ally';
+            allyBtn.addEventListener('click', async() => {
+                await confirmAlly(activist.id);
+                allyBtn.innerText = 'Allies';
+                allyBtn.setAttribute("disabled", "");
+            })
         } else {
             allyBtn.addEventListener('click', async() => {
                 addAlly(activist.id);
-                allyBtn.setAttribute("disabled", "");
                 allyBtn.innerText = 'Awaiting response';
+                allyBtn.setAttribute("disabled", "");
             });
         }
         return posts
@@ -133,6 +138,24 @@ async function addAlly(activistID) {
         });
         if (!response.ok) {
             throw new Error("couldn't add ally");
+        }
+        return
+    }
+    catch(error) {
+        console.error(error.message);
+    }
+}
+
+async function confirmAlly(activistID) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/allies/${activistID}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("couldn't confirm ally");
         }
         return
     }

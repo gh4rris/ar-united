@@ -2,10 +2,11 @@ import { API_BASE_URL, PRIVATE_PAGES, LOGOUT_ONLY } from './config.js';
 
 const routes = {
     '/': () => import('./pages/home.js'),
-    '/login': () => import('./pages/login.js'),
     '/create_account': () => import('./pages/create_account.js'),
-    '/activists': () => import('./pages/activists.js'),
     '/edit_profile': () => import('./pages/edit_profile.js'),
+    '/login': () => import('./pages/login.js'),
+    '/activists': () => import('./pages/activists.js'),
+    '/allies': () => import('./pages/allies.js'),
     '/search': () => import('./pages/search.js')
 };
 
@@ -77,14 +78,16 @@ async function renderPage() {
         appElement.innerHTML = module.default();
         if (typeof(module.homeEvents) === 'function') {
             module.homeEvents();
-        } else if (typeof(module.loginEvents) === 'function') {
-            module.loginEvents();
         } else if (typeof(module.createAccountEvents) === 'function') {
             module.createAccountEvents();
-        } else if (typeof(module.activistEvents) === 'function') {
-            module.activistEvents();
+        } else if (typeof(module.loginEvents) === 'function') {
+            module.loginEvents();
         } else if (typeof(module.editProfileEvents) === 'function') {
             module.editProfileEvents();
+        } else if (typeof(module.activistEvents) === 'function') {
+            module.activistEvents();
+        } else if (typeof(module.alliesEvents) === 'function') {
+            module.alliesEvents();
         } else if (typeof(module.searchEvents) === 'function') {
             module.searchEvents();
         }
