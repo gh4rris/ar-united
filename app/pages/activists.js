@@ -53,7 +53,7 @@ export async function activistEvents() {
         
 }
 
-async function getActivist() {
+export async function getActivist() {
     const slug = window.location.pathname.split('/')[2];
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${slug}`);

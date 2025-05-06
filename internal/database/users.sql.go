@@ -12,14 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-const checkSlug = `-- name: CheckSlug :one
+const checkSlugUser = `-- name: CheckSlugUser :one
 SELECT COUNT(slug) AS slug_count
 FROM users
 WHERE slug = $1
 `
 
-func (q *Queries) CheckSlug(ctx context.Context, slug string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, checkSlug, slug)
+func (q *Queries) CheckSlugUser(ctx context.Context, slug string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, checkSlugUser, slug)
 	var slug_count int64
 	err := row.Scan(&slug_count)
 	return slug_count, err

@@ -25,6 +25,7 @@ type Group struct {
 	UpdatedAt   time.Time
 	AdminID     uuid.UUID
 	Description sql.NullString
+	Slug        string
 }
 
 type Post struct {

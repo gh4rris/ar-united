@@ -52,7 +52,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		DOB = *params.DOB
 	}
 
-	slug, err := cfg.generateSlug(params.FirstName, params.LastName, r)
+	slug, err := cfg.generateSlugUser(params.FirstName, params.LastName, r)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't generate slug", err)
 		return

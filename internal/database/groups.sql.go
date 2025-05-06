@@ -12,27 +12,47 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkSlugGroup = `-- name: CheckSlugGroup :one
+SELECT COUNT(slug) AS slug_count
+FROM groups
+WHERE slug = $1
+`
+
+func (q *Queries) CheckSlugGroup(ctx context.Context, slug string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, checkSlugGroup, slug)
+	var slug_count int64
+	err := row.Scan(&slug_count)
+	return slug_count, err
+}
+
 const createGroup = `-- name: CreateGroup :one
-INSERT INTO groups(id, name, created_at, updated_at, admin_id, description)
+INSERT INTO groups(id, name, created_at, updated_at, admin_id, description, slug)
 VALUES (
     gen_random_uuid(),
     $1,
     NOW(),
     NOW(),
     $2,
-    $3
+    $3,
+    $4
 )
-RETURNING id, name, created_at, updated_at, admin_id, description
+RETURNING id, name, created_at, updated_at, admin_id, description, slug
 `
 
 type CreateGroupParams struct {
 	Name        string
 	AdminID     uuid.UUID
 	Description sql.NullString
+	Slug        string
 }
 
 func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error) {
-	row := q.db.QueryRowContext(ctx, createGroup, arg.Name, arg.AdminID, arg.Description)
+	row := q.db.QueryRowContext(ctx, createGroup,
+		arg.Name,
+		arg.AdminID,
+		arg.Description,
+		arg.Slug,
+	)
 	var i Group
 	err := row.Scan(
 		&i.ID,
@@ -41,6 +61,7 @@ func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group
 		&i.UpdatedAt,
 		&i.AdminID,
 		&i.Description,
+		&i.Slug,
 	)
 	return i, err
 }
@@ -61,6 +82,27 @@ type CreateMemberParams struct {
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) error {
 	_, err := q.db.ExecContext(ctx, createMember, arg.UserID, arg.GroupID)
 	return err
+}
+
+const getGroupBySlug = `-- name: GetGroupBySlug :one
+SELECT id, name, created_at, updated_at, admin_id, description, slug
+FROM groups
+WHERE slug = $1
+`
+
+func (q *Queries) GetGroupBySlug(ctx context.Context, slug string) (Group, error) {
+	row := q.db.QueryRowContext(ctx, getGroupBySlug, slug)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AdminID,
+		&i.Description,
+		&i.Slug,
+	)
+	return i, err
 }
 
 const groupMembers = `-- name: GroupMembers :many
@@ -105,8 +147,45 @@ func (q *Queries) GroupMembers(ctx context.Context, groupID uuid.UUID) ([]User, 
 	return items, nil
 }
 
+const groupsByAdmin = `-- name: GroupsByAdmin :many
+SELECT id, name, created_at, updated_at, admin_id, description, slug
+FROM groups
+WHERE admin_id = $1
+`
+
+func (q *Queries) GroupsByAdmin(ctx context.Context, adminID uuid.UUID) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, groupsByAdmin, adminID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Group
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AdminID,
+			&i.Description,
+			&i.Slug,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const groupsByUser = `-- name: GroupsByUser :many
-SELECT g.id, g.name, g.created_at, g.updated_at, g.admin_id, g.description
+SELECT g.id, g.name, g.created_at, g.updated_at, g.admin_id, g.description, g.slug
 FROM users_groups AS ug
 INNER JOIN groups AS g
 ON ug.group_id = g.id
@@ -130,6 +209,7 @@ func (q *Queries) GroupsByUser(ctx context.Context, userID uuid.UUID) ([]Group, 
 			&i.UpdatedAt,
 			&i.AdminID,
 			&i.Description,
+			&i.Slug,
 		); err != nil {
 			return nil, err
 		}

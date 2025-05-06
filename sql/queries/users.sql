@@ -37,7 +37,7 @@ WHERE first_name ILIKE '%' || $1 || '%'
 OR last_name ILIKE '%' || $1 || '%'
 OR email ILIKE '%' || $1 || '%';
 
--- name: CheckSlug :one
+-- name: CheckSlugUser :one
 SELECT COUNT(slug) AS slug_count
 FROM users
 WHERE slug = $1;

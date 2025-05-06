@@ -8,6 +8,8 @@ const routes = {
     '/activists': () => import('./pages/activists.js'),
     '/allies': () => import('./pages/allies.js'),
     '/create_group': () => import('./pages/create_group.js'),
+    '/user_groups': () => import('./pages/user_groups.js'),
+    '/groups': () => import('./pages/groups.js'),
     '/search': () => import('./pages/search.js')
 };
 
@@ -37,7 +39,11 @@ function main() {
     })
     const slug = localStorage.user ? JSON.parse(localStorage.user).slug : undefined;
     const profileLink = document.getElementById('profile-link');
-    profileLink.href = slug ? `/activists/${slug}` : "/activists";
+    const alliesLink = document.getElementById('allies-link');
+    const groupsLink = document.getElementById('groups-link');
+    profileLink.href = slug ? `/activists/${slug}` : "/";
+    alliesLink.href = slug ? `/activists/${slug}/allies` : "/";
+    groupsLink.href = slug ? `/activists/${slug}/groups` : "/";
 
     window.addEventListener('popstate', renderPage);
 
@@ -51,9 +57,15 @@ async function navigateTo(url) {
 
 async function renderPage() {
     const appElement = document.getElementById('app');
-    const path = "/" + window.location.pathname.split("/")[1];
+    let path = window.location.pathname.split("/");
+    const userSub = path.length > 3;
+    path = userSub ? "/"+path[3] : "/"+path[1];
+    if (path === '/groups' && userSub) {
+        path = '/user_groups'
+    }
+    
     const loader = routes[path];
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.accessToken;
     if (PRIVATE_PAGES.includes(path)) {
         if (!token) {
             window.location.replace('/');
@@ -61,16 +73,22 @@ async function renderPage() {
         }
         const valid = await validateToken();
         if (!valid) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
             window.location.replace('/');
             return
         }
     } else if (LOGOUT_ONLY.includes(path) && token) {
         const valid = await validateToken();
-        if (valid) {
-            const slug = JSON.parse(localStorage.user).slug;
-            window.location.replace(`/activists/${slug}`);
+        if (!valid) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
+            window.location.replace('/');
             return
         }
+        const slug = JSON.parse(localStorage.user).slug;
+        window.location.replace(`/activists/${slug}`);
+        return
     }
 
     if (loader) {
@@ -91,6 +109,10 @@ async function renderPage() {
             module.alliesEvents();
         } else if (typeof(module.createGroupEvents) === 'function') {
             module.createGroupEvents();
+        } else if (typeof(module.userGroupEvents) === 'function') {
+            module.userGroupEvents();
+        } else if (typeof(module.groupEvents) === 'function') {
+            module.groupEvents();
         } else if (typeof(module.searchEvents) === 'function') {
             module.searchEvents();
         }

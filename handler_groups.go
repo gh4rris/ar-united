@@ -12,12 +12,13 @@ import (
 )
 
 type Group struct {
-	ID          uuid.UUID
-	Name        string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	AdminID     uuid.UUID
-	Description string
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	AdminID     uuid.UUID `json:"admin_id"`
+	Description string    `json:"description"`
+	Slug        string    `json:"slug"`
 }
 
 func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +43,12 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	slug, err := cfg.generateSlugGroup(r)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't generate slug", err)
+		return
+	}
+
 	group, err := cfg.db.CreateGroup(r.Context(), database.CreateGroupParams{
 		Name:    params.Name,
 		AdminID: userID,
@@ -49,6 +56,7 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 			String: params.Description,
 			Valid:  params.Description != "",
 		},
+		Slug: slug,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't Create group", err)
@@ -72,6 +80,7 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 			UpdatedAt:   group.UpdatedAt,
 			AdminID:     group.AdminID,
 			Description: group.Description.String,
+			Slug:        group.Slug,
 		},
 	})
 }
@@ -121,6 +130,7 @@ func (cfg *apiConfig) handlerUserGroups(w http.ResponseWriter, r *http.Request) 
 			UpdatedAt:   group.UpdatedAt,
 			AdminID:     group.AdminID,
 			Description: group.Description.String,
+			Slug:        group.Slug,
 		})
 	}
 
@@ -155,4 +165,60 @@ func (cfg *apiConfig) handlerGroupMembers(w http.ResponseWriter, r *http.Request
 	}
 
 	respondWithJson(w, http.StatusOK, members)
+}
+
+func (cfg *apiConfig) handlerAdminGroups(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("userID")
+	userID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	dbGroups, err := cfg.db.GroupsByAdmin(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find groups", err)
+		return
+	}
+
+	groups := []Group{}
+	for _, group := range dbGroups {
+		groups = append(groups, Group{
+			ID:          group.ID,
+			Name:        group.Name,
+			CreatedAt:   group.CreatedAt,
+			UpdatedAt:   group.UpdatedAt,
+			AdminID:     group.AdminID,
+			Description: group.Description.String,
+			Slug:        group.Slug,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, groups)
+}
+
+func (cfg *apiConfig) handlerGetGroupBySlug(w http.ResponseWriter, r *http.Request) {
+	type respone struct {
+		Group Group `json:"group"`
+	}
+
+	slugID := r.PathValue("slugID")
+
+	group, err := cfg.db.GetGroupBySlug(r.Context(), slugID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find user", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, respone{
+		Group: Group{
+			ID:          group.ID,
+			Name:        group.Name,
+			CreatedAt:   group.CreatedAt,
+			UpdatedAt:   group.UpdatedAt,
+			AdminID:     group.AdminID,
+			Description: group.Description.String,
+			Slug:        group.Slug,
+		},
+	})
 }

@@ -96,5 +96,5 @@ func (cfg *apiConfig) handlerValidateToken(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }

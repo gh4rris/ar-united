@@ -5,7 +5,8 @@ CREATE TABLE groups (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     admin_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    description TEXT
+    description TEXT,
+    slug TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE users_groups (
