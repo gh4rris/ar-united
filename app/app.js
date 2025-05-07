@@ -15,7 +15,13 @@ const routes = {
 
 main();
 
-function main() {
+async function main() {
+    const database = await checkDatabase();
+    if (!database) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+    }
+
     document.addEventListener('click', e => {
         if (e.target.matches('[data-link]')) {
             e.preventDefault();
@@ -33,8 +39,9 @@ function main() {
     })
     const searchBtn = document.getElementById('search-btn');
     searchBtn.addEventListener('click', async () => {
-        const searchInput = document.getElementById('search-input');
-        const url = `/search?search=${encodeURIComponent(searchInput.value)}`;
+        const searchInput = document.getElementById('search-input').value;
+        const type = document.getElementById('search-type').value.toLowerCase();
+        const url = `/search?value=${encodeURIComponent(searchInput)}&type=${encodeURIComponent(type)}`;
         await navigateTo(url);
     })
     const slug = localStorage.user ? JSON.parse(localStorage.user).slug : undefined;
@@ -172,6 +179,20 @@ async function revokeRefreshToken() {
         if (!response.ok) {
             throw new Error("coudn't revoke token");
         }
+    }
+    catch(error) {
+        console.error(error.message);
+    }
+}
+
+async function checkDatabase() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/users`);
+        if (!response.ok) {
+            throw new Error("couldn't check database");
+        }
+        const responseData = await response.json();
+        return responseData.entries;
     }
     catch(error) {
         console.error(error.message);

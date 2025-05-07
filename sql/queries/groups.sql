@@ -39,6 +39,11 @@ SELECT *
 FROM groups
 WHERE admin_id = $1;
 
+-- name: SearchGroups :many
+SELECT *
+FROM groups
+WHERE name ILIKE '%' || $1 || '%';
+
 -- name: CheckSlugGroup :one
 SELECT COUNT(slug) AS slug_count
 FROM groups
@@ -48,3 +53,8 @@ WHERE slug = $1;
 SELECT *
 FROM groups
 WHERE slug = $1;
+
+-- name: IsMember :one
+SELECT *
+FROM users_groups
+WHERE user_id = $1 AND group_id = $2;

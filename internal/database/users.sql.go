@@ -25,6 +25,18 @@ func (q *Queries) CheckSlugUser(ctx context.Context, slug string) (int64, error)
 	return slug_count, err
 }
 
+const checkUsers = `-- name: CheckUsers :one
+SELECT COUNT(id) AS entries
+FROM users
+`
+
+func (q *Queries) CheckUsers(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, checkUsers)
+	var entries int64
+	err := row.Scan(&entries)
+	return entries, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password)
 VALUES (

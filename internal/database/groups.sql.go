@@ -223,3 +223,58 @@ func (q *Queries) GroupsByUser(ctx context.Context, userID uuid.UUID) ([]Group, 
 	}
 	return items, nil
 }
+
+const isMember = `-- name: IsMember :one
+SELECT user_id, group_id
+FROM users_groups
+WHERE user_id = $1 AND group_id = $2
+`
+
+type IsMemberParams struct {
+	UserID  uuid.UUID
+	GroupID uuid.UUID
+}
+
+func (q *Queries) IsMember(ctx context.Context, arg IsMemberParams) (UsersGroup, error) {
+	row := q.db.QueryRowContext(ctx, isMember, arg.UserID, arg.GroupID)
+	var i UsersGroup
+	err := row.Scan(&i.UserID, &i.GroupID)
+	return i, err
+}
+
+const searchGroups = `-- name: SearchGroups :many
+SELECT id, name, created_at, updated_at, admin_id, description, slug
+FROM groups
+WHERE name ILIKE '%' || $1 || '%'
+`
+
+func (q *Queries) SearchGroups(ctx context.Context, dollar_1 sql.NullString) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, searchGroups, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Group
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AdminID,
+			&i.Description,
+			&i.Slug,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

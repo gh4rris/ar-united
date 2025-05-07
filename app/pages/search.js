@@ -7,25 +7,31 @@ export default function Search() {
 export async function searchEvents() {
     const resultBox = document.getElementById('result-box');
     const params = new URLSearchParams(window.location.search);
-    const searchValue = params.get('search');
-    if (searchValue != '') {
-        const results = await searchResults(searchValue);
+    const value = params.get('value');
+    const type = params.get('type');
+    if (value != '') {
+        const results = await searchResultsUsers(value, type);
         for (const result of results) {
             if (result.id === JSON.parse(localStorage.user).id) {
                 continue;
             }
             const link = document.createElement('a');
-            link.href = `/activists/${result.slug}`;
-            link.innerText = `${result.first_name} ${result.last_name}`;
+            if (type === 'activists') {
+                link.href = `/activists/${result.slug}`;
+                link.innerText = `${result.first_name} ${result.last_name}`;
+            } else if (type === 'groups') {
+                link.href = `/groups/${result.slug}`;
+                link.innerText = `${result.name}`;
+            }
             resultBox.append(link);
             resultBox.append(document.createElement('br'));
         }
     }
 }
 
-async function searchResults(searchValue) {
+async function searchResultsUsers(value, type) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/search/users?search=${encodeURIComponent(searchValue)}`);
+        const response = await fetch(`${API_BASE_URL}/api/search?value=${encodeURIComponent(value)}&type=${encodeURIComponent(type)}`);
         if (!response.ok) {
             throw new Error("couldn't find users");
         }

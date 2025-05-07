@@ -222,3 +222,34 @@ func (cfg *apiConfig) handlerGetGroupBySlug(w http.ResponseWriter, r *http.Reque
 		},
 	})
 }
+
+func (cfg *apiConfig) handlerIsMember(w http.ResponseWriter, r *http.Request) {
+	type response struct {
+		UserID  uuid.UUID `json:"user_id"`
+		GroupID uuid.UUID `json:"group_id"`
+	}
+
+	userStrID := r.PathValue("userID")
+	userID, err := uuid.Parse(userStrID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Invalid user ID", err)
+		return
+	}
+
+	groupStrID := r.PathValue("groupID")
+	groupID, err := uuid.Parse(groupStrID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Invalid group ID", err)
+		return
+	}
+
+	member, _ := cfg.db.IsMember(r.Context(), database.IsMemberParams{
+		UserID:  userID,
+		GroupID: groupID,
+	})
+
+	respondWithJson(w, http.StatusOK, response{
+		UserID:  member.UserID,
+		GroupID: member.GroupID,
+	})
+}

@@ -51,5 +51,9 @@ WHERE slug = $1;
 DELETE FROM users
 WHERE id = $1;
 
+-- name: CheckUsers :one
+SELECT COUNT(id) AS entries
+FROM users;
+
 -- name: Reset :exec
 DELETE FROM users;

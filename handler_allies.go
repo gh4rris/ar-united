@@ -141,7 +141,7 @@ func (cfg *apiConfig) handlerIsAlly(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ally, err := cfg.db.IsAlly(r.Context(), database.IsAllyParams{
+	ally, _ := cfg.db.IsAlly(r.Context(), database.IsAllyParams{
 		RequesterID: userID,
 		RequesteeID: allyID,
 	})

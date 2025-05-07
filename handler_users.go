@@ -200,3 +200,19 @@ func (cfg *apiConfig) handlerGetUserBySlug(w http.ResponseWriter, r *http.Reques
 		},
 	})
 }
+
+func (cfg *apiConfig) handlerCheckUsers(w http.ResponseWriter, r *http.Request) {
+	type response struct {
+		Entries int64 `json:"entries"`
+	}
+
+	entries, err := cfg.db.CheckUsers(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't count users", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, response{
+		Entries: entries,
+	})
+}

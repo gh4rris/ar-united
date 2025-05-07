@@ -14,7 +14,7 @@ export default function UserGroups() {
 export async function userGroupEvents() {
     const user = JSON.parse(localStorage.user);
     const activist = await getActivist();
-    let groups = [];
+    let groups;
     if (!activist) {
         window.location.replace(`/activists/${user.slug}`);
         return
@@ -24,7 +24,7 @@ export async function userGroupEvents() {
         groups = await managedGroups(user.id);
     }
     const adminGroups = document.getElementById('admin-grp-box');
-    if (!groups) {
+    if (groups.length === 0) {
         adminGroups.remove();
     } else {
         for (const group of groups) {
