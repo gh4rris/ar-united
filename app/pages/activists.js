@@ -14,7 +14,7 @@ export default function Activist() {
       <div id="posts-box"></div>`;
 }
 
-const allyActivists = `
+const allyHTML = `
 <div id="profile-box">
         <div id="name-box">
             <h2 id="profile-name"></h2>
@@ -39,6 +39,7 @@ export async function activistEvents() {
             await validateToken();
             const value = e.target.previousElementSibling.value;
             await newPost(value);
+            e.target.previousElementSibling.value = '';
         });
         posts = await getUserPosts(user.id);
     }
@@ -70,31 +71,31 @@ export async function getActivist() {
 
 async function activistPage(user, activist) {
     const appElement = document.getElementById('app');
-        appElement.innerHTML = allyActivists;
-        const posts = await getUserPosts(activist.id);
-        const ally = await isAlly(activist.id);
-        const allyBtn = document.getElementById('ally-btn');
-        if (ally.confirmed) {
+    appElement.innerHTML = allyHTML;
+    const posts = await getUserPosts(activist.id);
+    const ally = await isAlly(activist.id);
+    const allyBtn = document.getElementById('ally-btn');
+    if (ally.confirmed) {
+        allyBtn.innerText = 'Allies';
+        allyBtn.setAttribute('disabled', '');
+    } else if (ally.requester_id === user.id) {
+        allyBtn.innerText = 'Awaiting response';
+        allyBtn.setAttribute('disabled', '');
+    } else if (ally.requester_id === activist.id) {
+        allyBtn.innerText = 'Confirm Ally';
+        allyBtn.addEventListener('click', () => {
+            confirmAlly(activist.id);
             allyBtn.innerText = 'Allies';
             allyBtn.setAttribute('disabled', '');
-        } else if (ally.requester_id === user.id) {
+        })
+    } else {
+        allyBtn.addEventListener('click', () => {
+            addAlly(activist.id);
             allyBtn.innerText = 'Awaiting response';
             allyBtn.setAttribute('disabled', '');
-        } else if (ally.requester_id === activist.id) {
-            allyBtn.innerText = 'Confirm Ally';
-            allyBtn.addEventListener('click', () => {
-                confirmAlly(activist.id);
-                allyBtn.innerText = 'Allies';
-                allyBtn.setAttribute('disabled', '');
-            })
-        } else {
-            allyBtn.addEventListener('click', () => {
-                addAlly(activist.id);
-                allyBtn.innerText = 'Awaiting response';
-                allyBtn.setAttribute('disabled', '');
-            });
-        }
-        return posts
+        });
+    }
+    return posts
 }
 
 async function getUserPosts(userID) {

@@ -5,7 +5,8 @@ export default function Group() {
     <div id="group-box">
         <h2 id="group-name"></h2>
         <p id="group-description"></p>
-        <button id="member-btn">Join Group</button>
+        <button id="member-btn" disabled>Admin</button>
+        <button id="create-event-btn">Create Event</button>
         <div id="new-post-box">
             <input type="text" name="post" id="post-input" >
             <button id="post-btn">Post</button>
@@ -13,26 +14,25 @@ export default function Group() {
       <div id="posts-box"></div>`;
 }
 
+const nonAdminHTML = `
+<div id="group-box">
+        <h2 id="group-name"></h2>
+        <p id="group-description"></p>
+        <button id="member-btn">Join Group</button>
+      <div id="posts-box"></div>`
+
 export async function groupEvents() {
     const user = JSON.parse(localStorage.user);
     const group = await getGroup();
-    const memberBtn = document.getElementById('member-btn');
     if (!group) {
         window.location.replace(`/activists/${user.slug}`);
     } else if (user.id != group.admin_id) {
-        const member = await isMember(user.id, group.id);
-        if (member) {
-            memberBtn.innerText = 'Member';
-            memberBtn.setAttribute('disabled', '');
-        }
-        memberBtn.addEventListener('click', () => {
-            joinGroup(group.id);
-            memberBtn.innerText = 'Member';
-            memberBtn.setAttribute('disabled', '');
-        })
+        await nonAdminPage(user, group);
     } else {
-        memberBtn.innerText = 'Admin';
-        memberBtn.setAttribute('disabled', '');
+        const eventBtn = document.getElementById('create-event-btn');
+        eventBtn.addEventListener('click', () => {
+            window.location.assign(`/groups/${group.slug}/create_event`)
+        })
     }
     const nameElement = document.getElementById('group-name');
     const descriptionElement = document.getElementById('group-description');
@@ -53,6 +53,22 @@ export async function getGroup() {
     catch(error) {
         console.error(error.message);
     }
+}
+
+async function nonAdminPage(user, group) {
+    const appElement = document.getElementById('app');
+    appElement.innerHTML = nonAdminHTML;
+    const memberBtn = document.getElementById('member-btn');
+    const member = await isMember(user.id, group.id);
+    if (member) {
+        memberBtn.innerText = 'Member';
+        memberBtn.setAttribute('disabled', '');
+    }
+    memberBtn.addEventListener('click', () => {
+        joinGroup(group.id);
+        memberBtn.innerText = 'Member';
+        memberBtn.setAttribute('disabled', '');
+    })
 }
 
 async function isMember(userID, groupID) {

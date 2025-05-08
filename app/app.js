@@ -10,6 +10,7 @@ const routes = {
     '/create_group': () => import('./pages/create_group.js'),
     '/user_groups': () => import('./pages/user_groups.js'),
     '/groups': () => import('./pages/groups.js'),
+    '/create_event': () => import('./pages/create_event.js'),
     '/search': () => import('./pages/search.js')
 };
 
@@ -65,9 +66,9 @@ async function navigateTo(url) {
 async function renderPage() {
     const appElement = document.getElementById('app');
     let path = window.location.pathname.split("/");
-    const userSub = path.length > 3;
-    path = userSub ? "/"+path[3] : "/"+path[1];
-    if (path === '/groups' && userSub) {
+    const subPath = path.length > 3;
+    path = subPath ? "/"+path[3] : "/"+path[1];
+    if (path === '/groups' && subPath) {
         path = '/user_groups'
     }
     
@@ -120,6 +121,8 @@ async function renderPage() {
             module.userGroupEvents();
         } else if (typeof(module.groupEvents) === 'function') {
             module.groupEvents();
+        } else if (typeof(module.eventEvents) === 'function') {
+            module.eventEvents();
         } else if (typeof(module.searchEvents) === 'function') {
             module.searchEvents();
         }

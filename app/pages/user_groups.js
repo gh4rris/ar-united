@@ -14,25 +14,35 @@ export default function UserGroups() {
 export async function userGroupEvents() {
     const user = JSON.parse(localStorage.user);
     const activist = await getActivist();
-    let groups;
+    let adminGroups;
+    let isMemberGroups;
     if (!activist) {
         window.location.replace(`/activists/${user.slug}`);
         return
     } else if (user.id != activist.id) {
-        groups = await managedGroups(activist.id);
+        adminGroups = await managedGroups(activist.id);
+        isMemberGroups = await memberGroups(activist.id);
     } else {
-        groups = await managedGroups(user.id);
+        adminGroups = await managedGroups(user.id);
+        isMemberGroups = await memberGroups(user.id);
     }
-    const adminGroups = document.getElementById('admin-grp-box');
-    if (groups.length === 0) {
-        adminGroups.remove();
+    const adminGroupsBox = document.getElementById('admin-grp-box');
+    const memberGroupsBox = document.getElementById('member-grp-box');
+    if (adminGroups.length === 0) {
+        adminGroupsBox.remove();
     } else {
-        for (const group of groups) {
+        for (const group of adminGroups) {
             const link = document.createElement('a');
             link.href = `/groups/${group.slug}`;
             link.innerText = `${group.name}`;
-            adminGroups.append(link);
+            adminGroupsBox.append(link);
         }
+    }
+    for (const group of isMemberGroups) {
+        const link = document.createElement('a');
+        link.href = `/groups/${group.slug}`;
+        link.innerText = `${group.name}`;
+        memberGroupsBox.append(link);
     }
 }
 
@@ -40,7 +50,20 @@ async function managedGroups(userID) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${userID}/groups/admin`);
         if (!response.ok) {
-            throw new Error("couldn't find managed groups");
+            throw new Error("couldn't find admin groups");
+        }
+        return await response.json();
+    }
+    catch(error) {
+        console.error(error.message);
+    }
+}
+
+async function memberGroups(userID) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/users/${userID}/groups`);
+        if (!response.ok) {
+            throw new Error("couldn't find member groups");
         }
         return await response.json();
     }
