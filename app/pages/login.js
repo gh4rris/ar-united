@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config.js";
 
-export function RenderLogin() {
+export function renderLogin() {
     document.getElementById('app').innerHTML = `
     <p>Enter your email and password</p>
     <form id="login-form">

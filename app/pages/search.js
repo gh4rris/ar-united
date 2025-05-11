@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config.js";
 
-export function RenderSearch() {
+export function renderSearch() {
     document.getElementById('app').innerHTML = `<div id="result-box"></div>`;
     searchEvents();
 }

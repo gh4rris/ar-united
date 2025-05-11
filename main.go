@@ -80,8 +80,10 @@ func main() {
 	mux.HandleFunc("GET /api/users/{userID}/allies", apiCfg.handlerUserAllies)
 	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerUserPosts)
 	mux.HandleFunc("GET /api/users/{userID}/groups", apiCfg.handlerUserGroups)
+	// mux.HandleFunc("GET /api/users/{userID}/events", apiCfg.handlerUserEvents)
 	mux.HandleFunc("GET /api/users/{userID}/groups/{groupID}", apiCfg.handlerIsMember)
 	mux.HandleFunc("GET /api/users/{userID}/groups/admin", apiCfg.handlerAdminGroups)
+	mux.HandleFunc("GET /api/users/{userID}/events/admin", apiCfg.handlerAdminEvents)
 
 	mux.HandleFunc("POST /api/allies/{allyID}", apiCfg.handlerAddAlly)
 	mux.HandleFunc("PUT /api/allies/{allyID}", apiCfg.handlerConfirmAlly)

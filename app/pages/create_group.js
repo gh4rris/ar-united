@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config.js";
 
-export function RenderCreateGroup() {
+export function renderCreateGroup() {
     document.getElementById('app').innerHTML = `
     <form id="create-grp-form">
         <div id="gname-create-box">

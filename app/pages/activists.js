@@ -1,7 +1,7 @@
 import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
 
-export async function RenderActivist(activist) {
+export async function renderActivist(activist) {
     const user = JSON.parse(localStorage.user);
     if (user.id === activist.id) {
         document.getElementById('app').innerHTML = `

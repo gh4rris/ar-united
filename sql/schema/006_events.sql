@@ -11,5 +11,12 @@ CREATE TABLE events (
     slug TEXT NOT NULL UNIQUE
 );
 
+CREATE TABLE users_events (
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    UNIQUE(user_id, event_id)
+);
+
 -- +goose Down
+DROP TABLE users_events;
 DROP TABLE events;

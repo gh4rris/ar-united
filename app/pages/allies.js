@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config.js";
 
-export async function RenderAllies(activist) {
+export async function renderAllies(activist) {
     document.getElementById('app').innerHTML = `<div id="ally-box"></div>`;
     alliesEvents(activist);
 }

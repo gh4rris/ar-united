@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config.js";
 import { userLogin } from "./login.js";
 
-export function RenderCreateAccount() {
+export function renderCreateAccount() {
     document.getElementById('app').innerHTML = `
     <p>Create an account and join the network of animal rights activists today!</p>
     <form id="create-acc-form">

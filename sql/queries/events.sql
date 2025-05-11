@@ -12,3 +12,19 @@ VALUES (
     $6
 )
 RETURNING *;
+
+-- name: EventsByAdmin :many
+SELECT *
+FROM events AS e
+INNER JOIN groups AS g
+ON e.group_id = g.id
+WHERE g.admin_id = $1
+ORDER BY e.date ASC;
+
+-- name: EventsByUser :many
+SELECT *
+FROM events AS e
+INNER JOIN users_events AS ue
+ON e.id = ue.event_id
+WHERE ue.user_id = $1
+ORDER BY e.date ASC;

@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config.js";
 
-export function RenderCreateEvent(group) {
+export function renderCreateEvent(group) {
     document.getElementById('app').innerHTML = `
     <form id="create-evnt-form">
         <div id="ename-create-box">

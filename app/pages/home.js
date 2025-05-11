@@ -1,4 +1,4 @@
-export function RenderHome() {
+export function renderHome() {
     document.getElementById('app').innerHTML = `
     <h1>AR United</h1>
     <h2>Hub for Animal Rights groups and activists</h2>

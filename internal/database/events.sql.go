@@ -61,3 +61,129 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 	)
 	return i, err
 }
+
+const eventsByAdmin = `-- name: EventsByAdmin :many
+SELECT e.id, e.name, location, date, e.created_at, e.updated_at, e.description, group_id, e.slug, g.id, g.name, g.created_at, g.updated_at, admin_id, g.description, g.slug
+FROM events AS e
+INNER JOIN groups AS g
+ON e.group_id = g.id
+WHERE g.admin_id = $1
+ORDER BY e.date ASC
+`
+
+type EventsByAdminRow struct {
+	ID            uuid.UUID
+	Name          string
+	Location      sql.NullString
+	Date          time.Time
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Description   sql.NullString
+	GroupID       uuid.UUID
+	Slug          string
+	ID_2          uuid.UUID
+	Name_2        string
+	CreatedAt_2   time.Time
+	UpdatedAt_2   time.Time
+	AdminID       uuid.UUID
+	Description_2 sql.NullString
+	Slug_2        string
+}
+
+func (q *Queries) EventsByAdmin(ctx context.Context, adminID uuid.UUID) ([]EventsByAdminRow, error) {
+	rows, err := q.db.QueryContext(ctx, eventsByAdmin, adminID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EventsByAdminRow
+	for rows.Next() {
+		var i EventsByAdminRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Location,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Description,
+			&i.GroupID,
+			&i.Slug,
+			&i.ID_2,
+			&i.Name_2,
+			&i.CreatedAt_2,
+			&i.UpdatedAt_2,
+			&i.AdminID,
+			&i.Description_2,
+			&i.Slug_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const eventsByUser = `-- name: EventsByUser :many
+SELECT id, name, location, date, created_at, updated_at, description, group_id, slug, user_id, event_id
+FROM events AS e
+INNER JOIN users_events AS ue
+ON e.id = ue.event_id
+WHERE ue.user_id = $1
+ORDER BY e.date ASC
+`
+
+type EventsByUserRow struct {
+	ID          uuid.UUID
+	Name        string
+	Location    sql.NullString
+	Date        time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Description sql.NullString
+	GroupID     uuid.UUID
+	Slug        string
+	UserID      uuid.UUID
+	EventID     uuid.UUID
+}
+
+func (q *Queries) EventsByUser(ctx context.Context, userID uuid.UUID) ([]EventsByUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, eventsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EventsByUserRow
+	for rows.Next() {
+		var i EventsByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Location,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Description,
+			&i.GroupID,
+			&i.Slug,
+			&i.UserID,
+			&i.EventID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

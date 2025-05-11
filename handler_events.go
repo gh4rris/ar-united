@@ -80,3 +80,35 @@ func (cfg *apiConfig) handlerCreateEvent(w http.ResponseWriter, r *http.Request)
 		},
 	})
 }
+
+func (cfg *apiConfig) handlerAdminEvents(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("userID")
+	userID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	dbEvents, err := cfg.db.EventsByAdmin(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn;t find events", err)
+		return
+	}
+
+	events := []Event{}
+	for _, event := range dbEvents {
+		events = append(events, Event{
+			ID:          event.ID,
+			Name:        event.Name,
+			Location:    event.Location.String,
+			Date:        event.Date,
+			CreatedAt:   event.CreatedAt,
+			UpdatedAt:   event.UpdatedAt,
+			Description: event.Description.String,
+			GroupID:     event.GroupID,
+			Slug:        event.Slug,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, events)
+}

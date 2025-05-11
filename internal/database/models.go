@@ -69,6 +69,11 @@ type User struct {
 	HashedPassword string
 }
 
+type UsersEvent struct {
+	UserID  uuid.UUID
+	EventID uuid.UUID
+}
+
 type UsersGroup struct {
 	UserID  uuid.UUID
 	GroupID uuid.UUID

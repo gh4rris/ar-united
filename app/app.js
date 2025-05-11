@@ -1,29 +1,31 @@
 import { API_BASE_URL } from './config.js';
-import { RenderHome } from './pages/home.js'
-import { RenderCreateAccount } from './pages/create_account.js'
-import { RenderLogin } from './pages/login.js'
-import { RenderEditProfile } from './pages/edit_profile.js'
-import { RenderActivist } from './pages/activists.js'
-import { RenderAllies } from './pages/allies.js'
-import { RenderCreateGroup } from './pages/create_group.js'
-import { RenderUserGroups } from './pages/user_groups.js'
-import { RenderGroup } from './pages/groups.js'
-import { RenderCreateEvent } from './pages/create_event.js'
-import { RenderSearch } from './pages/search.js'
+import { renderHome } from './pages/home.js'
+import { renderCreateAccount } from './pages/create_account.js'
+import { renderLogin } from './pages/login.js'
+import { renderEditProfile } from './pages/edit_profile.js'
+import { renderActivist } from './pages/activists.js'
+import { renderAllies } from './pages/allies.js'
+import { renderCreateGroup } from './pages/create_group.js'
+import { renderUserGroups } from './pages/user_groups.js'
+import { renderGroup } from './pages/groups.js'
+import { renderCreateEvent } from './pages/create_event.js'
+import { renderSearch } from './pages/search.js'
+import { renderUserEvents } from './pages/user_events.js';
 
 
 const routes = [
-    { pattern: /^\/$/, handler: () => RenderHome() , private: false },
-    { pattern: /^\/create_account$/, handler: () => RenderCreateAccount(), private: false },
-    { pattern: /^\/login$/, handler: () => RenderLogin(), private: false },
-    { pattern: /^\/(activists)\/([\w-]+)$/, handler: (activist) => RenderActivist(activist), private: true },
-    { pattern: /^\/(activists)\/([\w-]+)\/edit_profile$/, handler: (activist) => RenderEditProfile(activist), private: true },
-    { pattern: /^\/(activists)\/([\w-]+)\/allies$/, handler: (activist) => RenderAllies(activist), private: true },
-    { pattern: /^\/groups\/create_group$/, handler: () => RenderCreateGroup(), private: true },
-    { pattern: /^\/(activists)\/([\w-]+)\/groups$/, handler: (activist) => RenderUserGroups(activist), private: true },
-    { pattern: /^\/(groups)\/(\w+)$/, handler: (group) => RenderGroup(group), private: true },
-    { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => RenderCreateEvent(group), private: true },
-    { pattern: /^\/search$/, handler: () => RenderSearch(), private: true }
+    { pattern: /^\/$/, handler: () => renderHome() , private: false },
+    { pattern: /^\/create_account$/, handler: () => renderCreateAccount(), private: false },
+    { pattern: /^\/login$/, handler: () => renderLogin(), private: false },
+    { pattern: /^\/(activists)\/([\w-]+)$/, handler: (activist) => renderActivist(activist), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/edit_profile$/, handler: (activist) => renderEditProfile(activist), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/allies$/, handler: (activist) => renderAllies(activist), private: true },
+    { pattern: /^\/groups\/create_group$/, handler: () => renderCreateGroup(), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/groups$/, handler: (activist) => renderUserGroups(activist), private: true },
+    { pattern: /^\/(groups)\/(\w+)$/, handler: (group) => renderGroup(group), private: true },
+    { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => renderCreateEvent(group), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/events$/, handler: (activist) => renderUserEvents(activist), private: true },
+    { pattern: /^\/search$/, handler: () => renderSearch(), private: true }
 ];
 
 main();
@@ -61,9 +63,13 @@ async function main() {
     const profileLink = document.getElementById('profile-link');
     const alliesLink = document.getElementById('allies-link');
     const groupsLink = document.getElementById('groups-link');
+    const editLink = document.getElementById('edit-link');
+    const eventsLink = document.getElementById('events-link');
     profileLink.href = slug ? `/activists/${slug}` : "/";
     alliesLink.href = slug ? `/activists/${slug}/allies` : "/";
     groupsLink.href = slug ? `/activists/${slug}/groups` : "/";
+    editLink.href = slug ? `/activists/${slug}/edit_profile` : "/";
+    eventsLink.href = slug ? `/activists/${slug}/events` : "/";
     
     window.addEventListener('popstate', renderPage);
 

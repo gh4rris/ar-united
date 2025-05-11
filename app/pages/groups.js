@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config.js";
 
-export function RenderGroup(group) {
+export function renderGroup(group) {
     const user = JSON.parse(localStorage.user);
     if (user.id === group.admin_id) {
         document.getElementById('app').innerHTML = `

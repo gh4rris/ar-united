@@ -1,7 +1,9 @@
 import { API_BASE_URL } from "../config.js"
 
-export function RenderUserGroups(activist) {
-    document.getElementById('app').innerHTML = `
+export function renderUserGroups(activist) {
+    const user = JSON.parse(localStorage.user);
+    if (user.id === activist.id) {
+        document.getElementById('app').innerHTML = `
     <div id="admin-grp-box">
         <h2>Groups you manage</h2>
     </div>
@@ -9,6 +11,16 @@ export function RenderUserGroups(activist) {
         <h2>Groups you're a member of</h2>
     </div>`
     userGroupEvents(activist);
+    } else {
+        document.getElementById('app').innerHTML = `
+    <div id="admin-grp-box">
+        <h2>Groups ${activist.first_name} manages</h2>
+    </div>
+    <div id="member-grp-box">
+        <h2>Groups ${activist.first_name} is a member of</h2>
+    </div>`
+    userGroupEvents(activist);
+    }
 }
 
 export async function userGroupEvents(activist) {

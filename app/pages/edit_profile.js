@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config.js";
 import { validateToken } from "../app.js";
 
-export async function RenderEditProfile(activist) {
+export async function renderEditProfile(activist) {
   const user = JSON.parse(localStorage.user);
   if (user.id != activist.id) {
     window.location.replace(`/activists/${user.slug}`);
