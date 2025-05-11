@@ -49,6 +49,23 @@ func (cfg *apiConfig) generateSlugGroup(r *http.Request) (string, error) {
 	return slug, nil
 }
 
+func (cfg *apiConfig) generateSlugEvent(r *http.Request) (string, error) {
+	slug, err := generateHexId(8)
+	if err != nil {
+		return "", err
+	}
+
+	slugCheck, err := cfg.db.CheckSlugEvent(r.Context(), slug)
+	if err != nil {
+		return "", err
+	}
+	if slugCheck > 0 {
+		return cfg.generateSlugGroup(r)
+	}
+
+	return slug, nil
+}
+
 func generateHexId(n int) (string, error) {
 	idByte := make([]byte, n)
 	_, err := rand.Read(idByte)

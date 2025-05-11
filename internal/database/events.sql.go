@@ -13,6 +13,19 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkSlugEvent = `-- name: CheckSlugEvent :one
+SELECT COUNT(slug) AS slug_count
+FROM events
+WHERE slug = $1
+`
+
+func (q *Queries) CheckSlugEvent(ctx context.Context, slug string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, checkSlugEvent, slug)
+	var slug_count int64
+	err := row.Scan(&slug_count)
+	return slug_count, err
+}
+
 const createEvent = `-- name: CreateEvent :one
 INSERT INTO events (id, name, location, date, created_at, updated_at, description, group_id, slug)
 VALUES (
@@ -186,4 +199,27 @@ func (q *Queries) EventsByUser(ctx context.Context, userID uuid.UUID) ([]EventsB
 		return nil, err
 	}
 	return items, nil
+}
+
+const getEventBySlug = `-- name: GetEventBySlug :one
+SELECT id, name, location, date, created_at, updated_at, description, group_id, slug
+FROM events
+WHERE slug = $1
+`
+
+func (q *Queries) GetEventBySlug(ctx context.Context, slug string) (Event, error) {
+	row := q.db.QueryRowContext(ctx, getEventBySlug, slug)
+	var i Event
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Location,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Description,
+		&i.GroupID,
+		&i.Slug,
+	)
+	return i, err
 }

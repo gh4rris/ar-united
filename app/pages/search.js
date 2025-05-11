@@ -1,7 +1,10 @@
 import { API_BASE_URL } from "../config.js";
 
 export function renderSearch() {
-    document.getElementById('app').innerHTML = `<div id="result-box"></div>`;
+    document.getElementById('app').innerHTML = `
+    <div id="result-box">
+        <h2>Results</h2>
+    </div>`;
     searchEvents();
 }
 

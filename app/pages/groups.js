@@ -5,8 +5,8 @@ export function renderGroup(group) {
     if (user.id === group.admin_id) {
         document.getElementById('app').innerHTML = `
     <div id="group-box">
-        <h2 id="group-name"></h2>
-        <p id="group-description"></p>
+        <h2 id="group-name">${group.name}</h2>
+        <p id="group-description">${group.description}</p>
         <button id="member-btn" disabled>Admin</button>
         <button id="create-event-btn">Create Event</button>
         <div id="new-post-box">
@@ -18,8 +18,8 @@ export function renderGroup(group) {
     } else {
         document.getElementById('app').innerHTML = `
 <div id="group-box">
-        <h2 id="group-name"></h2>
-        <p id="group-description"></p>
+        <h2 id="group-name">${group.name}</h2>
+        <p id="group-description">${group.description}</p>
         <button id="member-btn">Join Group</button>
       <div id="posts-box"></div>`;
       nonAdminPage(user, group);
@@ -31,13 +31,7 @@ export async function groupEvents(group) {
     const eventBtn = document.getElementById('create-event-btn');
     eventBtn.addEventListener('click', () => {
         window.location.assign(`/groups/${group.slug}/create_event`)
-    })
-    displayPage(group);
-}
-
-function displayPage(group) {
-    document.getElementById('group-name').innerText = `${group.name}`;
-    document.getElementById('group-description').innerText = `${group.description}`;
+    });
 }
 
 async function nonAdminPage(user, group) {
@@ -51,8 +45,7 @@ async function nonAdminPage(user, group) {
         joinGroup(group.id);
         memberBtn.innerText = 'Member';
         memberBtn.setAttribute('disabled', '');
-    })
-    displayPage(group);
+    });
 }
 
 async function isMember(userID, groupID) {

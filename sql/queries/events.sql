@@ -28,3 +28,13 @@ INNER JOIN users_events AS ue
 ON e.id = ue.event_id
 WHERE ue.user_id = $1
 ORDER BY e.date ASC;
+
+-- name: CheckSlugEvent :one
+SELECT COUNT(slug) AS slug_count
+FROM events
+WHERE slug = $1;
+
+-- name: GetEventBySlug :one
+SELECT *
+FROM events
+WHERE slug = $1;

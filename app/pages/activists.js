@@ -6,12 +6,12 @@ export async function renderActivist(activist) {
     if (user.id === activist.id) {
         document.getElementById('app').innerHTML = `
     <div id="profile-box">
-        <h2 id="profile-name"></h2>
-        <p id="profile-email"></p>
+        <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
+        <p id="profile-email">${activist.email}</p>
         <p id="profile-description">I am an animal rights activist</p>
         <button id="edit-btn">Edit Profile</button>
         <div id="allies-box">
-            <a id="user-allies" href="">Allies</a>
+            <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
         </div>
         <div id="new-post-box">
             <input type="text" name="post" id="post-input" >
@@ -23,13 +23,13 @@ export async function renderActivist(activist) {
         document.getElementById('app').innerHTML = `
 <div id="profile-box">
         <div id="name-box">
-            <h2 id="profile-name"></h2>
+            <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
             <button id="ally-btn">Add Ally</button>
         </div>
-        <p id="profile-email"></p>
+        <p id="profile-email">${activist.email}</p>
         <p id="profile-description">I am an animal rights activist</p>
         <div id="allies-box">
-            <a id="user-allies" href="">Allies</a>
+            <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
         </div>
       <div id="posts-box"></div>`;
       await nonUserPage(user, activist);
@@ -48,14 +48,11 @@ export async function activistEvents(activist) {
     editBtn.addEventListener('click', () => {
         window.location.assign(`/activists/${activist.slug}/edit_profile`);
     })
-    await displayPage(activist);
+    await displayPosts(activist);
 }
 
-async function displayPage(activist) {
+async function displayPosts(activist) {
     const posts = await getUserPosts(activist.id);
-    document.getElementById('profile-name').innerText = `${activist.first_name} ${activist.last_name}`;
-    document.getElementById('profile-email').innerText = activist.email;
-    document.getElementById('user-allies').href = `/activists/${activist.slug}/allies`;
     for (let i = posts.length-1; i >= 0; i--) {
         insertPost(posts[i].id, posts[i].body);
     }
@@ -84,7 +81,7 @@ async function nonUserPage(user, activist) {
             allyBtn.setAttribute('disabled', '');
         });
     }
-    await displayPage(activist);
+    await displayPosts(activist);
 }
 
 async function getUserPosts(userID) {

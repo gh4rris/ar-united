@@ -32,7 +32,8 @@ export function createEventEvents(group) {
     const data = {'name': e.target[0].value, 'location': e.target[1].value,
       'date': date, 'description': e.target[3].value, 'group_id': group.id
     }
-    newEvent(data);
+    const event = await newEvent(data);
+    window.location.assign(`/events/${event.slug}`);
   })
 }
 
@@ -48,6 +49,8 @@ async function newEvent(data) {
     if (!response.ok) {
       throw new Error("couldn't create new event");
     }
+    const eventObj = response.json();
+    return eventObj.event;
   }
   catch(error) {
     console.error(error.message);

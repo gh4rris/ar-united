@@ -80,7 +80,7 @@ func main() {
 	mux.HandleFunc("GET /api/users/{userID}/allies", apiCfg.handlerUserAllies)
 	mux.HandleFunc("GET /api/users/{userID}/posts", apiCfg.handlerUserPosts)
 	mux.HandleFunc("GET /api/users/{userID}/groups", apiCfg.handlerUserGroups)
-	// mux.HandleFunc("GET /api/users/{userID}/events", apiCfg.handlerUserEvents)
+	mux.HandleFunc("GET /api/users/{userID}/events", apiCfg.handlerUserEvents)
 	mux.HandleFunc("GET /api/users/{userID}/groups/{groupID}", apiCfg.handlerIsMember)
 	mux.HandleFunc("GET /api/users/{userID}/groups/admin", apiCfg.handlerAdminGroups)
 	mux.HandleFunc("GET /api/users/{userID}/events/admin", apiCfg.handlerAdminEvents)
@@ -101,6 +101,7 @@ func main() {
 	mux.HandleFunc("GET /api/groups/{groupID}/users", apiCfg.handlerGroupMembers)
 
 	mux.HandleFunc("POST /api/events", apiCfg.handlerCreateEvent)
+	mux.HandleFunc("GET /api/events/{slugID}", apiCfg.handlerGetEventBySlug)
 
 	mux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)

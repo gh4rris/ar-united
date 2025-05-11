@@ -1,7 +1,10 @@
 import { API_BASE_URL } from "../config.js";
 
 export async function renderAllies(activist) {
-    document.getElementById('app').innerHTML = `<div id="ally-box"></div>`;
+    document.getElementById('app').innerHTML = `
+    <div id="ally-box">
+        <h2>Allies</h2>
+    </div>`;
     alliesEvents(activist);
 }
 

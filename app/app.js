@@ -11,6 +11,7 @@ import { renderGroup } from './pages/groups.js'
 import { renderCreateEvent } from './pages/create_event.js'
 import { renderSearch } from './pages/search.js'
 import { renderUserEvents } from './pages/user_events.js';
+import { renderEvent } from './pages/events.js';
 
 
 const routes = [
@@ -25,6 +26,7 @@ const routes = [
     { pattern: /^\/(groups)\/(\w+)$/, handler: (group) => renderGroup(group), private: true },
     { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => renderCreateEvent(group), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/events$/, handler: (activist) => renderUserEvents(activist), private: true },
+    { pattern: /^\/(events)\/(\w+)$/, handler: (event) => renderEvent(event), private: true },
     { pattern: /^\/search$/, handler: () => renderSearch(), private: true }
 ];
 
@@ -115,8 +117,17 @@ async function renderPage() {
                     const group = await getGroup(match[2]);
                     if (!group) {
                             renderNotFound();
+                            return
                         }
                     route.handler(group);
+                    return
+                } else if (match[1] === 'events') {
+                    const event = await getEvent(match[2]);
+                    if (!event) {
+                            renderNotFound();
+                            return
+                        }
+                    route.handler(event);
                     return
                 } else {
                     renderNotFound();
@@ -148,7 +159,6 @@ async function getActivist(slug) {
     }
     catch(error) {
         console.error(error.message);
-        // renderNotFound();
     }
 }
 
@@ -160,6 +170,20 @@ async function getGroup(slug) {
         }
         const responseData = await response.json();
         return responseData.group;
+    }
+    catch(error) {
+        console.error(error.message);
+    }
+}
+
+async function getEvent(slug) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/events/${slug}`);
+        if (!response.ok) {
+            throw new Error("couldn't get event");
+        }
+        const responseData = await response.json();
+        return responseData.event;
     }
     catch(error) {
         console.error(error.message);

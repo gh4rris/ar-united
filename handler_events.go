@@ -48,6 +48,12 @@ func (cfg *apiConfig) handlerCreateEvent(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	slug, err := cfg.generateSlugEvent(r)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't generate slug", err)
+		return
+	}
+
 	event, err := cfg.db.CreateEvent(r.Context(), database.CreateEventParams{
 		Name: params.Name,
 		Location: sql.NullString{
@@ -60,6 +66,7 @@ func (cfg *apiConfig) handlerCreateEvent(w http.ResponseWriter, r *http.Request)
 			Valid:  params.Description != "",
 		},
 		GroupID: params.GroupID,
+		Slug:    slug,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create event", err)
@@ -79,6 +86,38 @@ func (cfg *apiConfig) handlerCreateEvent(w http.ResponseWriter, r *http.Request)
 			Slug:        event.Slug,
 		},
 	})
+}
+
+func (cfg *apiConfig) handlerUserEvents(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("userID")
+	userID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	dbEvents, err := cfg.db.EventsByUser(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find events", err)
+		return
+	}
+
+	events := []Event{}
+	for _, event := range dbEvents {
+		events = append(events, Event{
+			ID:          event.ID,
+			Name:        event.Name,
+			Location:    event.Location.String,
+			Date:        event.Date,
+			CreatedAt:   event.CreatedAt,
+			UpdatedAt:   event.UpdatedAt,
+			Description: event.Description.String,
+			GroupID:     event.GroupID,
+			Slug:        event.Slug,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, events)
 }
 
 func (cfg *apiConfig) handlerAdminEvents(w http.ResponseWriter, r *http.Request) {
@@ -111,4 +150,32 @@ func (cfg *apiConfig) handlerAdminEvents(w http.ResponseWriter, r *http.Request)
 	}
 
 	respondWithJson(w, http.StatusOK, events)
+}
+
+func (cfg *apiConfig) handlerGetEventBySlug(w http.ResponseWriter, r *http.Request) {
+	type respone struct {
+		Event Event `json:"event"`
+	}
+
+	slugID := r.PathValue("slugID")
+
+	event, err := cfg.db.GetEventBySlug(r.Context(), slugID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find event", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, respone{
+		Event: Event{
+			ID:          event.ID,
+			Name:        event.Name,
+			Location:    event.Location.String,
+			Date:        event.Date,
+			CreatedAt:   event.CreatedAt,
+			UpdatedAt:   event.UpdatedAt,
+			Description: event.Description.String,
+			GroupID:     event.GroupID,
+			Slug:        event.Slug,
+		},
+	})
 }
