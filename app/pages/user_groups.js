@@ -9,7 +9,9 @@ export function renderUserGroups(activist) {
     </div>
     <div id="member-grp-box">
         <h2>Groups you're a member of</h2>
-    </div>`
+    </div>
+    <br>
+    <a id="back" href="/activists/${activist.slug}">Back</a>`;
     userGroupEvents(activist);
     } else {
         document.getElementById('app').innerHTML = `
@@ -18,7 +20,9 @@ export function renderUserGroups(activist) {
     </div>
     <div id="member-grp-box">
         <h2>Groups ${activist.first_name} is a member of</h2>
-    </div>`
+    </div>
+    <br>
+    <a id="back" href="/activists/${activist.slug}">Back</a>`;
     userGroupEvents(activist);
     }
 }

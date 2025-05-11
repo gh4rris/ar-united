@@ -1,11 +1,24 @@
 import { API_BASE_URL } from "../config.js";
 
 export async function renderAllies(activist) {
-    document.getElementById('app').innerHTML = `
-    <div id="ally-box">
-        <h2>Allies</h2>
-    </div>`;
-    alliesEvents(activist);
+    const user = JSON.parse(localStorage.user);
+    if (user.id === activist.id) {
+        document.getElementById('app').innerHTML = `
+        <div id="ally-box">
+            <h2>Allies</h2>
+        </div>
+        <br>
+        <a id="back" href="/activists/${activist.slug}">Back</a>`;
+        alliesEvents(activist);
+    } else {
+        document.getElementById('app').innerHTML = `
+        <div id="ally-box">
+            <h2>${activist.first_name}'s allies</h2>
+        </div>
+        <br>
+        <a id="back" href="/activists/${activist.slug}">Back</a>`;
+        alliesEvents(activist);
+    }
 }
 
 export async function alliesEvents(activist) {

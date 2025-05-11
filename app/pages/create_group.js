@@ -1,3 +1,4 @@
+import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
 
 export function renderCreateGroup() {
@@ -20,6 +21,11 @@ export function createGroupEvents() {
   const form = document.getElementById('create-grp-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const validToken = await validateToken();
+      if (!validToken) {
+        window.location.replace('/');
+        return
+    }
     const data = {'name': e.target[0].value, 'description': e.target[1].value};
     const group = await newGroup(data);
     window.location.assign(`/groups/${group.slug}`);

@@ -9,7 +9,9 @@ export function renderUserEvents(activist) {
         </div>
         <div id="attend-evnt-box">
             <h2>Events you're attending</h2>
-        </div>`
+        </div>
+        <br>
+        <a id="back" href="/activists/${activist.slug}">Back</a>`;
         userEventEvents(activist);
         } else {
             document.getElementById('app').innerHTML = `
@@ -18,7 +20,9 @@ export function renderUserEvents(activist) {
         </div>
         <div id="attend-evnt-box">
             <h2>Events ${activist.first_name} is attending</h2>
-        </div>`
+        </div>
+        <br>
+        <a id="back" href="/activists/${activist.slug}">Back</a>`;
         userEventEvents(activist);
         }
 }

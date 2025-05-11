@@ -91,8 +91,6 @@ async function renderPage() {
         const match = path.match(route.pattern);
         if (match) {
             if (route.private && !validToken) {
-                localStorage.removeItem('user');
-                localStorage.removeItem('accessToken');
                 window.location.replace('/');
                 return
             } else if (!route.private && validToken) {
@@ -203,7 +201,10 @@ export async function validateToken(retries=1) {
             return await validateToken(retries - 1);
         }
         if (!response.ok) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
             throw new Error("invalid access token");
+            
         }
         return response.ok;
     }

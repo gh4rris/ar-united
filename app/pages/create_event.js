@@ -1,3 +1,4 @@
+import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
 
 export function renderCreateEvent(group) {
@@ -28,6 +29,11 @@ export function createEventEvents(group) {
   const form = document.getElementById('create-evnt-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const validToken = await validateToken();
+      if (!validToken) {
+        window.location.replace('/');
+        return
+    }
     const date = e.target[2].value + 'T00:00:00Z';
     const data = {'name': e.target[0].value, 'location': e.target[1].value,
       'date': date, 'description': e.target[3].value, 'group_id': group.id

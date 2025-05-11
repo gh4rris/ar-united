@@ -13,6 +13,10 @@ export async function renderActivist(activist) {
         <div id="allies-box">
             <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
         </div>
+        <div id="groups-box">
+            <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
+        </div>
+        <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
         <div id="new-post-box">
             <input type="text" name="post" id="post-input" >
             <button id="post-btn">Post</button>
@@ -31,6 +35,10 @@ export async function renderActivist(activist) {
         <div id="allies-box">
             <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
         </div>
+        <div id="groups-box">
+            <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
+        </div>
+        <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
       <div id="posts-box"></div>`;
       await nonUserPage(user, activist);
     }
@@ -39,8 +47,12 @@ export async function renderActivist(activist) {
 export async function activistEvents(activist) {
     const postBtn = document.getElementById('post-btn');
     const editBtn = document.getElementById('edit-btn');
-    postBtn.addEventListener('click', async e => {
-        await validateToken();
+    postBtn.addEventListener('click', async (e) => {
+        const validToken = await validateToken();
+        if (!validToken) {
+                window.location.replace('/');
+                return
+            }
         const value = e.target.previousElementSibling.value;
         await newPost(value);
         e.target.previousElementSibling.value = '';
