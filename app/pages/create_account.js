@@ -46,8 +46,8 @@ export function createAccountEvents() {
         }
         delete(data.re_password);
         data.dob += 'T00:00:00Z';
-        const accountObj = await newAccount(data);
-        const loginData = {'email': accountObj.user.email, 'password': data.password}
+        const user = await newAccount(data);
+        const loginData = {'email': user.email, 'password': data.password}
         await userLogin(loginData);
     })
 }
@@ -64,7 +64,8 @@ async function newAccount(data) {
   if (!response.ok) {
     throw new Error("couldn't create user");
   }
-  return await response.json();
+  const accountObj = await response.json();
+  return accountObj.user;
   }
   catch(error) {
     console.error(error);

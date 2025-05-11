@@ -39,7 +39,7 @@ func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request)
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	if err = decoder.Decode(&params); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return
 	}
 
@@ -243,10 +243,14 @@ func (cfg *apiConfig) handlerIsMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	member, _ := cfg.db.IsMember(r.Context(), database.IsMemberParams{
+	member, err := cfg.db.IsMember(r.Context(), database.IsMemberParams{
 		UserID:  userID,
 		GroupID: groupID,
 	})
+	if err != nil {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 
 	respondWithJson(w, http.StatusOK, response{
 		UserID:  member.UserID,

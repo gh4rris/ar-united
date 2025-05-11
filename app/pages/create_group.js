@@ -20,9 +20,9 @@ export function createGroupEvents() {
   const form = document.getElementById('create-grp-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const data = {"name": e.target[0].value, "description": e.target[1].value};
-    const groupObj = await newGroup(data);
-    console.log(groupObj);
+    const data = {'name': e.target[0].value, 'description': e.target[1].value};
+    const group = await newGroup(data);
+    window.location.assign(`/groups/${group.slug}`);
   });
 }
 
@@ -33,12 +33,13 @@ async function newGroup(data) {
       headers: {
         'Authorization': `Bearer ${localStorage.accessToken}`
       },
-      body: `{"name": "${data.name}", "description": "${data.description}"}`
+      body: JSON.stringify(data)
     });
     if (!response.ok) {
       throw new Error("couldn't create group");
     }
-    return await response.json();
+    const groupObj = await response.json();
+    return groupObj.group;
   }
   catch(error) {
     console.error(error.message);

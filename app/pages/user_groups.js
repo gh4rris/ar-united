@@ -27,9 +27,11 @@ export async function userGroupEvents(activist) {
 function appendGroups(groups, box) {
     for (const group of groups) {
             const link = document.createElement('a');
+            const lineBreak = document.createElement('br');
             link.href = `/groups/${group.slug}`;
             link.innerText = `${group.name}`;
             box.append(link);
+            box.append(lineBreak);
         }
 }
 

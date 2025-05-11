@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../config.js";
+
 export function RenderCreateEvent(group) {
     document.getElementById('app').innerHTML = `
     <form id="create-evnt-form">
@@ -23,5 +25,31 @@ export function RenderCreateEvent(group) {
 }
 
 export function createEventEvents(group) {
-  console.log(group)
+  const form = document.getElementById('create-evnt-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const date = e.target[2].value + 'T00:00:00Z';
+    const data = {'name': e.target[0].value, 'location': e.target[1].value,
+      'date': date, 'description': e.target[3].value, 'group_id': group.id
+    }
+    newEvent(data);
+  })
+}
+
+async function newEvent(data) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/events`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.accessToken}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      throw new Error("couldn't create new event");
+    }
+  }
+  catch(error) {
+    console.error(error.message);
+  }
 }

@@ -77,18 +77,17 @@ async function navigateTo(url) {
 
 async function renderPage() {
     const path = window.location.pathname;
-    const token = localStorage.accessToken;
-    const valid = token ? await validateToken() : false;
-    const user = JSON.parse(localStorage.user);
+    const user = localStorage.user ? JSON.parse(localStorage.user) : null;
+    const validToken = localStorage.accessToken ? await validateToken() : false;
     for (const route of routes) {
         const match = path.match(route.pattern);
         if (match) {
-            if (route.private && !valid) {
+            if (route.private && !validToken) {
                 localStorage.removeItem('user');
                 localStorage.removeItem('accessToken');
                 window.location.replace('/');
                 return
-            } else if (!route.private && valid) {
+            } else if (!route.private && validToken) {
                 window.location.replace(`/activists/${user.slug}`);
                 return
             }
