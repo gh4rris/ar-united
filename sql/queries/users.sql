@@ -43,7 +43,7 @@ FROM users
 WHERE slug = $1;
 
 -- name: GetUserBySlug :one
-SELECT id, first_name, last_name, email
+SELECT id, first_name, last_name, email, slug
 FROM users
 WHERE slug = $1;
 

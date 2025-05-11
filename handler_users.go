@@ -197,6 +197,7 @@ func (cfg *apiConfig) handlerGetUserBySlug(w http.ResponseWriter, r *http.Reques
 			FirstName: user.FirstName,
 			LastName:  user.LastName.String,
 			Email:     user.Email,
+			Slug:      user.Slug,
 		},
 	})
 }

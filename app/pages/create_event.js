@@ -1,5 +1,5 @@
-export default function CreateEvent() {
-    return `
+export function RenderCreateEvent(group) {
+    document.getElementById('app').innerHTML = `
     <form id="create-evnt-form">
         <div id="ename-create-box">
           <label for="ename-input-create">Event name:</label>
@@ -19,6 +19,9 @@ export default function CreateEvent() {
         </div>
         <button type="submit" id="submit-btn-create">Create Event</button>
       </form>`;
+      createEventEvents(group);
 }
 
-export function eventEvents() {}
+export function createEventEvents(group) {
+  console.log(group)
+}

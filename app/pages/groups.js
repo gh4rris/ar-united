@@ -1,7 +1,9 @@
 import { API_BASE_URL } from "../config.js";
 
-export default function Group() {
-    return `
+export function RenderGroup(group) {
+    const user = JSON.parse(localStorage.user);
+    if (user.id === group.admin_id) {
+        document.getElementById('app').innerHTML = `
     <div id="group-box">
         <h2 id="group-name"></h2>
         <p id="group-description"></p>
@@ -12,52 +14,33 @@ export default function Group() {
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;
-}
-
-const nonAdminHTML = `
+      groupEvents(group);
+    } else {
+        document.getElementById('app').innerHTML = `
 <div id="group-box">
         <h2 id="group-name"></h2>
         <p id="group-description"></p>
         <button id="member-btn">Join Group</button>
-      <div id="posts-box"></div>`
-
-export async function groupEvents() {
-    const user = JSON.parse(localStorage.user);
-    const group = await getGroup();
-    if (!group) {
-        window.location.replace(`/activists/${user.slug}`);
-    } else if (user.id != group.admin_id) {
-        await nonAdminPage(user, group);
-    } else {
-        const eventBtn = document.getElementById('create-event-btn');
-        eventBtn.addEventListener('click', () => {
-            window.location.assign(`/groups/${group.slug}/create_event`)
-        })
+      <div id="posts-box"></div>`;
+      nonAdminPage(user, group);
     }
-    const nameElement = document.getElementById('group-name');
-    const descriptionElement = document.getElementById('group-description');
-    nameElement.innerText = `${group.name}`;
-    descriptionElement.innerText = `${group.description}`;
 }
 
-export async function getGroup() {
-    const slug = window.location.pathname.split('/')[2];
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/groups/${slug}`);
-        if (!response.ok) {
-            throw new Error("couldn't get group");
-        }
-        const responseData = await response.json();
-        return responseData.group;
-    }
-    catch(error) {
-        console.error(error.message);
-    }
+
+export async function groupEvents(group) {
+    const eventBtn = document.getElementById('create-event-btn');
+    eventBtn.addEventListener('click', () => {
+        window.location.assign(`/groups/${group.slug}/create_event`)
+    })
+    displayPage(group);
+}
+
+function displayPage(group) {
+    document.getElementById('group-name').innerText = `${group.name}`;
+    document.getElementById('group-description').innerText = `${group.description}`;
 }
 
 async function nonAdminPage(user, group) {
-    const appElement = document.getElementById('app');
-    appElement.innerHTML = nonAdminHTML;
     const memberBtn = document.getElementById('member-btn');
     const member = await isMember(user.id, group.id);
     if (member) {
@@ -69,6 +52,7 @@ async function nonAdminPage(user, group) {
         memberBtn.innerText = 'Member';
         memberBtn.setAttribute('disabled', '');
     })
+    displayPage(group);
 }
 
 async function isMember(userID, groupID) {

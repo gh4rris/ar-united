@@ -1,18 +1,30 @@
-import { API_BASE_URL, PRIVATE_PAGES, LOGOUT_ONLY } from './config.js';
+import { API_BASE_URL } from './config.js';
+import { RenderHome } from './pages/home.js'
+import { RenderCreateAccount } from './pages/create_account.js'
+import { RenderLogin } from './pages/login.js'
+import { RenderEditProfile } from './pages/edit_profile.js'
+import { RenderActivist } from './pages/activists.js'
+import { RenderAllies } from './pages/allies.js'
+import { RenderCreateGroup } from './pages/create_group.js'
+import { RenderUserGroups } from './pages/user_groups.js'
+import { RenderGroup } from './pages/groups.js'
+import { RenderCreateEvent } from './pages/create_event.js'
+import { RenderSearch } from './pages/search.js'
 
-const routes = {
-    '/': () => import('./pages/home.js'),
-    '/create_account': () => import('./pages/create_account.js'),
-    '/edit_profile': () => import('./pages/edit_profile.js'),
-    '/login': () => import('./pages/login.js'),
-    '/activists': () => import('./pages/activists.js'),
-    '/allies': () => import('./pages/allies.js'),
-    '/create_group': () => import('./pages/create_group.js'),
-    '/user_groups': () => import('./pages/user_groups.js'),
-    '/groups': () => import('./pages/groups.js'),
-    '/create_event': () => import('./pages/create_event.js'),
-    '/search': () => import('./pages/search.js')
-};
+
+const routes = [
+    { pattern: /^\/$/, handler: () => RenderHome() , private: false },
+    { pattern: /^\/create_account$/, handler: () => RenderCreateAccount(), private: false },
+    { pattern: /^\/login$/, handler: () => RenderLogin(), private: false },
+    { pattern: /^\/(activists)\/([\w-]+)$/, handler: (activist) => RenderActivist(activist), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/edit_profile$/, handler: (activist) => RenderEditProfile(activist), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/allies$/, handler: (activist) => RenderAllies(activist), private: true },
+    { pattern: /^\/groups\/create_group$/, handler: () => RenderCreateGroup(), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/groups$/, handler: (activist) => RenderUserGroups(activist), private: true },
+    { pattern: /^\/(groups)\/(\w+)$/, handler: (group) => RenderGroup(group), private: true },
+    { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => RenderCreateEvent(group), private: true },
+    { pattern: /^\/search$/, handler: () => RenderSearch(), private: true }
+];
 
 main();
 
@@ -52,7 +64,7 @@ async function main() {
     profileLink.href = slug ? `/activists/${slug}` : "/";
     alliesLink.href = slug ? `/activists/${slug}/allies` : "/";
     groupsLink.href = slug ? `/activists/${slug}/groups` : "/";
-
+    
     window.addEventListener('popstate', renderPage);
 
     navigateTo(window.location.url);
@@ -64,72 +76,88 @@ async function navigateTo(url) {
 }
 
 async function renderPage() {
-    const appElement = document.getElementById('app');
-    let path = window.location.pathname.split("/");
-    const subPath = path.length > 3;
-    path = subPath ? "/"+path[3] : "/"+path[1];
-    if (path === '/groups' && subPath) {
-        path = '/user_groups'
-    }
-    
-    const loader = routes[path];
+    const path = window.location.pathname;
     const token = localStorage.accessToken;
-    if (PRIVATE_PAGES.includes(path)) {
-        if (!token) {
-            window.location.replace('/');
-            return
-        }
-        const valid = await validateToken();
-        if (!valid) {
-            localStorage.removeItem('user');
-            localStorage.removeItem('accessToken');
-            window.location.replace('/');
-            return
-        }
-    } else if (LOGOUT_ONLY.includes(path) && token) {
-        const valid = await validateToken();
-        if (!valid) {
-            localStorage.removeItem('user');
-            localStorage.removeItem('accessToken');
-            window.location.replace('/');
-            return
-        }
-        const slug = JSON.parse(localStorage.user).slug;
-        window.location.replace(`/activists/${slug}`);
-        return
-    }
+    const valid = token ? await validateToken() : false;
+    const user = JSON.parse(localStorage.user);
+    for (const route of routes) {
+        const match = path.match(route.pattern);
+        if (match) {
+            if (route.private && !valid) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('accessToken');
+                window.location.replace('/');
+                return
+            } else if (!route.private && valid) {
+                window.location.replace(`/activists/${user.slug}`);
+                return
+            }
 
-    if (loader) {
-        const module = await loader();
-        
-        appElement.innerHTML = module.default();
-        if (typeof(module.homeEvents) === 'function') {
-            module.homeEvents();
-        } else if (typeof(module.createAccountEvents) === 'function') {
-            module.createAccountEvents();
-        } else if (typeof(module.loginEvents) === 'function') {
-            module.loginEvents();
-        } else if (typeof(module.editProfileEvents) === 'function') {
-            module.editProfileEvents();
-        } else if (typeof(module.activistEvents) === 'function') {
-            module.activistEvents();
-        } else if (typeof(module.alliesEvents) === 'function') {
-            module.alliesEvents();
-        } else if (typeof(module.createGroupEvents) === 'function') {
-            module.createGroupEvents();
-        } else if (typeof(module.userGroupEvents) === 'function') {
-            module.userGroupEvents();
-        } else if (typeof(module.groupEvents) === 'function') {
-            module.groupEvents();
-        } else if (typeof(module.eventEvents) === 'function') {
-            module.eventEvents();
-        } else if (typeof(module.searchEvents) === 'function') {
-            module.searchEvents();
+            if (match.length > 1) {
+                if (match[1] === 'activists') {
+                    if (match[1] != user.slug) {
+                        const activist = await getActivist(match[2]);
+                        if (!activist) {
+                            renderNotFound();
+                            return
+                        }
+                        route.handler(activist);
+                        return
+                    }
+                    route.handler(user);
+                    return
+                } else if (match[1] === 'groups') {
+                    const group = await getGroup(match[2]);
+                    if (!group) {
+                            renderNotFound();
+                        }
+                    route.handler(group);
+                    return
+                } else {
+                    renderNotFound();
+                    return
+                }
+            }
+            route.handler();
+            return
         }
-    } else {
-        appElement.innerHTML = `
-        <h1>404</h1>
-        <p>Page not found</p>`;
+    };
+    renderNotFound()
+}
+
+function renderNotFound() {
+    document.getElementById('app').innerHTML = `
+    <h1>404</h1>
+    <p>Page not found</p>`;
+    return
+}
+
+async function getActivist(slug) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/users/${slug}`);
+        if (!response.ok) {
+            throw new Error("couldn't find user");
+        }
+        const activist = await response.json();
+        return activist.user;
+    }
+    catch(error) {
+        console.error(error.message);
+        // renderNotFound();
+    }
+}
+
+async function getGroup(slug) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/groups/${slug}`);
+        if (!response.ok) {
+            throw new Error("couldn't get group");
+        }
+        const responseData = await response.json();
+        return responseData.group;
+    }
+    catch(error) {
+        console.error(error.message);
     }
 }
 

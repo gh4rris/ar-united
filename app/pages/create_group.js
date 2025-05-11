@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config.js";
 
-export default function CreateGroup() {
-    return `
+export function RenderCreateGroup() {
+    document.getElementById('app').innerHTML = `
     <form id="create-grp-form">
         <div id="gname-create-box">
           <label for="gname-input-create">Group name:</label>
@@ -13,11 +13,12 @@ export default function CreateGroup() {
         </div>
         <button type="submit" id="submit-btn-create">Create Group</button>
       </form>`;
+      createGroupEvents();
 }
 
 export function createGroupEvents() {
   const form = document.getElementById('create-grp-form');
-  form.addEventListener('submit', async e => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = {"name": e.target[0].value, "description": e.target[1].value};
     const groupObj = await newGroup(data);

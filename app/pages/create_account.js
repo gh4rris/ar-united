@@ -1,8 +1,8 @@
 import { API_BASE_URL } from "../config.js";
 import { userLogin } from "./login.js";
 
-export default function CreateAccount() {
-    return `
+export function RenderCreateAccount() {
+    document.getElementById('app').innerHTML = `
     <p>Create an account and join the network of animal rights activists today!</p>
     <form id="create-acc-form">
         <div id="fname-create-box">
@@ -31,13 +31,14 @@ export default function CreateAccount() {
         </div>
         <button type="submit" id="submit-btn-create">Create Account</button>
       </form>`
+      createAccountEvents();
 }
 
 export function createAccountEvents() {
     const form = document.getElementById('create-acc-form');
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(this);
+        const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
         if (data.password != data.re_password) {
             console.error('passwords not the same');

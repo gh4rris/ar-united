@@ -1,49 +1,36 @@
 import { API_BASE_URL } from "../config.js"
-import { getActivist } from "./activists.js"
 
-export default function UserGroups() {
-    return `
+export function RenderUserGroups(activist) {
+    document.getElementById('app').innerHTML = `
     <div id="admin-grp-box">
         <h2>Groups you manage</h2>
     </div>
     <div id="member-grp-box">
         <h2>Groups you're a member of</h2>
     </div>`
+    userGroupEvents(activist);
 }
 
-export async function userGroupEvents() {
-    const user = JSON.parse(localStorage.user);
-    const activist = await getActivist();
-    let adminGroups;
-    let isMemberGroups;
-    if (!activist) {
-        window.location.replace(`/activists/${user.slug}`);
-        return
-    } else if (user.id != activist.id) {
-        adminGroups = await managedGroups(activist.id);
-        isMemberGroups = await memberGroups(activist.id);
-    } else {
-        adminGroups = await managedGroups(user.id);
-        isMemberGroups = await memberGroups(user.id);
-    }
+export async function userGroupEvents(activist) {
+    const adminGroups = await managedGroups(activist.id);
+    const isMemberGroups = await memberGroups(activist.id);
     const adminGroupsBox = document.getElementById('admin-grp-box');
     const memberGroupsBox = document.getElementById('member-grp-box');
     if (adminGroups.length === 0) {
         adminGroupsBox.remove();
     } else {
-        for (const group of adminGroups) {
+        appendGroups(adminGroups, adminGroupsBox);
+    }
+    appendGroups(isMemberGroups, memberGroupsBox);
+}
+
+function appendGroups(groups, box) {
+    for (const group of groups) {
             const link = document.createElement('a');
             link.href = `/groups/${group.slug}`;
             link.innerText = `${group.name}`;
-            adminGroupsBox.append(link);
+            box.append(link);
         }
-    }
-    for (const group of isMemberGroups) {
-        const link = document.createElement('a');
-        link.href = `/groups/${group.slug}`;
-        link.innerText = `${group.name}`;
-        memberGroupsBox.append(link);
-    }
 }
 
 async function managedGroups(userID) {

@@ -18,6 +18,18 @@ type Ally struct {
 	Confirmed   sql.NullTime
 }
 
+type Event struct {
+	ID          uuid.UUID
+	Name        string
+	Location    sql.NullString
+	Date        time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Description sql.NullString
+	GroupID     uuid.UUID
+	Slug        string
+}
+
 type Group struct {
 	ID          uuid.UUID
 	Name        string

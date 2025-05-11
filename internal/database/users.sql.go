@@ -120,7 +120,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserBySlug = `-- name: GetUserBySlug :one
-SELECT id, first_name, last_name, email
+SELECT id, first_name, last_name, email, slug
 FROM users
 WHERE slug = $1
 `
@@ -130,6 +130,7 @@ type GetUserBySlugRow struct {
 	FirstName string
 	LastName  sql.NullString
 	Email     string
+	Slug      string
 }
 
 func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (GetUserBySlugRow, error) {
@@ -140,6 +141,7 @@ func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (GetUserBySlug
 		&i.FirstName,
 		&i.LastName,
 		&i.Email,
+		&i.Slug,
 	)
 	return i, err
 }

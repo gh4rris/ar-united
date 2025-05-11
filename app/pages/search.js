@@ -1,7 +1,8 @@
 import { API_BASE_URL } from "../config.js";
 
-export default function Search() {
-    return `<div id="result-box"></div>`
+export function RenderSearch() {
+    document.getElementById('app').innerHTML = `<div id="result-box"></div>`;
+    searchEvents();
 }
 
 export async function searchEvents() {

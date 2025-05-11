@@ -1,12 +1,13 @@
 import { API_BASE_URL } from "../config.js";
 
-export default function Allies() {
-    return `<div id="ally-box"></div>`;
+export async function RenderAllies(activist) {
+    document.getElementById('app').innerHTML = `<div id="ally-box"></div>`;
+    alliesEvents(activist);
 }
 
-export async function alliesEvents() {
+export async function alliesEvents(activist) {
     const allyBox = document.getElementById('ally-box');
-    const allies = await getAllies(JSON.parse(localStorage.user).id);
+    const allies = await getAllies(activist.id);
     for (const ally of allies) {
         const link = document.createElement('a');
         link.href = `/activists/${ally.slug}`;

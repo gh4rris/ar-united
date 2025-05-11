@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config.js";
 
-export default function Login() {
-    return `
+export function RenderLogin() {
+    document.getElementById('app').innerHTML = `
     <p>Enter your email and password</p>
     <form id="login-form">
         <div id="email-login-box">
@@ -14,13 +14,14 @@ export default function Login() {
         </div>
         <button type="submit" id="submit-btn-login">Submit</button>
       </form>`;
+      loginEvents();
 }
 
 export function loginEvents() {
     const form = document.getElementById('login-form');
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(this);
+      const formData = new FormData(e.target);
       const data = Object.fromEntries(formData.entries());
       await userLogin(data);     
     });
