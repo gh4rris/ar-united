@@ -162,7 +162,7 @@ async function getActivist(slug) {
 
 async function getGroup(slug) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/groups/${slug}`);
+        const response = await fetch(`${API_BASE_URL}/api/groups/${slug}/slug`);
         if (!response.ok) {
             throw new Error("couldn't get group");
         }

@@ -201,6 +201,37 @@ func (cfg *apiConfig) handlerAdminGroups(w http.ResponseWriter, r *http.Request)
 	respondWithJson(w, http.StatusOK, groups)
 }
 
+func (cfg *apiConfig) handlerGetGroupByID(w http.ResponseWriter, r *http.Request) {
+	type respone struct {
+		Group Group `json:"group"`
+	}
+
+	stringID := r.PathValue("groupID")
+	groupID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+		return
+	}
+
+	group, err := cfg.db.GetGroupByID(r.Context(), groupID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find user", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, respone{
+		Group: Group{
+			ID:          group.ID,
+			Name:        group.Name,
+			CreatedAt:   group.CreatedAt,
+			UpdatedAt:   group.UpdatedAt,
+			AdminID:     group.AdminID,
+			Description: group.Description.String,
+			Slug:        group.Slug,
+		},
+	})
+}
+
 func (cfg *apiConfig) handlerGetGroupBySlug(w http.ResponseWriter, r *http.Request) {
 	type respone struct {
 		Group Group `json:"group"`

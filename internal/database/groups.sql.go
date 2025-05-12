@@ -84,6 +84,27 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) erro
 	return err
 }
 
+const getGroupByID = `-- name: GetGroupByID :one
+SELECT id, name, created_at, updated_at, admin_id, description, slug
+FROM groups
+WHERE id = $1
+`
+
+func (q *Queries) GetGroupByID(ctx context.Context, id uuid.UUID) (Group, error) {
+	row := q.db.QueryRowContext(ctx, getGroupByID, id)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AdminID,
+		&i.Description,
+		&i.Slug,
+	)
+	return i, err
+}
+
 const getGroupBySlug = `-- name: GetGroupBySlug :one
 SELECT id, name, created_at, updated_at, admin_id, description, slug
 FROM groups

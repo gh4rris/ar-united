@@ -54,6 +54,11 @@ SELECT *
 FROM groups
 WHERE slug = $1;
 
+-- name: GetGroupByID :one
+SELECT *
+FROM groups
+WHERE id = $1;
+
 -- name: IsMember :one
 SELECT *
 FROM users_groups
