@@ -21,6 +21,10 @@ type Group struct {
 	Slug        string    `json:"slug"`
 }
 
+func (g Group) DisplayName() string {
+	return g.Name
+}
+
 func (cfg *apiConfig) handlerCreateGroup(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Name        string `json:"name"`

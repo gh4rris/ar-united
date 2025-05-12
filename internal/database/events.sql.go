@@ -223,3 +223,43 @@ func (q *Queries) GetEventBySlug(ctx context.Context, slug string) (Event, error
 	)
 	return i, err
 }
+
+const searchEvents = `-- name: SearchEvents :many
+SELECT id, name, location, date, created_at, updated_at, description, group_id, slug
+FROM events
+WHERE name ILIKE '%' || $1 || '%'
+ORDER BY date ASC
+`
+
+func (q *Queries) SearchEvents(ctx context.Context, dollar_1 sql.NullString) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, searchEvents, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Event
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Location,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Description,
+			&i.GroupID,
+			&i.Slug,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -20,6 +21,14 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
 	Slug      string    `json:"slug"`
+}
+
+type Displayable interface {
+	DisplayName() string
+}
+
+func (u User) DisplayName() string {
+	return fmt.Sprintf("%s %s", u.FirstName, u.LastName)
 }
 
 func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {

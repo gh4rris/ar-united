@@ -14,18 +14,21 @@ export async function searchEvents() {
     const value = params.get('value');
     const type = params.get('type');
     if (value != '') {
-        const results = await searchResultsUsers(value, type);
+        const results = await searchResults(value, type);
         for (const result of results) {
             if (result.id === JSON.parse(localStorage.user).id) {
                 continue;
             }
             const link = document.createElement('a');
-            if (type === 'activists') {
+            if (!result.admin_id && !result.group_id) {
                 link.href = `/activists/${result.slug}`;
                 link.innerText = `${result.first_name} ${result.last_name}`;
-            } else if (type === 'groups') {
+            } else if (!result.group_id) {
                 link.href = `/groups/${result.slug}`;
-                link.innerText = `${result.name}`;
+                link.innerText = result.name;
+            } else {
+                link.href = `/events/${result.slug}`;
+                link.innerText = result.name
             }
             resultBox.append(link);
             resultBox.append(document.createElement('br'));
@@ -33,7 +36,7 @@ export async function searchEvents() {
     }
 }
 
-async function searchResultsUsers(value, type) {
+async function searchResults(value, type) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/search?value=${encodeURIComponent(value)}&type=${encodeURIComponent(type)}`);
         if (!response.ok) {

@@ -23,6 +23,10 @@ type Event struct {
 	Slug        string    `json:"slug"`
 }
 
+func (e Event) DisplayName() string {
+	return e.Name
+}
+
 func (cfg *apiConfig) handlerCreateEvent(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Name        string    `json:"name"`
@@ -78,7 +82,7 @@ func (cfg *apiConfig) handlerCreateEvent(w http.ResponseWriter, r *http.Request)
 			ID:          event.ID,
 			Name:        event.Name,
 			Location:    event.Location.String,
-			Date:        event.CreatedAt,
+			Date:        event.Date,
 			CreatedAt:   event.CreatedAt,
 			UpdatedAt:   event.UpdatedAt,
 			Description: event.Description.String,

@@ -38,3 +38,9 @@ WHERE slug = $1;
 SELECT *
 FROM events
 WHERE slug = $1;
+
+-- name: SearchEvents :many
+SELECT *
+FROM events
+WHERE name ILIKE '%' || $1 || '%'
+ORDER BY date ASC;
