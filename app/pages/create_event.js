@@ -55,7 +55,7 @@ async function newEvent(data) {
     if (!response.ok) {
       throw new Error("couldn't create new event");
     }
-    const eventObj = response.json();
+    const eventObj = await response.json();
     return eventObj.event;
   }
   catch(error) {

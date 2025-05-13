@@ -1,4 +1,6 @@
+import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
+import { displayPosts, newPost } from "../posts.js";
 
 export async function renderEvent(event) {
     const user = JSON.parse(localStorage.user);
@@ -25,11 +27,27 @@ export async function renderEvent(event) {
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
       <div id="posts-box"></div>`;
-      eventEvents(event);
+      goingButtons(event);
     }
 }
 
 async function eventEvents(event) {
+    const postBtn = document.getElementById('post-btn');
+    postBtn.addEventListener('click', async (e) => {
+        const validToken = await validateToken();
+        if (!validToken) {
+                window.location.replace('/');
+                return
+            }
+        const value = e.target.previousElementSibling.value;
+        const data = {'body': value}
+        await newPost(data, `/events/${event.id}`);
+        e.target.previousElementSibling.value = '';
+    });
+    await goingButtons(event);
+}
+
+async function goingButtons(event) {
     const goingBtn = document.getElementById('going-btn');
     const notGoingBtn = document.getElementById('not-going-btn');
     const going = await isGoing(event.id);
@@ -41,7 +59,8 @@ async function eventEvents(event) {
     });
     notGoingBtn.addEventListener('click', async () => {
         await removeGoing(event.id, goingBtn);
-    })
+    });
+    await displayPosts(event, 'events');
 }
 
 async function getGroup(groupID) {

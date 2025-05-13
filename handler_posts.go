@@ -293,7 +293,7 @@ func (cfg *apiConfig) handlerEventPosts(w http.ResponseWriter, r *http.Request) 
 	stringID := r.PathValue("eventID")
 	eventID, err := uuid.Parse(stringID)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		respondWithError(w, http.StatusBadRequest, "Invalid event ID", err)
 		return
 	}
 

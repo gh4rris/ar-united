@@ -105,7 +105,7 @@ func main() {
 	mux.HandleFunc("GET /api/groups/{groupID}/users", apiCfg.handlerGroupMembers)
 
 	mux.HandleFunc("POST /api/events", apiCfg.handlerCreateEvent)
-	mux.HandleFunc("GET /api/event/{eventID}/posts", apiCfg.handlerEventPosts)
+	mux.HandleFunc("GET /api/events/{eventID}/posts", apiCfg.handlerEventPosts)
 	mux.HandleFunc("GET /api/events/{slugID}", apiCfg.handlerGetEventBySlug)
 
 	mux.HandleFunc("GET /api/attenders/{eventID}", apiCfg.handlerIsGoing)

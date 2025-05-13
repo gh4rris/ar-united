@@ -30,6 +30,13 @@ const routes = [
     { pattern: /^\/search$/, handler: () => renderSearch(), private: true }
 ];
 
+const app = document.getElementById('app');
+const profileLink = document.getElementById('profile-link');
+const logout = document.getElementById('logout');
+const searchBtn = document.getElementById('search-btn');
+const searchInput = document.getElementById('search-input');
+const searchSelect = document.getElementById('search-type');
+
 main();
 
 async function main() {
@@ -38,44 +45,38 @@ async function main() {
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
     }
-
-    document.addEventListener('click', e => {
-        if (e.target.matches('[data-link]')) {
-            e.preventDefault();
-            navigateTo(e.target.href);
-        }
-    })
-    const logout = document.getElementById('logout');
+    searchBtn.addEventListener('click', async () => {
+        const type = document.getElementById('search-type').value.toLowerCase();
+        const url = `/search?value=${encodeURIComponent(searchInput.value)}&type=${encodeURIComponent(type)}`;
+        await navigateTo(url);
+    });
     logout.addEventListener('click', async (e) => {
         e.preventDefault();
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
         history.replaceState(null, '', '/');
+        removeElements();
         await renderPage();
         await revokeRefreshToken();
     })
-    const searchBtn = document.getElementById('search-btn');
-    searchBtn.addEventListener('click', async () => {
-        const searchInput = document.getElementById('search-input').value;
-        const type = document.getElementById('search-type').value.toLowerCase();
-        const url = `/search?value=${encodeURIComponent(searchInput)}&type=${encodeURIComponent(type)}`;
-        await navigateTo(url);
-    })
-    const slug = localStorage.user ? JSON.parse(localStorage.user).slug : undefined;
-    const profileLink = document.getElementById('profile-link');
-    const alliesLink = document.getElementById('allies-link');
-    const groupsLink = document.getElementById('groups-link');
-    const editLink = document.getElementById('edit-link');
-    const eventsLink = document.getElementById('events-link');
-    profileLink.href = slug ? `/activists/${slug}` : "/";
-    alliesLink.href = slug ? `/activists/${slug}/allies` : "/";
-    groupsLink.href = slug ? `/activists/${slug}/groups` : "/";
-    editLink.href = slug ? `/activists/${slug}/edit_profile` : "/";
-    eventsLink.href = slug ? `/activists/${slug}/events` : "/";
+    
+    if (localStorage.user) {
+        profileLink.href = `/activists/${JSON.parse(localStorage.user).slug}`;
+    } else {
+        removeElements();
+    }
     
     window.addEventListener('popstate', renderPage);
 
     navigateTo(window.location.url);
+}
+
+function removeElements() {
+    searchInput.remove();
+    searchBtn.remove();
+    searchSelect.remove();
+    profileLink.remove();
+    logout.remove();
 }
 
 async function navigateTo(url) {
@@ -140,7 +141,7 @@ async function renderPage() {
 }
 
 function renderNotFound() {
-    document.getElementById('app').innerHTML = `
+    app.innerHTML = `
     <h1>404</h1>
     <p>Page not found</p>`;
     return
