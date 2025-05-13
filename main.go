@@ -90,7 +90,9 @@ func main() {
 	mux.HandleFunc("GET /api/allies/requests", apiCfg.handlerGetAllyRequests)
 	mux.HandleFunc("GET /api/allies/{allyID}", apiCfg.handlerIsAlly)
 
-	mux.HandleFunc("POST /api/posts", apiCfg.handlerCreatePost)
+	mux.HandleFunc("POST /api/posts", apiCfg.handlerCreateUserPost)
+	mux.HandleFunc("POST /api/posts/groups/{groupID}", apiCfg.handlerCreateGroupPost)
+	mux.HandleFunc("POST /api/posts/events/{eventID}", apiCfg.handlerCreateEventPost)
 	mux.HandleFunc("GET /api/posts", apiCfg.handlerGetPosts)
 	mux.HandleFunc("GET /api/posts/{postID}", apiCfg.handlerGetPost)
 	mux.HandleFunc("DELETE /api/posts/{postID}", apiCfg.handlerDeletePost)
@@ -98,10 +100,12 @@ func main() {
 	mux.HandleFunc("POST /api/groups", apiCfg.handlerCreateGroup)
 	mux.HandleFunc("POST /api/groups/{groupID}", apiCfg.handlerJoinGroup)
 	mux.HandleFunc("GET /api/groups/{groupID}", apiCfg.handlerGetGroupByID)
+	mux.HandleFunc("GET /api/groups/{groupID}/posts", apiCfg.handlerGroupPosts)
 	mux.HandleFunc("GET /api/groups/{slugID}/slug", apiCfg.handlerGetGroupBySlug)
 	mux.HandleFunc("GET /api/groups/{groupID}/users", apiCfg.handlerGroupMembers)
 
 	mux.HandleFunc("POST /api/events", apiCfg.handlerCreateEvent)
+	mux.HandleFunc("GET /api/event/{eventID}/posts", apiCfg.handlerEventPosts)
 	mux.HandleFunc("GET /api/events/{slugID}", apiCfg.handlerGetEventBySlug)
 
 	mux.HandleFunc("GET /api/attenders/{eventID}", apiCfg.handlerIsGoing)

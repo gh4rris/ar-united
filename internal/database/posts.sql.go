@@ -11,7 +11,71 @@ import (
 	"github.com/google/uuid"
 )
 
-const createPost = `-- name: CreatePost :one
+const createEventPost = `-- name: CreateEventPost :one
+INSERT INTO posts(id, created_at, updated_at, body, event_id)
+VALUES (
+    gen_random_uuid(),
+    NOW(),
+    NOW(),
+    $1,
+    $2
+)
+RETURNING id, created_at, updated_at, body, user_id, group_id, event_id
+`
+
+type CreateEventPostParams struct {
+	Body    string
+	EventID uuid.NullUUID
+}
+
+func (q *Queries) CreateEventPost(ctx context.Context, arg CreateEventPostParams) (Post, error) {
+	row := q.db.QueryRowContext(ctx, createEventPost, arg.Body, arg.EventID)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Body,
+		&i.UserID,
+		&i.GroupID,
+		&i.EventID,
+	)
+	return i, err
+}
+
+const createGroupPost = `-- name: CreateGroupPost :one
+INSERT INTO posts(id, created_at, updated_at, body, group_id)
+VALUES (
+    gen_random_uuid(),
+    NOW(),
+    NOW(),
+    $1,
+    $2
+)
+RETURNING id, created_at, updated_at, body, user_id, group_id, event_id
+`
+
+type CreateGroupPostParams struct {
+	Body    string
+	GroupID uuid.NullUUID
+}
+
+func (q *Queries) CreateGroupPost(ctx context.Context, arg CreateGroupPostParams) (Post, error) {
+	row := q.db.QueryRowContext(ctx, createGroupPost, arg.Body, arg.GroupID)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Body,
+		&i.UserID,
+		&i.GroupID,
+		&i.EventID,
+	)
+	return i, err
+}
+
+const createUserPost = `-- name: CreateUserPost :one
 INSERT INTO posts(id, created_at, updated_at, body, user_id)
 VALUES (
     gen_random_uuid(),
@@ -20,16 +84,16 @@ VALUES (
     $1,
     $2
 )
-RETURNING id, created_at, updated_at, body, user_id
+RETURNING id, created_at, updated_at, body, user_id, group_id, event_id
 `
 
-type CreatePostParams struct {
+type CreateUserPostParams struct {
 	Body   string
-	UserID uuid.UUID
+	UserID uuid.NullUUID
 }
 
-func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, createPost, arg.Body, arg.UserID)
+func (q *Queries) CreateUserPost(ctx context.Context, arg CreateUserPostParams) (Post, error) {
+	row := q.db.QueryRowContext(ctx, createUserPost, arg.Body, arg.UserID)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -37,6 +101,8 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.UpdatedAt,
 		&i.Body,
 		&i.UserID,
+		&i.GroupID,
+		&i.EventID,
 	)
 	return i, err
 }
@@ -51,8 +117,84 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getEventPosts = `-- name: GetEventPosts :many
+SELECT id, created_at, updated_at, body, user_id, group_id, event_id
+FROM posts
+WHERE event_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) GetEventPosts(ctx context.Context, eventID uuid.NullUUID) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, getEventPosts, eventID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Body,
+			&i.UserID,
+			&i.GroupID,
+			&i.EventID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGroupPosts = `-- name: GetGroupPosts :many
+SELECT id, created_at, updated_at, body, user_id, group_id, event_id
+FROM posts
+WHERE group_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) GetGroupPosts(ctx context.Context, groupID uuid.NullUUID) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, getGroupPosts, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Body,
+			&i.UserID,
+			&i.GroupID,
+			&i.EventID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPost = `-- name: GetPost :one
-SELECT id, created_at, updated_at, body, user_id
+SELECT id, created_at, updated_at, body, user_id, group_id, event_id
 FROM posts
 WHERE id = $1
 `
@@ -66,12 +208,14 @@ func (q *Queries) GetPost(ctx context.Context, id uuid.UUID) (Post, error) {
 		&i.UpdatedAt,
 		&i.Body,
 		&i.UserID,
+		&i.GroupID,
+		&i.EventID,
 	)
 	return i, err
 }
 
 const getPosts = `-- name: GetPosts :many
-SELECT id, created_at, updated_at, body, user_id
+SELECT id, created_at, updated_at, body, user_id, group_id, event_id
 FROM posts
 ORDER BY created_at DESC
 `
@@ -91,6 +235,8 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 			&i.UpdatedAt,
 			&i.Body,
 			&i.UserID,
+			&i.GroupID,
+			&i.EventID,
 		); err != nil {
 			return nil, err
 		}
@@ -106,13 +252,13 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 }
 
 const getUserPosts = `-- name: GetUserPosts :many
-SELECT id, created_at, updated_at, body, user_id
+SELECT id, created_at, updated_at, body, user_id, group_id, event_id
 FROM posts
 WHERE user_id = $1
 ORDER BY created_at DESC
 `
 
-func (q *Queries) GetUserPosts(ctx context.Context, userID uuid.UUID) ([]Post, error) {
+func (q *Queries) GetUserPosts(ctx context.Context, userID uuid.NullUUID) ([]Post, error) {
 	rows, err := q.db.QueryContext(ctx, getUserPosts, userID)
 	if err != nil {
 		return nil, err
@@ -127,6 +273,8 @@ func (q *Queries) GetUserPosts(ctx context.Context, userID uuid.UUID) ([]Post, e
 			&i.UpdatedAt,
 			&i.Body,
 			&i.UserID,
+			&i.GroupID,
+			&i.EventID,
 		); err != nil {
 			return nil, err
 		}

@@ -16,19 +16,20 @@ type Post struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Body      string    `json:"body"`
 	UserID    uuid.UUID `json:"user_id"`
+	GroupID   uuid.UUID `json:"group_id"`
+	EventID   uuid.UUID `json:"event_id"`
 }
 
-func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerCreateUserPost(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		Body   string    `json:"body"`
-		UserID uuid.UUID `json:"user_id"`
+		Body string `json:"body"`
 	}
 
 	type response struct {
 		Post Post `json:"post"`
 	}
 
-	_, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
@@ -41,9 +42,12 @@ func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	post, err := cfg.db.CreatePost(r.Context(), database.CreatePostParams{
-		Body:   params.Body,
-		UserID: params.UserID,
+	post, err := cfg.db.CreateUserPost(r.Context(), database.CreateUserPostParams{
+		Body: params.Body,
+		UserID: uuid.NullUUID{
+			UUID:  userID,
+			Valid: userID != uuid.Nil,
+		},
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create post", err)
@@ -56,7 +60,117 @@ func (cfg *apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) 
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.CreatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
+		},
+	})
+}
+
+func (cfg *apiConfig) handlerCreateGroupPost(w http.ResponseWriter, r *http.Request) {
+	type parameters struct {
+		Body string `json:"body"`
+	}
+
+	type response struct {
+		Post Post `json:"post"`
+	}
+
+	_, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, msg, err)
+		return
+	}
+
+	groupStringID := r.PathValue("groupID")
+	groupID, err := uuid.Parse(groupStringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	if err := decoder.Decode(&params); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
+		return
+	}
+
+	post, err := cfg.db.CreateGroupPost(r.Context(), database.CreateGroupPostParams{
+		Body: params.Body,
+		GroupID: uuid.NullUUID{
+			UUID:  groupID,
+			Valid: groupID != uuid.Nil,
+		},
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't create post", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusCreated, response{
+		Post: Post{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			UpdatedAt: post.CreatedAt,
+			Body:      post.Body,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
+		},
+	})
+}
+
+func (cfg *apiConfig) handlerCreateEventPost(w http.ResponseWriter, r *http.Request) {
+	type parameters struct {
+		Body string `json:"body"`
+	}
+
+	type response struct {
+		Post Post `json:"post"`
+	}
+
+	_, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, msg, err)
+		return
+	}
+
+	eventStringID := r.PathValue("eventID")
+	eventID, err := uuid.Parse(eventStringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	if err := decoder.Decode(&params); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
+		return
+	}
+
+	post, err := cfg.db.CreateEventPost(r.Context(), database.CreateEventPostParams{
+		Body: params.Body,
+		EventID: uuid.NullUUID{
+			UUID:  eventID,
+			Valid: eventID != uuid.Nil,
+		},
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't create post", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusCreated, response{
+		Post: Post{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			UpdatedAt: post.CreatedAt,
+			Body:      post.Body,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
 		},
 	})
 }
@@ -75,7 +189,9 @@ func (cfg *apiConfig) handlerGetPosts(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
 		})
 	}
 
@@ -101,7 +217,9 @@ func (cfg *apiConfig) handlerGetPost(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: dbPost.CreatedAt,
 		UpdatedAt: dbPost.UpdatedAt,
 		Body:      dbPost.Body,
-		UserID:    dbPost.UserID,
+		UserID:    dbPost.UserID.UUID,
+		GroupID:   dbPost.GroupID.UUID,
+		EventID:   dbPost.EventID.UUID,
 	})
 }
 
@@ -113,7 +231,10 @@ func (cfg *apiConfig) handlerUserPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbPosts, err := cfg.db.GetUserPosts(r.Context(), userID)
+	dbPosts, err := cfg.db.GetUserPosts(r.Context(), uuid.NullUUID{
+		UUID:  userID,
+		Valid: userID != uuid.Nil,
+	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve posts", err)
 		return
@@ -126,7 +247,75 @@ func (cfg *apiConfig) handlerUserPosts(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, posts)
+}
+
+func (cfg *apiConfig) handlerGroupPosts(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("groupID")
+	groupID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	dbPosts, err := cfg.db.GetGroupPosts(r.Context(), uuid.NullUUID{
+		UUID:  groupID,
+		Valid: groupID != uuid.Nil,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve posts", err)
+		return
+	}
+
+	posts := []Post{}
+	for _, post := range dbPosts {
+		posts = append(posts, Post{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			UpdatedAt: post.UpdatedAt,
+			Body:      post.Body,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, posts)
+}
+
+func (cfg *apiConfig) handlerEventPosts(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("eventID")
+	eventID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	dbPosts, err := cfg.db.GetEventPosts(r.Context(), uuid.NullUUID{
+		UUID:  eventID,
+		Valid: eventID != uuid.Nil,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve posts", err)
+		return
+	}
+
+	posts := []Post{}
+	for _, post := range dbPosts {
+		posts = append(posts, Post{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			UpdatedAt: post.UpdatedAt,
+			Body:      post.Body,
+			UserID:    post.UserID.UUID,
+			GroupID:   post.GroupID.UUID,
+			EventID:   post.EventID.UUID,
 		})
 	}
 
@@ -134,15 +323,9 @@ func (cfg *apiConfig) handlerUserPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *apiConfig) handlerDeletePost(w http.ResponseWriter, r *http.Request) {
-	token, err := auth.GetBearerToken(r.Header)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "No Bearer token header", err)
-		return
-	}
-
-	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Invalid JWT token", err)
+		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
 	}
 
@@ -159,7 +342,7 @@ func (cfg *apiConfig) handlerDeletePost(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if post.UserID != userID {
+	if post.UserID.UUID != userID {
 		respondWithError(w, http.StatusForbidden, "You can't delete this post", err)
 		return
 	}

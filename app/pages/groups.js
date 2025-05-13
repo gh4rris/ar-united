@@ -1,4 +1,6 @@
+import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
+import { displayPosts, newPost } from "../posts.js";
 
 export function renderGroup(group) {
     const user = JSON.parse(localStorage.user);
@@ -29,9 +31,22 @@ export function renderGroup(group) {
 
 export async function groupEvents(group) {
     const eventBtn = document.getElementById('create-event-btn');
+    const postBtn = document.getElementById('post-btn');
     eventBtn.addEventListener('click', () => {
         window.location.assign(`/groups/${group.slug}/create_event`)
     });
+    postBtn.addEventListener('click', async (e) => {
+        const validToken = await validateToken();
+        if (!validToken) {
+                window.location.replace('/');
+                return
+            }
+        const value = e.target.previousElementSibling.value;
+        const data = {'body': value}
+        await newPost(data, `/groups/${group.id}`);
+        e.target.previousElementSibling.value = '';
+    });
+    await displayPosts(group, 'groups');
 }
 
 async function nonAdminPage(user, group) {
@@ -39,13 +54,14 @@ async function nonAdminPage(user, group) {
     const member = await isMember(user.id, group.id);
     if (member) {
         memberBtn.innerText = 'Member';
-        memberBtn.setAttribute('disabled', '');
+        memberBtn.disabled = true;
     }
     memberBtn.addEventListener('click', () => {
         joinGroup(group.id);
         memberBtn.innerText = 'Member';
-        memberBtn.setAttribute('disabled', '');
+        memberBtn.disabled = true;
     });
+    await displayPosts(group, 'groups');
 }
 
 async function isMember(userID, groupID) {

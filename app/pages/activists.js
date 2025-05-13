@@ -1,5 +1,6 @@
 import { validateToken } from "../app.js";
 import { API_BASE_URL } from "../config.js";
+import { displayPosts, newPost } from "../posts.js";
 
 export async function renderActivist(activist) {
     const user = JSON.parse(localStorage.user);
@@ -54,21 +55,17 @@ export async function activistEvents(activist) {
                 return
             }
         const value = e.target.previousElementSibling.value;
-        await newPost(value);
+        const data = {'body': value}
+        await newPost(data, '');
         e.target.previousElementSibling.value = '';
     });
     editBtn.addEventListener('click', () => {
         window.location.assign(`/activists/${activist.slug}/edit_profile`);
     })
-    await displayPosts(activist);
+    await displayPosts(activist, 'users');
 }
 
-async function displayPosts(activist) {
-    const posts = await getUserPosts(activist.id);
-    for (let i = posts.length-1; i >= 0; i--) {
-        insertPost(posts[i].id, posts[i].body);
-    }
-}
+
 
 async function nonUserPage(user, activist) {
     const ally = await isAlly(activist.id);
@@ -93,20 +90,7 @@ async function nonUserPage(user, activist) {
             allyBtn.disabled = true;
         });
     }
-    await displayPosts(activist);
-}
-
-async function getUserPosts(userID) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/users/${userID}/posts`);
-        if (!response.ok) {
-            throw new Error("couldn't get user posts");
-        }
-        return await response.json();
-    }
-    catch(error) {
-        console.error(error);
-    }
+    await displayPosts(activist, 'users');
 }
 
 async function isAlly(activistID) {
@@ -162,39 +146,3 @@ async function confirmAlly(activistID) {
         console.error(error.message);
     }
 }
-
-async function newPost(value) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/posts`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.accessToken}`
-            },
-            body: `{"body": "${value}", "user_id": "${JSON.parse(localStorage.user).id}"}`
-        });
-        if (!response.ok) {
-            throw new Error("couldn't make post");
-        }
-        const responseData = await response.json();
-        insertPost(responseData.post.id, responseData.post.body);
-    }
-    catch(error) {
-        console.error(error);
-    }
-}
-
-function insertPost(id, body) {
-    const postsBox = document.getElementById('posts-box');
-    const newPost = document.createElement('div');
-    const paragraph = document.createElement('p');
-    newPost.append(paragraph);
-    newPost.setAttribute('id', id);
-    paragraph.innerText = body;
-    if (postsBox.children.length === 0) {
-        postsBox.append(newPost);
-    } else {
-        postsBox.insertBefore(newPost, postsBox.children[0]);
-    }
-}
-

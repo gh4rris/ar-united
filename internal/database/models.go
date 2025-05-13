@@ -45,7 +45,9 @@ type Post struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Body      string
-	UserID    uuid.UUID
+	UserID    uuid.NullUUID
+	GroupID   uuid.NullUUID
+	EventID   uuid.NullUUID
 }
 
 type RefreshToken struct {
