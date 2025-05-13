@@ -102,9 +102,11 @@ func main() {
 	mux.HandleFunc("GET /api/groups/{groupID}/users", apiCfg.handlerGroupMembers)
 
 	mux.HandleFunc("POST /api/events", apiCfg.handlerCreateEvent)
-	mux.HandleFunc("POST /api/events/{eventID}", apiCfg.handlerGoingEvent)
-	mux.HandleFunc("DELETE /api/events/{eventID}", apiCfg.handlerNotGoingEvent)
 	mux.HandleFunc("GET /api/events/{slugID}", apiCfg.handlerGetEventBySlug)
+
+	mux.HandleFunc("GET /api/attenders/{eventID}", apiCfg.handlerIsGoing)
+	mux.HandleFunc("POST /api/attenders/{eventID}", apiCfg.handlerGoingEvent)
+	mux.HandleFunc("DELETE /api/attenders/{eventID}", apiCfg.handlerNotGoingEvent)
 
 	mux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)

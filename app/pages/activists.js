@@ -75,22 +75,22 @@ async function nonUserPage(user, activist) {
     const allyBtn = document.getElementById('ally-btn');
     if (ally.confirmed) {
         allyBtn.innerText = 'Allies';
-        allyBtn.setAttribute('disabled', '');
+        allyBtn.disabled = true;
     } else if (ally.requester_id === user.id) {
         allyBtn.innerText = 'Awaiting response';
-        allyBtn.setAttribute('disabled', '');
+        allyBtn.disabled = true;
     } else if (ally.requester_id === activist.id) {
         allyBtn.innerText = 'Confirm Ally';
         allyBtn.addEventListener('click', () => {
             confirmAlly(activist.id);
             allyBtn.innerText = 'Allies';
-            allyBtn.setAttribute('disabled', '');
+            allyBtn.disabled = true;
         })
     } else {
         allyBtn.addEventListener('click', () => {
             addAlly(activist.id);
             allyBtn.innerText = 'Awaiting response';
-            allyBtn.setAttribute('disabled', '');
+            allyBtn.disabled = true;
         });
     }
     await displayPosts(activist);

@@ -25,15 +25,22 @@ export async function renderEvent(event) {
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
       <div id="posts-box"></div>`;
+      eventEvents(event);
     }
-    eventEvents(event);
 }
 
-function eventEvents(event) {
+async function eventEvents(event) {
     const goingBtn = document.getElementById('going-btn');
+    const notGoingBtn = document.getElementById('not-going-btn');
+    const going = await isGoing(event.id);
+    if (going) {
+        goingBtn.disabled = true;
+    }
     goingBtn.addEventListener('click', async () => {
-        await addGoing(event.id);
-        goingBtn.setAttribute('disabled', '');
+        await addGoing(event.id, goingBtn);
+    });
+    notGoingBtn.addEventListener('click', async () => {
+        await removeGoing(event.id, goingBtn);
     })
 }
 
@@ -51,17 +58,56 @@ async function getGroup(groupID) {
     }
 }
 
-async function addGoing(eventID) {
+async function isGoing(eventID) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/events/${eventID}`, {
+        const response = await fetch(`${API_BASE_URL}/api/attenders/${eventID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("couldn't find if going");
+        }
+        if (response.status === 200) {
+            return await response.json();
+        }
+    }
+    catch(error) {
+        console.error(error.message)
+    }
+}
+
+async function addGoing(eventID, button) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/attenders/${eventID}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.accessToken}`
             }
-        })
+        });
         if (!response.ok) {
             throw new Error("couldn't add going");
         }
+        button.disabled = true;
+    }
+    catch(error) {
+        console.error(error.message)
+    }
+}
+
+async function removeGoing(eventID, button) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/attenders/${eventID}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.accessToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("couldn't add going");
+        }
+        button.disabled = false;
     }
     catch(error) {
         console.error(error.message)

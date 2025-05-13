@@ -8,3 +8,8 @@ VALUES (
 -- name: RemoveGoing :exec
 DELETE FROM users_events
 WHERE user_id = $1 AND event_id = $2;
+
+-- name: IsAttending :one
+SELECT *
+FROM users_events
+WHERE user_id = $1 AND event_id = $2;
