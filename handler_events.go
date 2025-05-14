@@ -183,3 +183,21 @@ func (cfg *apiConfig) handlerGetEventBySlug(w http.ResponseWriter, r *http.Reque
 		},
 	})
 }
+
+// func (cfg *apiConfig) handlerGetEventGroup(w http.ResponseWriter, r *http.Request) {
+// 	eventStringID := r.PathValue("eventID")
+// 	eventID, err := uuid.Parse(eventStringID)
+// 	if err != nil {
+// 		respondWithError(w, http.StatusBadRequest, "Invalid event ID", err)
+// 		return
+// 	}
+
+// 	groupStringID := r.PathValue("groupID")
+// 	groupID, err := uuid.Parse(groupStringID)
+// 	if err != nil {
+// 		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+// 		return
+// 	}
+
+// 	group, err := cfg.db.EventGroup(r.Context(), groupID)
+// }

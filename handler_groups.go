@@ -177,14 +177,14 @@ func (cfg *apiConfig) handlerGroupAdmin(w http.ResponseWriter, r *http.Request) 
 		User User `json:"user"`
 	}
 
-	stringID := r.PathValue("groupID")
-	groupID, err := uuid.Parse(stringID)
+	stringID := r.PathValue("userID")
+	userID, err := uuid.Parse(stringID)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID", err)
 		return
 	}
 
-	user, err := cfg.db.GroupAdmin(r.Context(), groupID)
+	user, err := cfg.db.GetUserByID(r.Context(), userID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't find admin", err)
 		return

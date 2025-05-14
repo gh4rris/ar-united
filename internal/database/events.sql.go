@@ -75,6 +75,29 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 	return i, err
 }
 
+const eventGroup = `-- name: EventGroup :one
+SELECT g.id, g.name, g.created_at, g.updated_at, g.admin_id, g.description, g.slug
+FROM events AS e
+INNER JOIN groups AS g
+ON e.group_id = g.id
+WHERE e.group_id = $1
+`
+
+func (q *Queries) EventGroup(ctx context.Context, groupID uuid.UUID) (Group, error) {
+	row := q.db.QueryRowContext(ctx, eventGroup, groupID)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AdminID,
+		&i.Description,
+		&i.Slug,
+	)
+	return i, err
+}
+
 const eventsByAdmin = `-- name: EventsByAdmin :many
 SELECT e.id, e.name, location, date, e.created_at, e.updated_at, e.description, group_id, e.slug, g.id, g.name, g.created_at, g.updated_at, admin_id, g.description, g.slug
 FROM events AS e

@@ -44,3 +44,10 @@ SELECT *
 FROM events
 WHERE name ILIKE '%' || $1 || '%'
 ORDER BY date ASC;
+
+-- name: EventGroup :one
+SELECT g.*
+FROM events AS e
+INNER JOIN groups AS g
+ON e.group_id = g.id
+WHERE e.group_id = $1;

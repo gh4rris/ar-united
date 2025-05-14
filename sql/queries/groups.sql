@@ -34,13 +34,6 @@ ON ug.user_id = u.id
 WHERE ug.group_id = $1
 ORDER BY u.first_name;
 
--- name: GroupAdmin :one
-SELECT u.*
-FROM groups AS g
-INNER JOIN users AS u
-ON g.admin_id = u.id
-WHERE g.id = $1;
-
 -- name: GroupsByAdmin :many
 SELECT *
 FROM groups

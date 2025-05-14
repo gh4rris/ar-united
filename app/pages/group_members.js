@@ -16,7 +16,7 @@ export async function renderGroupMembers(group) {
 async function groupMembersEvents(group) {
     const adminBox = document.getElementById('admin-box');
     const memberBox = document.getElementById('member-box');
-    const admin = await getGroupAdmin(group.id);
+    const admin = await getGroupAdmin(group.admin_id);
     const members = await getGroupMembers(group.id);
     appendLinks([admin], adminBox);
     appendLinks(members, memberBox);
@@ -32,9 +32,9 @@ function appendLinks(activists, box) {
     }
 }
 
-async function getGroupAdmin(groupID) {
+async function getGroupAdmin(userID) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/groups/${groupID}/admin`)
+        const response = await fetch(`${API_BASE_URL}/api/groups/${userID}/admin`)
         if (!response.ok) {
             throw new Error("couldn't find group admin");
         }

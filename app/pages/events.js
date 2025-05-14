@@ -10,6 +10,11 @@ export async function renderEvent(event) {
     <div id="event-box">
         <h2 id="event-name">${event.name}</h2>
         <p id="event-description">${event.description}</p>
+        <p id="event-location">${event.location}</p>
+        <p id="event-date">${event.date.replace('T00:00:00Z', '')}</p>
+        <div id="group-box">
+            <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
+        </div>
         <button id="member-btn" disabled>Organiser</button>
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
@@ -24,6 +29,11 @@ export async function renderEvent(event) {
     <div id="event-box">
         <h2 id="event-name">${event.name}</h2>
         <p id="event-description">${event.description}</p>
+        <p id="event-location">${event.location}</p>
+        <p id="event-date">${event.date.replace('T00:00:00Z', '')}</p>
+        <div id="group-box">
+            <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
+        </div>
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
       <div id="posts-box"></div>`;
@@ -55,10 +65,16 @@ async function goingButtons(event) {
         goingBtn.disabled = true;
     }
     goingBtn.addEventListener('click', async () => {
-        await addGoing(event.id, goingBtn);
+        const valid = await validateToken();
+        if (valid) {
+            await addGoing(event.id, goingBtn);
+        }
     });
     notGoingBtn.addEventListener('click', async () => {
-        await removeGoing(event.id, goingBtn);
+        const valid = await validateToken();
+        if (valid) {
+            await removeGoing(event.id, goingBtn);
+        }
     });
     await displayPosts(event, 'events');
 }
