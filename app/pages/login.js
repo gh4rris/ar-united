@@ -13,7 +13,8 @@ export function renderLogin() {
           <input type="password" name="password" id="password-input-login" required />
         </div>
         <button type="submit" id="submit-btn-login">Submit</button>
-      </form>`;
+      </form>
+      <a href="/">back</a>`;
       loginEvents();
 }
 

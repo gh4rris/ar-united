@@ -8,6 +8,8 @@ import { renderAllies } from './pages/allies.js'
 import { renderCreateGroup } from './pages/create_group.js'
 import { renderUserGroups } from './pages/user_groups.js'
 import { renderGroup } from './pages/groups.js'
+import { renderGroupMembers } from './pages/group_members.js';
+import { renderGroupEvents } from './pages/group_events.js';
 import { renderCreateEvent } from './pages/create_event.js'
 import { renderSearch } from './pages/search.js'
 import { renderUserEvents } from './pages/user_events.js';
@@ -24,6 +26,8 @@ const routes = [
     { pattern: /^\/groups\/create_group$/, handler: () => renderCreateGroup(), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/groups$/, handler: (activist) => renderUserGroups(activist), private: true },
     { pattern: /^\/(groups)\/(\w+)$/, handler: (group) => renderGroup(group), private: true },
+    { pattern: /^\/(groups)\/(\w+)\/members$/, handler: (group) => renderGroupMembers(group), private: true },
+    { pattern: /^\/(groups)\/(\w+)\/events$/, handler: (group) => renderGroupEvents(group), private: true },
     { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => renderCreateEvent(group), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/events$/, handler: (activist) => renderUserEvents(activist), private: true },
     { pattern: /^\/(events)\/(\w+)$/, handler: (event) => renderEvent(event), private: true },

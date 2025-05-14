@@ -11,6 +11,12 @@ export function renderGroup(group) {
         <p id="group-description">${group.description}</p>
         <button id="member-btn" disabled>Admin</button>
         <button id="create-event-btn">Create Event</button>
+        <div id="members-box">
+            <a id="group-members" href="/groups/${group.slug}/members">Members</a>
+        </div>
+        <div id="events-box">
+            <a id="group-events" href="/groups/${group.slug}/events">Events</a>
+        </div>
         <div id="new-post-box">
             <input type="text" name="post" id="post-input" >
             <button id="post-btn">Post</button>
@@ -23,6 +29,12 @@ export function renderGroup(group) {
         <h2 id="group-name">${group.name}</h2>
         <p id="group-description">${group.description}</p>
         <button id="member-btn">Join Group</button>
+        <div id="members-box">
+            <a id="group-members" href="/groups/${group.slug}/members">Members</a>
+        </div>
+        <div id="events-box">
+            <a id="group-events" href="/groups/${group.slug}/events">Events</a>
+        </div>
       <div id="posts-box"></div>`;
       nonAdminPage(user, group);
     }

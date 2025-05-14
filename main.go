@@ -103,6 +103,8 @@ func main() {
 	mux.HandleFunc("GET /api/groups/{groupID}/posts", apiCfg.handlerGroupPosts)
 	mux.HandleFunc("GET /api/groups/{slugID}/slug", apiCfg.handlerGetGroupBySlug)
 	mux.HandleFunc("GET /api/groups/{groupID}/users", apiCfg.handlerGroupMembers)
+	mux.HandleFunc("GET /api/groups/{groupID}/admin", apiCfg.handlerGroupAdmin)
+	mux.HandleFunc("GET /api/groups/{groupID}/events", apiCfg.handlerGroupEvents)
 
 	mux.HandleFunc("POST /api/events", apiCfg.handlerCreateEvent)
 	mux.HandleFunc("GET /api/events/{eventID}/posts", apiCfg.handlerEventPosts)

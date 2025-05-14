@@ -151,7 +151,7 @@ func (cfg *apiConfig) handlerGroupMembers(w http.ResponseWriter, r *http.Request
 
 	dbUsers, err := cfg.db.GroupMembers(r.Context(), groupID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't find Members", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find members", err)
 		return
 	}
 
@@ -165,10 +165,43 @@ func (cfg *apiConfig) handlerGroupMembers(w http.ResponseWriter, r *http.Request
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
+			Slug:      user.Slug,
 		})
 	}
 
 	respondWithJson(w, http.StatusOK, members)
+}
+
+func (cfg *apiConfig) handlerGroupAdmin(w http.ResponseWriter, r *http.Request) {
+	type response struct {
+		User User `json:"user"`
+	}
+
+	stringID := r.PathValue("groupID")
+	groupID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+		return
+	}
+
+	user, err := cfg.db.GroupAdmin(r.Context(), groupID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find admin", err)
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, response{
+		User: User{
+			ID:        user.ID,
+			FirstName: user.FirstName,
+			LastName:  user.LastName.String,
+			DOB:       user.Dob.Time,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+			Email:     user.Email,
+			Slug:      user.Slug,
+		},
+	})
 }
 
 func (cfg *apiConfig) handlerAdminGroups(w http.ResponseWriter, r *http.Request) {
@@ -291,4 +324,36 @@ func (cfg *apiConfig) handlerIsMember(w http.ResponseWriter, r *http.Request) {
 		UserID:  member.UserID,
 		GroupID: member.GroupID,
 	})
+}
+
+func (cfg *apiConfig) handlerGroupEvents(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("groupID")
+	groupID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
+		return
+	}
+
+	dbEvents, err := cfg.db.GroupEvents(r.Context(), groupID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find events", err)
+		return
+	}
+
+	events := []Event{}
+	for _, event := range dbEvents {
+		events = append(events, Event{
+			ID:          event.ID,
+			Name:        event.Name,
+			Location:    event.Location.String,
+			Date:        event.Date,
+			CreatedAt:   event.CreatedAt,
+			UpdatedAt:   event.UpdatedAt,
+			Description: event.Description.String,
+			GroupID:     event.GroupID,
+			Slug:        event.Slug,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, events)
 }

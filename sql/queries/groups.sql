@@ -34,6 +34,13 @@ ON ug.user_id = u.id
 WHERE ug.group_id = $1
 ORDER BY u.first_name;
 
+-- name: GroupAdmin :one
+SELECT u.*
+FROM groups AS g
+INNER JOIN users AS u
+ON g.admin_id = u.id
+WHERE g.id = $1;
+
 -- name: GroupsByAdmin :many
 SELECT *
 FROM groups
@@ -63,3 +70,10 @@ WHERE id = $1;
 SELECT *
 FROM users_groups
 WHERE user_id = $1 AND group_id = $2;
+
+-- name: GroupEvents :many
+SELECT e.*
+FROM groups AS g
+INNER JOIN events AS e
+ON g.id = e.group_id
+WHERE g.id = $1;

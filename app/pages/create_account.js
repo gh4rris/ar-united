@@ -30,7 +30,8 @@ export function renderCreateAccount() {
           <input type="password" name="re_password" id="re-password-input-create" required />
         </div>
         <button type="submit" id="submit-btn-create">Create Account</button>
-      </form>`
+      </form>
+      <a href="/">back</a>`
       createAccountEvents();
 }
 

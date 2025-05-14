@@ -126,6 +126,72 @@ func (q *Queries) GetGroupBySlug(ctx context.Context, slug string) (Group, error
 	return i, err
 }
 
+const groupAdmin = `-- name: GroupAdmin :one
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.slug, u.hashed_password
+FROM groups AS g
+INNER JOIN users AS u
+ON g.admin_id = u.id
+WHERE g.id = $1
+`
+
+func (q *Queries) GroupAdmin(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, groupAdmin, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Dob,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.Slug,
+		&i.HashedPassword,
+	)
+	return i, err
+}
+
+const groupEvents = `-- name: GroupEvents :many
+SELECT e.id, e.name, e.location, e.date, e.created_at, e.updated_at, e.description, e.group_id, e.slug
+FROM groups AS g
+INNER JOIN events AS e
+ON g.id = e.group_id
+WHERE g.id = $1
+`
+
+func (q *Queries) GroupEvents(ctx context.Context, id uuid.UUID) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, groupEvents, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Event
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Location,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Description,
+			&i.GroupID,
+			&i.Slug,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const groupMembers = `-- name: GroupMembers :many
 SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.slug, u.hashed_password
 FROM users_groups AS ug
