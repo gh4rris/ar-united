@@ -184,20 +184,35 @@ func (cfg *apiConfig) handlerGetEventBySlug(w http.ResponseWriter, r *http.Reque
 	})
 }
 
-// func (cfg *apiConfig) handlerGetEventGroup(w http.ResponseWriter, r *http.Request) {
-// 	eventStringID := r.PathValue("eventID")
-// 	eventID, err := uuid.Parse(eventStringID)
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid event ID", err)
-// 		return
-// 	}
+func (cfg *apiConfig) handlerEventAttendees(w http.ResponseWriter, r *http.Request) {
+	stringID := r.PathValue("eventID")
+	eventID, err := uuid.Parse(stringID)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid event ID", err)
+		return
+	}
 
-// 	groupStringID := r.PathValue("groupID")
-// 	groupID, err := uuid.Parse(groupStringID)
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid group ID", err)
-// 		return
-// 	}
+	dbUsers, err := cfg.db.UsersByEvent(r.Context(), eventID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't find attendees", err)
+		return
+	}
 
-// 	group, err := cfg.db.EventGroup(r.Context(), groupID)
-// }
+	users := []User{}
+	for _, user := range dbUsers {
+		users = append(users, User{
+			ID:            user.ID,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName.String,
+			DOB:           user.Dob.Time,
+			CreatedAt:     user.CreatedAt,
+			UpdatedAt:     user.UpdatedAt,
+			Email:         user.Email,
+			Bio:           user.Bio.String,
+			Slug:          user.Slug,
+			ProfilePicURL: user.ProfilePicUrl.String,
+		})
+	}
+
+	respondWithJson(w, http.StatusOK, users)
+}

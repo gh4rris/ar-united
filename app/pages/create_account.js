@@ -31,7 +31,7 @@ export function renderCreateAccount() {
         </div>
         <button type="submit" id="submit-btn-create">Create Account</button>
       </form>
-      <a href="/">back</a>`
+      <a href="/">Back</a>`
       createAccountEvents();
 }
 

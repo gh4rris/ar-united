@@ -167,7 +167,7 @@ func (q *Queries) EventsByAdmin(ctx context.Context, adminID uuid.UUID) ([]Event
 }
 
 const eventsByUser = `-- name: EventsByUser :many
-SELECT id, name, location, date, created_at, updated_at, description, group_id, slug, user_id, event_id
+SELECT e.id, e.name, e.location, e.date, e.created_at, e.updated_at, e.description, e.group_id, e.slug
 FROM events AS e
 INNER JOIN users_events AS ue
 ON e.id = ue.event_id
@@ -175,29 +175,15 @@ WHERE ue.user_id = $1
 ORDER BY e.date ASC
 `
 
-type EventsByUserRow struct {
-	ID          uuid.UUID
-	Name        string
-	Location    sql.NullString
-	Date        time.Time
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Description sql.NullString
-	GroupID     uuid.UUID
-	Slug        string
-	UserID      uuid.UUID
-	EventID     uuid.UUID
-}
-
-func (q *Queries) EventsByUser(ctx context.Context, userID uuid.UUID) ([]EventsByUserRow, error) {
+func (q *Queries) EventsByUser(ctx context.Context, userID uuid.UUID) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, eventsByUser, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []EventsByUserRow
+	var items []Event
 	for rows.Next() {
-		var i EventsByUserRow
+		var i Event
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -208,8 +194,6 @@ func (q *Queries) EventsByUser(ctx context.Context, userID uuid.UUID) ([]EventsB
 			&i.Description,
 			&i.GroupID,
 			&i.Slug,
-			&i.UserID,
-			&i.EventID,
 		); err != nil {
 			return nil, err
 		}
@@ -273,6 +257,50 @@ func (q *Queries) SearchEvents(ctx context.Context, dollar_1 sql.NullString) ([]
 			&i.Description,
 			&i.GroupID,
 			&i.Slug,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const usersByEvent = `-- name: UsersByEvent :many
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password
+FROM users_events AS ue
+INNER JOIN users AS u
+ON ue.user_id = u.id
+WHERE ue.event_id = $1
+ORDER BY u.first_name ASC
+`
+
+func (q *Queries) UsersByEvent(ctx context.Context, eventID uuid.UUID) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, usersByEvent, eventID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Dob,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Email,
+			&i.Bio,
+			&i.Slug,
+			&i.ProfilePicUrl,
+			&i.HashedPassword,
 		); err != nil {
 			return nil, err
 		}

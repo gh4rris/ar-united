@@ -14,7 +14,7 @@ export function renderLogin() {
         </div>
         <button type="submit" id="submit-btn-login">Submit</button>
       </form>
-      <a href="/">back</a>`;
+      <a href="/">Back</a>`;
       loginEvents();
 }
 

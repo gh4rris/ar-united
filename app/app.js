@@ -15,6 +15,7 @@ import { renderCreateEvent } from './pages/create_event.js'
 import { renderSearch } from './pages/search.js'
 import { renderUserEvents } from './pages/user_events.js';
 import { renderEvent } from './pages/events.js';
+import { renderEventAttendees } from './pages/event_attendees.js';
 
 
 const routes = [
@@ -33,6 +34,7 @@ const routes = [
     { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => renderCreateEvent(group), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/events$/, handler: (activist) => renderUserEvents(activist), private: true },
     { pattern: /^\/(events)\/(\w+)$/, handler: (event) => renderEvent(event), private: true },
+    { pattern: /^\/(events)\/(\w+)\/attending$/, handler: (event) => renderEventAttendees(event), private: true },
     { pattern: /^\/search$/, handler: () => renderSearch(), private: true }
 ];
 

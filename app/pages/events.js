@@ -15,6 +15,9 @@ export async function renderEvent(event) {
         <div id="group-box">
             <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
         </div>
+        <div id="attending-box">
+            <a id="event-attendees" href="/events/${event.slug}/attending">Attending</a>
+        </div>
         <button id="member-btn" disabled>Organiser</button>
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
@@ -33,6 +36,9 @@ export async function renderEvent(event) {
         <p id="event-date">${event.date.replace('T00:00:00Z', '')}</p>
         <div id="group-box">
             <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
+        </div>
+        <div id="attending-box">
+            <a id="event-attendees" href="/events/${event.slug}/attending">Attending</a>
         </div>
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
@@ -95,7 +101,7 @@ async function getGroup(groupID) {
 
 async function isGoing(eventID) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/attenders/${eventID}`, {
+        const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.accessToken}`
@@ -115,7 +121,7 @@ async function isGoing(eventID) {
 
 async function addGoing(eventID, button) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/attenders/${eventID}`, {
+        const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.accessToken}`
@@ -133,7 +139,7 @@ async function addGoing(eventID, button) {
 
 async function removeGoing(eventID, button) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/attenders/${eventID}`, {
+        const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.accessToken}`

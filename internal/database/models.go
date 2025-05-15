@@ -64,10 +64,10 @@ type User struct {
 	FirstName      string
 	LastName       sql.NullString
 	Dob            sql.NullTime
-	Bio            sql.NullString
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Email          string
+	Bio            sql.NullString
 	Slug           string
 	ProfilePicUrl  sql.NullString
 	HashedPassword string

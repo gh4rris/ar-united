@@ -22,12 +22,20 @@ WHERE g.admin_id = $1
 ORDER BY e.date ASC;
 
 -- name: EventsByUser :many
-SELECT *
+SELECT e.*
 FROM events AS e
 INNER JOIN users_events AS ue
 ON e.id = ue.event_id
 WHERE ue.user_id = $1
 ORDER BY e.date ASC;
+
+-- name: UsersByEvent :many
+SELECT u.*
+FROM users_events AS ue
+INNER JOIN users AS u
+ON ue.user_id = u.id
+WHERE ue.event_id = $1
+ORDER BY u.first_name ASC;
 
 -- name: CheckSlugEvent :one
 SELECT COUNT(slug) AS slug_count

@@ -42,13 +42,13 @@ async function userEventEvents(activist) {
 
 function appendEvents(events, box) {
     for (const event of events) {
-            const link = document.createElement('a');
-            const lineBreak = document.createElement('br');
-            link.href = `/events/${event.slug}`;
-            link.innerText = `${event.name}`;
-            box.append(link);
-            box.append(lineBreak);
-        }
+        const link = document.createElement('a');
+        const lineBreak = document.createElement('br');
+        link.href = `/events/${event.slug}`;
+        link.innerText = `${event.name}`;
+        box.append(link);
+        box.append(lineBreak);
+    }
 }
 
 async function organisedEvents(userID) {
