@@ -64,6 +64,7 @@ type User struct {
 	FirstName      string
 	LastName       sql.NullString
 	Dob            sql.NullTime
+	Bio            sql.NullString
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Email          string

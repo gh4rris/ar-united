@@ -7,6 +7,7 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    bio TEXT,
     slug TEXT NOT NULL UNIQUE,
     profile_pic_url TEXT,
     hashed_password TEXT NOT NULL

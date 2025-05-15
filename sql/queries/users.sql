@@ -1,5 +1,5 @@
 -- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password)
+INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, hashed_password)
 VALUES (
     gen_random_uuid(),
     $1,
@@ -9,7 +9,8 @@ VALUES (
     NOW(),
     $4,
     $5,
-    $6
+    $6,
+    $7
 )
 RETURNING *;
 
@@ -21,7 +22,7 @@ WHERE email = $1;
 -- name: UpdateUser :one
 UPDATE users
 SET first_name = $2, last_name = $3, email = $4,
-updated_at = NOW()
+bio = $5, updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
@@ -48,7 +49,7 @@ FROM users
 WHERE slug = $1;
 
 -- name: GetUserBySlug :one
-SELECT id, first_name, last_name, email, slug, profile_pic_url
+SELECT *
 FROM users
 WHERE slug = $1;
 

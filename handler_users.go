@@ -20,6 +20,7 @@ type User struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Email         string    `json:"email"`
+	Bio           string    `json:"bio"`
 	Slug          string    `json:"slug"`
 	ProfilePicURL string    `json:"profile_pic_url"`
 }
@@ -96,6 +97,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 			CreatedAt:     user.CreatedAt,
 			UpdatedAt:     user.UpdatedAt,
 			Email:         user.Email,
+			Bio:           user.Bio.String,
 			Slug:          slug,
 			ProfilePicURL: user.ProfilePicUrl.String,
 		},
@@ -107,6 +109,7 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 		FirstName string `json:"first_name"`
 		LastName  string `json:"last_name"`
 		Email     string `json:"email"`
+		Bio       string `json:"bio"`
 	}
 	type response struct {
 		User User `json:"user"`
@@ -133,6 +136,10 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 			Valid:  params.LastName != "",
 		},
 		Email: params.Email,
+		Bio: sql.NullString{
+			String: params.Bio,
+			Valid:  params.Bio != "",
+		},
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't update user info", err)
@@ -148,6 +155,7 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 			CreatedAt:     user.CreatedAt,
 			UpdatedAt:     user.UpdatedAt,
 			Email:         user.Email,
+			Bio:           user.Bio.String,
 			Slug:          user.Slug,
 			ProfilePicURL: user.ProfilePicUrl.String,
 		},
@@ -208,7 +216,11 @@ func (cfg *apiConfig) handlerGetUserBySlug(w http.ResponseWriter, r *http.Reques
 			ID:            user.ID,
 			FirstName:     user.FirstName,
 			LastName:      user.LastName.String,
+			DOB:           user.Dob.Time,
+			CreatedAt:     user.CreatedAt,
+			UpdatedAt:     user.UpdatedAt,
 			Email:         user.Email,
+			Bio:           user.Bio.String,
 			Slug:          user.Slug,
 			ProfilePicURL: user.ProfilePicUrl.String,
 		},

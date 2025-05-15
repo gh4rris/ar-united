@@ -11,16 +11,20 @@ export async function renderEditProfile(activist) {
   <form id="edit-profile-form">
       <div id="fname-edit-box">
         <label for="fname-input-edit">First name:</label>
-        <input type="text" name="first_name" id="fname-input-edit" required />
+        <input type="text" name="first_name" id="fname-input-edit" value="${user.first_name}" required />
       </div>
       <div id="lname-edit-box">
         <label for="lname-input-edit">Last name:</label>
-        <input type="text" name="last_name" id="lname-input-edit" />
+        <input type="text" name="last_name" id="lname-input-edit" value="${user.last_name}" />
       </div>
       <div id="email-edit-box">
         <label for="email-input-edit">Email:</label>
-        <input type="email" name="email" id="email-input-edit" required />
+        <input type="email" name="email" id="email-input-edit" value="${user.email}" required />
       </div>
+      <div id="bio-edit-box">
+          <label for="bio-input-edit">Bio:</label>
+          <textarea name="bio" id="bio-input-edit" rows="5" cols="33" spellcheck="true">${user.bio}</textarea>
+        </div>
       <button type="submit">Save changes</button>
     </form>`
     editProfileEvents(user);
@@ -28,9 +32,6 @@ export async function renderEditProfile(activist) {
 
 export function editProfileEvents(user) {
   const form = document.getElementById('edit-profile-form');
-  document.getElementById('fname-input-edit').value = user.first_name;
-  document.getElementById('lname-input-edit').value = user.last_name;
-  document.getElementById('email-input-edit').value = user.email;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     await validateToken();
@@ -41,7 +42,7 @@ export function editProfileEvents(user) {
 }
 
 async function saveProfileChanges(user, data) {
-  if (user.first_name === data.first_name && user.last_name === data.last_name && user.email === data.email) {
+  if (user.first_name === data.first_name && user.last_name === data.last_name && user.email === data.email && user.bio === data.bio) {
     window.location.assign(`/activists/${user.slug}`);
   } else {
     try {
@@ -50,8 +51,7 @@ async function saveProfileChanges(user, data) {
         headers: {
           'Authorization': `Bearer ${localStorage.accessToken}`
         },
-        body: `{"first_name": "${data.first_name}", "last_name": "${data.last_name}",
-        "email": "${data.email}"}`
+        body: JSON.stringify(data)
       });
       if (!response.ok) {
         throw new Error("couldn't update user")

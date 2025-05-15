@@ -30,6 +30,7 @@ func (cfg *apiConfig) handlerSearch(w http.ResponseWriter, r *http.Request) {
 				CreatedAt:     user.CreatedAt,
 				UpdatedAt:     user.UpdatedAt,
 				Email:         user.Email,
+				Bio:           user.Bio.String,
 				Slug:          user.Slug,
 				ProfilePicURL: user.ProfilePicUrl.String,
 			})
@@ -124,6 +125,7 @@ func (cfg *apiConfig) handlerSearch(w http.ResponseWriter, r *http.Request) {
 				CreatedAt:     user.CreatedAt,
 				UpdatedAt:     user.UpdatedAt,
 				Email:         user.Email,
+				Bio:           user.Bio.String,
 				Slug:          user.Slug,
 				ProfilePicURL: user.ProfilePicUrl.String,
 			})

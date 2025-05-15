@@ -33,6 +33,7 @@ func (cfg *apiConfig) handlerUserAllies(w http.ResponseWriter, r *http.Request) 
 			CreatedAt:     ally.CreatedAt,
 			UpdatedAt:     ally.UpdatedAt,
 			Email:         ally.Email,
+			Bio:           ally.Bio.String,
 			Slug:          ally.Slug,
 			ProfilePicURL: ally.ProfilePicUrl.String,
 		})
@@ -116,6 +117,7 @@ func (cfg *apiConfig) handlerGetAllyRequests(w http.ResponseWriter, r *http.Requ
 			CreatedAt:     ally.CreatedAt,
 			UpdatedAt:     ally.UpdatedAt,
 			Email:         ally.Email,
+			Bio:           ally.Bio.String,
 			Slug:          ally.Slug,
 			ProfilePicURL: ally.ProfilePicUrl.String,
 		})

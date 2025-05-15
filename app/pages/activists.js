@@ -13,7 +13,7 @@ export async function renderActivist(activist) {
             <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
         </div>
         <p id="profile-email">${activist.email}</p>
-        <p id="profile-description">I am an animal rights activist</p>
+        <p id="profile-bio">${activist.bio}</p>
         <button id="edit-btn">Edit Profile</button>
         <div id="allies-box">
             <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
@@ -37,7 +37,7 @@ export async function renderActivist(activist) {
             <button id="ally-btn">Add Ally</button>
         </div>
         <p id="profile-email">${activist.email}</p>
-        <p id="profile-description">I am an animal rights activist</p>
+        <p id="profile-bio">${activist.bio}</p>
         <div id="allies-box">
             <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
         </div>

@@ -38,25 +38,27 @@ func (q *Queries) CheckUsers(ctx context.Context) (int64, error) {
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password)
+INSERT INTO users (id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, hashed_password)
 VALUES (
     gen_random_uuid(),
     $1,
     $2,
     $3,
-    NOW(),
-    NOW(),
     $4,
+    NOW(),
+    NOW(),
     $5,
-    $6
+    $6,
+    $7
 )
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
+RETURNING id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 `
 
 type CreateUserParams struct {
 	FirstName      string
 	LastName       sql.NullString
 	Dob            sql.NullTime
+	Bio            sql.NullString
 	Email          string
 	Slug           string
 	HashedPassword string
@@ -67,6 +69,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.FirstName,
 		arg.LastName,
 		arg.Dob,
+		arg.Bio,
 		arg.Email,
 		arg.Slug,
 		arg.HashedPassword,
@@ -77,6 +80,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.FirstName,
 		&i.LastName,
 		&i.Dob,
+		&i.Bio,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -98,7 +102,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE email = $1
 `
@@ -111,6 +115,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.FirstName,
 		&i.LastName,
 		&i.Dob,
+		&i.Bio,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -122,7 +127,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE id = $1
 `
@@ -135,6 +140,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.FirstName,
 		&i.LastName,
 		&i.Dob,
+		&i.Bio,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -146,30 +152,26 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 }
 
 const getUserBySlug = `-- name: GetUserBySlug :one
-SELECT id, first_name, last_name, email, slug, profile_pic_url
+SELECT id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE slug = $1
 `
 
-type GetUserBySlugRow struct {
-	ID            uuid.UUID
-	FirstName     string
-	LastName      sql.NullString
-	Email         string
-	Slug          string
-	ProfilePicUrl sql.NullString
-}
-
-func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (GetUserBySlugRow, error) {
+func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserBySlug, slug)
-	var i GetUserBySlugRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.FirstName,
 		&i.LastName,
+		&i.Dob,
+		&i.Bio,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.Email,
 		&i.Slug,
 		&i.ProfilePicUrl,
+		&i.HashedPassword,
 	)
 	return i, err
 }
@@ -184,7 +186,7 @@ func (q *Queries) Reset(ctx context.Context) error {
 }
 
 const searchUsers = `-- name: SearchUsers :many
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE first_name ILIKE '%' || $1 || '%'
 OR last_name ILIKE '%' || $1 || '%'
@@ -205,6 +207,7 @@ func (q *Queries) SearchUsers(ctx context.Context, dollar_1 sql.NullString) ([]U
 			&i.FirstName,
 			&i.LastName,
 			&i.Dob,
+			&i.Bio,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
@@ -260,9 +263,9 @@ func (q *Queries) UpdateProfilePic(ctx context.Context, arg UpdateProfilePicPara
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET first_name = $2, last_name = $3, email = $4,
-updated_at = NOW()
+bio = $5, updated_at = NOW()
 WHERE id = $1
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
+RETURNING id, first_name, last_name, dob, bio, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 `
 
 type UpdateUserParams struct {
@@ -270,6 +273,7 @@ type UpdateUserParams struct {
 	FirstName string
 	LastName  sql.NullString
 	Email     string
+	Bio       sql.NullString
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -278,6 +282,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.FirstName,
 		arg.LastName,
 		arg.Email,
+		arg.Bio,
 	)
 	var i User
 	err := row.Scan(
@@ -285,6 +290,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.FirstName,
 		&i.LastName,
 		&i.Dob,
+		&i.Bio,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
