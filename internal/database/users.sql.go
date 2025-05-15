@@ -50,7 +50,7 @@ VALUES (
     $5,
     $6
 )
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 `
 
 type CreateUserParams struct {
@@ -81,6 +81,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Slug,
+		&i.ProfilePicUrl,
 		&i.HashedPassword,
 	)
 	return i, err
@@ -97,7 +98,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE email = $1
 `
@@ -114,13 +115,14 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Slug,
+		&i.ProfilePicUrl,
 		&i.HashedPassword,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE id = $1
 `
@@ -137,23 +139,25 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Slug,
+		&i.ProfilePicUrl,
 		&i.HashedPassword,
 	)
 	return i, err
 }
 
 const getUserBySlug = `-- name: GetUserBySlug :one
-SELECT id, first_name, last_name, email, slug
+SELECT id, first_name, last_name, email, slug, profile_pic_url
 FROM users
 WHERE slug = $1
 `
 
 type GetUserBySlugRow struct {
-	ID        uuid.UUID
-	FirstName string
-	LastName  sql.NullString
-	Email     string
-	Slug      string
+	ID            uuid.UUID
+	FirstName     string
+	LastName      sql.NullString
+	Email         string
+	Slug          string
+	ProfilePicUrl sql.NullString
 }
 
 func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (GetUserBySlugRow, error) {
@@ -165,6 +169,7 @@ func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (GetUserBySlug
 		&i.LastName,
 		&i.Email,
 		&i.Slug,
+		&i.ProfilePicUrl,
 	)
 	return i, err
 }
@@ -179,7 +184,7 @@ func (q *Queries) Reset(ctx context.Context) error {
 }
 
 const searchUsers = `-- name: SearchUsers :many
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 FROM users
 WHERE first_name ILIKE '%' || $1 || '%'
 OR last_name ILIKE '%' || $1 || '%'
@@ -204,6 +209,7 @@ func (q *Queries) SearchUsers(ctx context.Context, dollar_1 sql.NullString) ([]U
 			&i.UpdatedAt,
 			&i.Email,
 			&i.Slug,
+			&i.ProfilePicUrl,
 			&i.HashedPassword,
 		); err != nil {
 			return nil, err
@@ -235,12 +241,28 @@ func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) 
 	return err
 }
 
+const updateProfilePic = `-- name: UpdateProfilePic :exec
+UPDATE users
+SET profile_pic_url = $2, updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateProfilePicParams struct {
+	ID            uuid.UUID
+	ProfilePicUrl sql.NullString
+}
+
+func (q *Queries) UpdateProfilePic(ctx context.Context, arg UpdateProfilePicParams) error {
+	_, err := q.db.ExecContext(ctx, updateProfilePic, arg.ID, arg.ProfilePicUrl)
+	return err
+}
+
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET first_name = $2, last_name = $3, email = $4,
 updated_at = NOW()
 WHERE id = $1
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, hashed_password
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, slug, profile_pic_url, hashed_password
 `
 
 type UpdateUserParams struct {
@@ -267,6 +289,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Slug,
+		&i.ProfilePicUrl,
 		&i.HashedPassword,
 	)
 	return i, err

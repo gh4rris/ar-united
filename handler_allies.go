@@ -26,14 +26,15 @@ func (cfg *apiConfig) handlerUserAllies(w http.ResponseWriter, r *http.Request) 
 	allies := []User{}
 	for _, ally := range dbAllies {
 		allies = append(allies, User{
-			ID:        ally.ID,
-			FirstName: ally.FirstName,
-			LastName:  ally.LastName.String,
-			DOB:       ally.Dob.Time,
-			CreatedAt: ally.CreatedAt,
-			UpdatedAt: ally.UpdatedAt,
-			Email:     ally.Email,
-			Slug:      ally.Slug,
+			ID:            ally.ID,
+			FirstName:     ally.FirstName,
+			LastName:      ally.LastName.String,
+			DOB:           ally.Dob.Time,
+			CreatedAt:     ally.CreatedAt,
+			UpdatedAt:     ally.UpdatedAt,
+			Email:         ally.Email,
+			Slug:          ally.Slug,
+			ProfilePicURL: ally.ProfilePicUrl.String,
 		})
 	}
 
@@ -108,13 +109,15 @@ func (cfg *apiConfig) handlerGetAllyRequests(w http.ResponseWriter, r *http.Requ
 	allyRequests := []User{}
 	for _, ally := range dbAllyRequests {
 		allyRequests = append(allyRequests, User{
-			ID:        ally.ID,
-			FirstName: ally.FirstName,
-			LastName:  ally.LastName.String,
-			DOB:       ally.Dob.Time,
-			CreatedAt: ally.CreatedAt,
-			UpdatedAt: ally.UpdatedAt,
-			Email:     ally.Email,
+			ID:            ally.ID,
+			FirstName:     ally.FirstName,
+			LastName:      ally.LastName.String,
+			DOB:           ally.Dob.Time,
+			CreatedAt:     ally.CreatedAt,
+			UpdatedAt:     ally.UpdatedAt,
+			Email:         ally.Email,
+			Slug:          ally.Slug,
+			ProfilePicURL: ally.ProfilePicUrl.String,
 		})
 	}
 

@@ -5,6 +5,7 @@ export async function renderEditProfile(activist) {
   const user = JSON.parse(localStorage.user);
   if (user.id != activist.id) {
     window.location.replace(`/activists/${user.slug}`);
+    return
   }
   document.getElementById('app').innerHTML = `
   <form id="edit-profile-form">

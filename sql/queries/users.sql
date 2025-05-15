@@ -30,6 +30,11 @@ UPDATE users
 SET hashed_password = $2, updated_at = NOW()
 WHERE id = $1;
 
+-- name: UpdateProfilePic :exec
+UPDATE users
+SET profile_pic_url = $2, updated_at = NOW()
+WHERE id = $1;
+
 -- name: SearchUsers :many
 SELECT *
 FROM users
@@ -43,7 +48,7 @@ FROM users
 WHERE slug = $1;
 
 -- name: GetUserBySlug :one
-SELECT id, first_name, last_name, email, slug
+SELECT id, first_name, last_name, email, slug, profile_pic_url
 FROM users
 WHERE slug = $1;
 

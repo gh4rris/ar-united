@@ -8,6 +8,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL,
     email TEXT NOT NULL UNIQUE,
     slug TEXT NOT NULL UNIQUE,
+    profile_pic_url TEXT,
     hashed_password TEXT NOT NULL
 );
 

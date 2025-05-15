@@ -13,14 +13,15 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `json:"id"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	DOB       time.Time `json:"dob"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Email     string    `json:"email"`
-	Slug      string    `json:"slug"`
+	ID            uuid.UUID `json:"id"`
+	FirstName     string    `json:"first_name"`
+	LastName      string    `json:"last_name"`
+	DOB           time.Time `json:"dob"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	Email         string    `json:"email"`
+	Slug          string    `json:"slug"`
+	ProfilePicURL string    `json:"profile_pic_url"`
 }
 
 type Displayable interface {
@@ -88,14 +89,15 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 
 	respondWithJson(w, http.StatusCreated, response{
 		User: User{
-			ID:        user.ID,
-			FirstName: user.FirstName,
-			LastName:  user.LastName.String,
-			DOB:       user.Dob.Time,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-			Email:     user.Email,
-			Slug:      slug,
+			ID:            user.ID,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName.String,
+			DOB:           user.Dob.Time,
+			CreatedAt:     user.CreatedAt,
+			UpdatedAt:     user.UpdatedAt,
+			Email:         user.Email,
+			Slug:          slug,
+			ProfilePicURL: user.ProfilePicUrl.String,
 		},
 	})
 }
@@ -139,14 +141,15 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 
 	respondWithJson(w, http.StatusOK, response{
 		User: User{
-			ID:        userID,
-			FirstName: user.FirstName,
-			LastName:  user.LastName.String,
-			DOB:       user.Dob.Time,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-			Email:     user.Email,
-			Slug:      user.Slug,
+			ID:            userID,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName.String,
+			DOB:           user.Dob.Time,
+			CreatedAt:     user.CreatedAt,
+			UpdatedAt:     user.UpdatedAt,
+			Email:         user.Email,
+			Slug:          user.Slug,
+			ProfilePicURL: user.ProfilePicUrl.String,
 		},
 	})
 }
@@ -202,11 +205,12 @@ func (cfg *apiConfig) handlerGetUserBySlug(w http.ResponseWriter, r *http.Reques
 
 	respondWithJson(w, http.StatusOK, response{
 		User: User{
-			ID:        user.ID,
-			FirstName: user.FirstName,
-			LastName:  user.LastName.String,
-			Email:     user.Email,
-			Slug:      user.Slug,
+			ID:            user.ID,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName.String,
+			Email:         user.Email,
+			Slug:          user.Slug,
+			ProfilePicURL: user.ProfilePicUrl.String,
 		},
 	})
 }

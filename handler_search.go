@@ -23,14 +23,15 @@ func (cfg *apiConfig) handlerSearch(w http.ResponseWriter, r *http.Request) {
 		userResults := []User{}
 		for _, user := range dbUserResults {
 			userResults = append(userResults, User{
-				ID:        user.ID,
-				FirstName: user.FirstName,
-				LastName:  user.LastName.String,
-				DOB:       user.Dob.Time,
-				CreatedAt: user.CreatedAt,
-				UpdatedAt: user.UpdatedAt,
-				Email:     user.Email,
-				Slug:      user.Slug,
+				ID:            user.ID,
+				FirstName:     user.FirstName,
+				LastName:      user.LastName.String,
+				DOB:           user.Dob.Time,
+				CreatedAt:     user.CreatedAt,
+				UpdatedAt:     user.UpdatedAt,
+				Email:         user.Email,
+				Slug:          user.Slug,
+				ProfilePicURL: user.ProfilePicUrl.String,
 			})
 		}
 
@@ -116,14 +117,15 @@ func (cfg *apiConfig) handlerSearch(w http.ResponseWriter, r *http.Request) {
 		allResults := []Displayable{}
 		for _, user := range dbUserResults {
 			allResults = append(allResults, User{
-				ID:        user.ID,
-				FirstName: user.FirstName,
-				LastName:  user.LastName.String,
-				DOB:       user.Dob.Time,
-				CreatedAt: user.CreatedAt,
-				UpdatedAt: user.UpdatedAt,
-				Email:     user.Email,
-				Slug:      user.Slug,
+				ID:            user.ID,
+				FirstName:     user.FirstName,
+				LastName:      user.LastName.String,
+				DOB:           user.Dob.Time,
+				CreatedAt:     user.CreatedAt,
+				UpdatedAt:     user.UpdatedAt,
+				Email:         user.Email,
+				Slug:          user.Slug,
+				ProfilePicURL: user.ProfilePicUrl.String,
 			})
 		}
 		for _, group := range dbGroupResults {

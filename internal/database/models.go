@@ -68,6 +68,7 @@ type User struct {
 	UpdatedAt      time.Time
 	Email          string
 	Slug           string
+	ProfilePicUrl  sql.NullString
 	HashedPassword string
 }
 

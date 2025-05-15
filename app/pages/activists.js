@@ -7,7 +7,11 @@ export async function renderActivist(activist) {
     if (user.id === activist.id) {
         document.getElementById('app').innerHTML = `
     <div id="profile-box">
-        <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
+        <img id="profile-pic-img" src="${activist.profile_pic_url}" alt="profile-pic" width="200"><br>
+        <button id="upload-pic-btn">Upload Profile Picture</button>
+        <div id="name-box">
+            <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
+        </div>
         <p id="profile-email">${activist.email}</p>
         <p id="profile-description">I am an animal rights activist</p>
         <button id="edit-btn">Edit Profile</button>
@@ -27,6 +31,7 @@ export async function renderActivist(activist) {
     } else {
         document.getElementById('app').innerHTML = `
 <div id="profile-box">
+        <img id="profile-pic-img" src="${activist.profile_pic_url}" alt="profile-pic" width="200"><br>
         <div id="name-box">
             <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
             <button id="ally-btn">Add Ally</button>
@@ -46,8 +51,10 @@ export async function renderActivist(activist) {
 }
 
 export async function activistEvents(activist) {
+    const profilePic = document.getElementById('profile-pic-img');
     const postBtn = document.getElementById('post-btn');
     const editBtn = document.getElementById('edit-btn');
+    const uploadPicBtn = document.getElementById('upload-pic-btn');
     postBtn.addEventListener('click', async (e) => {
         const validToken = await validateToken();
         if (!validToken) {
@@ -61,6 +68,12 @@ export async function activistEvents(activist) {
     });
     editBtn.addEventListener('click', () => {
         window.location.assign(`/activists/${activist.slug}/edit_profile`);
+    })
+    if (profilePic.src != window.location) {
+        uploadPicBtn.innerText = 'Change Profile Picture';
+    }
+    uploadPicBtn.addEventListener('click', () => {
+        window.location.assign(`/activists/${activist.slug}/upload_profile_pic`);
     })
     await displayPosts(activist, 'users');
 }

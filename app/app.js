@@ -3,6 +3,7 @@ import { renderHome } from './pages/home.js'
 import { renderCreateAccount } from './pages/create_account.js'
 import { renderLogin } from './pages/login.js'
 import { renderEditProfile } from './pages/edit_profile.js'
+import { renderUploadProfilePic } from './pages/upload_profile_pic.js';
 import { renderActivist } from './pages/activists.js'
 import { renderAllies } from './pages/allies.js'
 import { renderCreateGroup } from './pages/create_group.js'
@@ -22,6 +23,7 @@ const routes = [
     { pattern: /^\/login$/, handler: () => renderLogin(), private: false },
     { pattern: /^\/(activists)\/([\w-]+)$/, handler: (activist) => renderActivist(activist), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/edit_profile$/, handler: (activist) => renderEditProfile(activist), private: true },
+    { pattern: /^\/(activists)\/([\w-]+)\/upload_profile_pic$/, handler: (activist) => renderUploadProfilePic(activist), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/allies$/, handler: (activist) => renderAllies(activist), private: true },
     { pattern: /^\/groups\/create_group$/, handler: () => renderCreateGroup(), private: true },
     { pattern: /^\/(activists)\/([\w-]+)\/groups$/, handler: (activist) => renderUserGroups(activist), private: true },
@@ -36,6 +38,7 @@ const routes = [
 
 const app = document.getElementById('app');
 const profileLink = document.getElementById('profile-link');
+const createGroupLink = document.getElementById('create-group-link');
 const logout = document.getElementById('logout');
 const searchBtn = document.getElementById('search-btn');
 const searchInput = document.getElementById('search-input');
@@ -80,6 +83,7 @@ function removeElements() {
     searchBtn.remove();
     searchSelect.remove();
     profileLink.remove();
+    createGroupLink.remove();
     logout.remove();
 }
 

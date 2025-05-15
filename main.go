@@ -14,7 +14,10 @@ import (
 )
 
 type apiConfig struct {
+	port           string
 	fileserverHits atomic.Int32
+	filepathRoot   string
+	assetsRoot     string
 	db             *database.Queries
 	platform       string
 	jwtSecret      string
@@ -26,6 +29,10 @@ func main() {
 	filepathRoot := os.Getenv("FILEPATH_ROOT")
 	if filepathRoot == "" {
 		log.Fatal("FILEPATH_ROOT environment variable is not set")
+	}
+	assetsRoot := os.Getenv("ASSETS_ROOT")
+	if assetsRoot == "" {
+		log.Fatal("ASSETS_ROOT environment variable is not set")
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -51,10 +58,18 @@ func main() {
 	dbQueries := database.New(db)
 
 	apiCfg := apiConfig{
+		port:           port,
 		fileserverHits: atomic.Int32{},
+		filepathRoot:   filepathRoot,
+		assetsRoot:     assetsRoot,
 		db:             dbQueries,
 		platform:       platform,
 		jwtSecret:      jwtSecret,
+	}
+
+	err = apiCfg.ensureAssetsDir()
+	if err != nil {
+		log.Fatalf("Couldn't create assets directory: %v", err)
 	}
 
 	mux := http.NewServeMux()
@@ -63,6 +78,9 @@ func main() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, filepath.Join(filepathRoot, "index.html"))
 	})
+
+	assetsHandler := http.StripPrefix("/assets", http.FileServer(http.Dir(assetsRoot)))
+	mux.Handle("/assets/", cacheMiddleware(assetsHandler))
 
 	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 
@@ -113,6 +131,8 @@ func main() {
 	mux.HandleFunc("GET /api/attenders/{eventID}", apiCfg.handlerIsGoing)
 	mux.HandleFunc("POST /api/attenders/{eventID}", apiCfg.handlerGoingEvent)
 	mux.HandleFunc("DELETE /api/attenders/{eventID}", apiCfg.handlerNotGoingEvent)
+
+	mux.HandleFunc("POST /api/profile_pic", apiCfg.handlerProfilePicUpload)
 
 	mux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)
