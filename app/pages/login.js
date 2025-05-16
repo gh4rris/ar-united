@@ -1,21 +1,23 @@
 import { API_BASE_URL } from "../config.js";
 
 export function renderLogin() {
-    document.getElementById('app').innerHTML = `
-    <p>Enter your email and password</p>
+  document.getElementById('app').innerHTML = `
+  <div id="login-box">
+    <p id="login-p">Enter your email and password</p>
     <form id="login-form">
-        <div id="email-login-box">
-          <label for="email-input-login">Email:</label>
-          <input type="email" name="email" id="email-input-login" placeholder="example@email.com" required />
+        <div id="email-login-box" class="input-box">
+          <label for="email-input-login" class="login-label">Email:</label>
+          <input type="email" name="email" id="email-input-login" class="input" placeholder="example@email.com" required />
         </div>
-        <div id="password-login-box">
-          <label for="password-input-login">Password:</label>
-          <input type="password" name="password" id="password-input-login" required />
+        <div id="password-login-box" class="input-box">
+          <label for="password-input-login" class="login-label">Password:</label>
+          <input type="password" name="password" id="password-input-login" class="input" required />
         </div>
-        <button type="submit" id="submit-btn-login">Submit</button>
+        <button type="submit" id="submit-btn-login" class="btn">Submit</button>
       </form>
-      <a href="/">Back</a>`;
-      loginEvents();
+      <a href="/">Back</a>
+    </login>`;
+    loginEvents();
 }
 
 export function loginEvents() {

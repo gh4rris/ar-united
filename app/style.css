@@ -1,3 +1,92 @@
 * {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Roboto Condensed", sans-serif;
+    margin: 0;
+}
+
+body {
+    background-color: rgb(229, 240, 239);
+}
+
+/* home */
+#home-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 5%;
+}
+
+h1 {
+    font-family: "Bowlby One SC", sans-serif;
+    color: rgb(28, 73, 26);
+    font-weight: 600;
+    font-size: 3.5rem;
+    text-shadow: 2px 3px 4px rgba(0, 0, 0, 0.699);
+}
+
+#home-h2, #home-login-btn {
+    margin-bottom: .5em;
+}
+
+#home-p {
+    margin-bottom: 1em;
+}
+
+.btn {
+    color: rgb(28, 73, 26);
+    border: 2px solid rgb(28, 73, 26);
+    background-color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 15px;
+    width: 150px;
+    height: 30px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn:active {
+    color: white;
+    border: 2px solid white;
+    background-color: rgb(28, 73, 26);
+}
+
+/* login */
+#login-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5%;
+}
+
+#login-p {
+    font-size: 1.1rem;
+    margin-bottom: 1em;
+}
+
+#login-form {
+    width: 260px;
+}
+
+.input-box {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: .75em;
+}
+
+.login-label {
+    align-self: center;
+}
+
+.input {
+    height: 20px;
+    width: 170px;
+    border-radius: 4px;
+}
+
+#submit-btn-login {
+    margin: 1em auto 1em auto;
+    display: block;
 }

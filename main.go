@@ -8,7 +8,9 @@ import (
 	"path/filepath"
 	"sync/atomic"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/gh4rris/ar-united/internal/database"
+	"github.com/jaschaephraim/lrserver"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -72,6 +74,35 @@ func main() {
 		log.Fatalf("Couldn't create assets directory: %v", err)
 	}
 
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer watcher.Close()
+
+	err = watcher.Add("./app")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = watcher.Add("./app/pages")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	lr := lrserver.New(lrserver.DefaultName, lrserver.DefaultPort)
+	go lr.ListenAndServe()
+
+	go func() {
+		for {
+			select {
+			case event := <-watcher.Events:
+				lr.Reload(event.Name)
+			case err := <-watcher.Errors:
+				log.Println(err)
+			}
+		}
+	}()
+
 	mux := http.NewServeMux()
 	appHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
 	mux.Handle("/app/", apiCfg.middlewareMetricsInc(appHandler))
@@ -80,7 +111,7 @@ func main() {
 	})
 
 	assetsHandler := http.StripPrefix("/assets", http.FileServer(http.Dir(assetsRoot)))
-	mux.Handle("/assets/", cacheMiddleware(assetsHandler))
+	mux.Handle("/assets/", noCacheMiddleware(assetsHandler))
 
 	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 
