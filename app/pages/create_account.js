@@ -3,35 +3,37 @@ import { userLogin } from "./login.js";
 
 export function renderCreateAccount() {
     document.getElementById('app').innerHTML = `
-    <p>Create an account and join the network of animal rights activists today!</p>
-    <form id="create-acc-form">
-        <div id="fname-create-box">
-          <label for="fname-input-create">First name:</label>
-          <input type="text" name="first_name" id="fname-input-create" required >
-        </div>
-        <div id="lname-create-box">
-          <label for="lname-input-create">Last name:</label>
-          <input type="text" name="last_name" id="lname-input-create">
-        </div>
-        <div id="dob-create-box">
-          <label for="dob-input-create">Date of birth:</label>
-          <input type="date" name="dob" id="dob-input-create" >
-        </div>
-        <div id="email-create-box">
-          <label for="email-input-create">Email:</label>
-          <input type="email" name="email" id="email-input-create" placeholder="example@email.com" required />
-        </div>
-        <div id="password-create-box">
-          <label for="password-input-create">Password:</label>
-          <input type="password" name="password" id="password-input-create" required />
-        </div>
-        <div id="re-password-create-box">
-          <label for="re-password-input-create">Re-enter password:</label>
-          <input type="password" name="re_password" id="re-password-input-create" required />
-        </div>
-        <button type="submit" id="submit-btn-create">Create Account</button>
+    <div id="create-acc-box">
+      <p id="create-acc-p">Create an account and join the network of animal rights activists today!</p>
+      <form id="create-acc-form">
+          <div id="fname-create-box" class="input-box">
+            <label for="fname-input-create" class="login-label">First name:</label>
+            <input type="text" name="first_name" id="fname-input-create" class="input" required >
+          </div>
+          <div id="lname-create-box" class="input-box">
+            <label for="lname-input-create" class="login-label">Last name:</label>
+            <input type="text" name="last_name" id="lname-input-create" class="input">
+          </div>
+          <div id="dob-create-box" class="input-box">
+            <label for="dob-input-create" class="login-label">Date of birth:</label>
+            <input type="date" name="dob" id="dob-input-create" class="input">
+          </div>
+          <div id="email-create-box" class="input-box">
+            <label for="email-input-create" class="login-label">Email:</label>
+            <input type="email" name="email" id="email-input-create" placeholder="example@email.com" class="input" required />
+          </div>
+          <div id="password-create-box" class="input-box">
+            <label for="password-input-create" class="login-label">Password:</label>
+            <input type="password" name="password" id="password-input-create" class="input" required />
+          </div>
+          <div id="re-password-create-box" class="input-box">
+            <label for="re-password-input-create" class="login-label">Re-enter password:</label>
+            <input type="password" name="re_password" id="re-password-input-create" class="input" required />
+          </div>
+          <button type="submit" id="submit-btn-create" class="btn">Create Account</button>
+          <a href="/" class="back">Back</a>
       </form>
-      <a href="/">Back</a>`
+    </div>`
       createAccountEvents();
 }
 
@@ -48,6 +50,11 @@ export function createAccountEvents() {
         delete(data.re_password);
         data.dob += 'T00:00:00Z';
         const user = await newAccount(data);
+        if (!user) {
+          console.error('field error');
+          return
+        }
+        console.log(user);
         const loginData = {'email': user.email, 'password': data.password}
         await userLogin(loginData);
     })

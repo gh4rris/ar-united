@@ -18,7 +18,7 @@ export function renderGroup(group) {
             <a id="group-events" href="/groups/${group.slug}/events">Events</a>
         </div>
         <div id="new-post-box">
-            <input type="text" name="post" id="post-input" >
+            <input type="text" name="post" id="post-input" class="input">
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;

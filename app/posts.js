@@ -24,6 +24,7 @@ function insertPost(id, body) {
     const postsBox = document.getElementById('posts-box');
     const newPost = document.createElement('div');
     const paragraph = document.createElement('p');
+    newPost.classList.add('post');
     newPost.append(paragraph);
     newPost.setAttribute('id', id);
     paragraph.innerText = body;

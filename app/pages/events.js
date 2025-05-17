@@ -22,7 +22,7 @@ export async function renderEvent(event) {
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
         <div id="new-post-box">
-            <input type="text" name="post" id="post-input" >
+            <input type="text" name="post" id="post-input" class="input">
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;

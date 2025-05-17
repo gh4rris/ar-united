@@ -70,14 +70,16 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 
 	respondWithJson(w, http.StatusOK, response{
 		User: User{
-			ID:        user.ID,
-			FirstName: user.FirstName,
-			LastName:  user.LastName.String,
-			DOB:       user.Dob.Time,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-			Email:     user.Email,
-			Slug:      user.Slug,
+			ID:            user.ID,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName.String,
+			DOB:           user.Dob.Time,
+			CreatedAt:     user.CreatedAt,
+			UpdatedAt:     user.UpdatedAt,
+			Email:         user.Email,
+			Bio:           user.Bio.String,
+			Slug:          user.Slug,
+			ProfilePicURL: user.ProfilePicUrl.String,
 		},
 		Token: token,
 	})

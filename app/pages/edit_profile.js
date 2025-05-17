@@ -8,25 +8,28 @@ export async function renderEditProfile(activist) {
     return
   }
   document.getElementById('app').innerHTML = `
-  <form id="edit-profile-form">
-      <div id="fname-edit-box">
-        <label for="fname-input-edit">First name:</label>
-        <input type="text" name="first_name" id="fname-input-edit" value="${user.first_name}" required />
-      </div>
-      <div id="lname-edit-box">
-        <label for="lname-input-edit">Last name:</label>
-        <input type="text" name="last_name" id="lname-input-edit" value="${user.last_name}" />
-      </div>
-      <div id="email-edit-box">
-        <label for="email-input-edit">Email:</label>
-        <input type="email" name="email" id="email-input-edit" value="${user.email}" required />
-      </div>
-      <div id="bio-edit-box">
-          <label for="bio-input-edit">Bio:</label>
-          <textarea name="bio" id="bio-input-edit" rows="5" cols="33" spellcheck="true">${user.bio}</textarea>
+  <div id="edit-profile-box">
+    <form id="edit-profile-form">
+        <div id="fname-edit-box" class="input-box">
+          <label for="fname-input-edit" class="label">First name:</label>
+          <input type="text" name="first_name" id="fname-input-edit" value="${user.first_name}" class="input" required />
         </div>
-      <button type="submit">Save changes</button>
-    </form>`
+        <div id="lname-edit-box" class="input-box">
+          <label for="lname-input-edit" class="label">Last name:</label>
+          <input type="text" name="last_name" id="lname-input-edit" value="${user.last_name}" class="input"/>
+        </div>
+        <div id="email-edit-box" class="input-box">
+          <label for="email-input-edit" class="label">Email:</label>
+          <input type="email" name="email" id="email-input-edit" value="${user.email}" class="input" required />
+        </div>
+        <div id="bio-edit-box">
+            <label for="bio-input-edit">Bio:</label>
+            <textarea name="bio" id="bio-input-edit" rows="6" cols="35" spellcheck="true">${user.bio}</textarea>
+          </div>
+        <button id="save-edit-btn" type="submit">Save changes</button>
+      </form>
+      <a href="/activists/${activist.slug}" class="back">Back</a>
+    </div>`;
     editProfileEvents(user);
 }
 

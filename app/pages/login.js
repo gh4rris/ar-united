@@ -6,16 +6,16 @@ export function renderLogin() {
     <p id="login-p">Enter your email and password</p>
     <form id="login-form">
         <div id="email-login-box" class="input-box">
-          <label for="email-input-login" class="login-label">Email:</label>
+          <label for="email-input-login" class="label">Email:</label>
           <input type="email" name="email" id="email-input-login" class="input" placeholder="example@email.com" required />
         </div>
         <div id="password-login-box" class="input-box">
-          <label for="password-input-login" class="login-label">Password:</label>
+          <label for="password-input-login" class="label">Password:</label>
           <input type="password" name="password" id="password-input-login" class="input" required />
         </div>
         <button type="submit" id="submit-btn-login" class="btn">Submit</button>
       </form>
-      <a href="/">Back</a>
+      <a href="/" class="back">Back</a>
     </login>`;
     loginEvents();
 }
