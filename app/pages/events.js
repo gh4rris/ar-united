@@ -26,7 +26,7 @@ export async function renderEvent(event) {
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;
-      eventEvents(event);
+      eventEvents(event, user.id);
     } else {
         document.getElementById('app').innerHTML = `
     <div id="event-box">
@@ -43,11 +43,11 @@ export async function renderEvent(event) {
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
       <div id="posts-box"></div>`;
-      goingButtons(event);
+      goingButtons(event, user.id);
     }
 }
 
-async function eventEvents(event) {
+async function eventEvents(event, userID) {
     const postBtn = document.getElementById('post-btn');
     postBtn.addEventListener('click', async (e) => {
         const validToken = await validateToken();
@@ -60,10 +60,10 @@ async function eventEvents(event) {
         await newPost(data, `/events/${event.id}`);
         e.target.previousElementSibling.value = '';
     });
-    await goingButtons(event);
+    await goingButtons(event, userID);
 }
 
-async function goingButtons(event) {
+async function goingButtons(event, userID) {
     const goingBtn = document.getElementById('going-btn');
     const notGoingBtn = document.getElementById('not-going-btn');
     const going = await isGoing(event.id);
@@ -82,7 +82,7 @@ async function goingButtons(event) {
             await removeGoing(event.id, goingBtn);
         }
     });
-    await displayPosts(event, 'events');
+    await displayPosts(event, 'events', userID);
 }
 
 async function getGroup(groupID) {

@@ -43,11 +43,8 @@ func (cfg *apiConfig) handlerCreateUserPost(w http.ResponseWriter, r *http.Reque
 	}
 
 	post, err := cfg.db.CreateUserPost(r.Context(), database.CreateUserPostParams{
-		Body: params.Body,
-		UserID: uuid.NullUUID{
-			UUID:  userID,
-			Valid: userID != uuid.Nil,
-		},
+		Body:   params.Body,
+		UserID: userID,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create post", err)
@@ -60,7 +57,7 @@ func (cfg *apiConfig) handlerCreateUserPost(w http.ResponseWriter, r *http.Reque
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.CreatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		},
@@ -76,7 +73,7 @@ func (cfg *apiConfig) handlerCreateGroupPost(w http.ResponseWriter, r *http.Requ
 		Post Post `json:"post"`
 	}
 
-	_, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
@@ -97,7 +94,8 @@ func (cfg *apiConfig) handlerCreateGroupPost(w http.ResponseWriter, r *http.Requ
 	}
 
 	post, err := cfg.db.CreateGroupPost(r.Context(), database.CreateGroupPostParams{
-		Body: params.Body,
+		Body:   params.Body,
+		UserID: userID,
 		GroupID: uuid.NullUUID{
 			UUID:  groupID,
 			Valid: groupID != uuid.Nil,
@@ -114,7 +112,7 @@ func (cfg *apiConfig) handlerCreateGroupPost(w http.ResponseWriter, r *http.Requ
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.CreatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		},
@@ -130,7 +128,7 @@ func (cfg *apiConfig) handlerCreateEventPost(w http.ResponseWriter, r *http.Requ
 		Post Post `json:"post"`
 	}
 
-	_, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, msg, err)
 		return
@@ -151,7 +149,8 @@ func (cfg *apiConfig) handlerCreateEventPost(w http.ResponseWriter, r *http.Requ
 	}
 
 	post, err := cfg.db.CreateEventPost(r.Context(), database.CreateEventPostParams{
-		Body: params.Body,
+		Body:   params.Body,
+		UserID: userID,
 		EventID: uuid.NullUUID{
 			UUID:  eventID,
 			Valid: eventID != uuid.Nil,
@@ -168,7 +167,7 @@ func (cfg *apiConfig) handlerCreateEventPost(w http.ResponseWriter, r *http.Requ
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.CreatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		},
@@ -189,7 +188,7 @@ func (cfg *apiConfig) handlerGetPosts(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		})
@@ -217,7 +216,7 @@ func (cfg *apiConfig) handlerGetPost(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: dbPost.CreatedAt,
 		UpdatedAt: dbPost.UpdatedAt,
 		Body:      dbPost.Body,
-		UserID:    dbPost.UserID.UUID,
+		UserID:    dbPost.UserID,
 		GroupID:   dbPost.GroupID.UUID,
 		EventID:   dbPost.EventID.UUID,
 	})
@@ -231,10 +230,7 @@ func (cfg *apiConfig) handlerUserPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbPosts, err := cfg.db.GetUserPosts(r.Context(), uuid.NullUUID{
-		UUID:  userID,
-		Valid: userID != uuid.Nil,
-	})
+	dbPosts, err := cfg.db.GetUserPosts(r.Context(), userID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't retrieve posts", err)
 		return
@@ -247,7 +243,7 @@ func (cfg *apiConfig) handlerUserPosts(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		})
@@ -280,7 +276,7 @@ func (cfg *apiConfig) handlerGroupPosts(w http.ResponseWriter, r *http.Request) 
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		})
@@ -313,7 +309,7 @@ func (cfg *apiConfig) handlerEventPosts(w http.ResponseWriter, r *http.Request) 
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 			Body:      post.Body,
-			UserID:    post.UserID.UUID,
+			UserID:    post.UserID,
 			GroupID:   post.GroupID.UUID,
 			EventID:   post.EventID.UUID,
 		})
@@ -342,7 +338,7 @@ func (cfg *apiConfig) handlerDeletePost(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if post.UserID.UUID != userID {
+	if post.UserID != userID {
 		respondWithError(w, http.StatusForbidden, "You can't delete this post", err)
 		return
 	}

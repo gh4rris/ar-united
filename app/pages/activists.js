@@ -31,7 +31,7 @@ export async function renderActivist(activist) {
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;
-      await activistEvents(activist);
+      await activistEvents(user, activist);
     } else {
         document.getElementById('app').innerHTML = `
 <div id="profile-box">
@@ -58,7 +58,7 @@ export async function renderActivist(activist) {
     }
 }
 
-export async function activistEvents(activist) {
+export async function activistEvents(user, activist) {
     const profilePic = document.getElementById('profile-pic-img');
     const postBtn = document.getElementById('post-btn');
     const editBtn = document.getElementById('edit-btn');
@@ -83,7 +83,7 @@ export async function activistEvents(activist) {
     uploadPicBtn.addEventListener('click', () => {
         window.location.assign(`/activists/${activist.slug}/upload_profile_pic`);
     })
-    await displayPosts(activist, 'users');
+    await displayPosts(activist, 'users', user.id);
 }
 
 
@@ -111,7 +111,7 @@ async function nonUserPage(user, activist) {
             allyBtn.disabled = true;
         });
     }
-    await displayPosts(activist, 'users');
+    await displayPosts(activist, 'users', user.id);
 }
 
 async function isAlly(activistID) {

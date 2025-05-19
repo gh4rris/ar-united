@@ -12,24 +12,26 @@ import (
 )
 
 const createEventPost = `-- name: CreateEventPost :one
-INSERT INTO posts(id, created_at, updated_at, body, event_id)
+INSERT INTO posts(id, created_at, updated_at, body, user_id, event_id)
 VALUES (
     gen_random_uuid(),
     NOW(),
     NOW(),
     $1,
-    $2
+    $2,
+    $3
 )
 RETURNING id, created_at, updated_at, body, user_id, group_id, event_id
 `
 
 type CreateEventPostParams struct {
 	Body    string
+	UserID  uuid.UUID
 	EventID uuid.NullUUID
 }
 
 func (q *Queries) CreateEventPost(ctx context.Context, arg CreateEventPostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, createEventPost, arg.Body, arg.EventID)
+	row := q.db.QueryRowContext(ctx, createEventPost, arg.Body, arg.UserID, arg.EventID)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -44,24 +46,26 @@ func (q *Queries) CreateEventPost(ctx context.Context, arg CreateEventPostParams
 }
 
 const createGroupPost = `-- name: CreateGroupPost :one
-INSERT INTO posts(id, created_at, updated_at, body, group_id)
+INSERT INTO posts(id, created_at, updated_at, body, user_id, group_id)
 VALUES (
     gen_random_uuid(),
     NOW(),
     NOW(),
     $1,
-    $2
+    $2,
+    $3
 )
 RETURNING id, created_at, updated_at, body, user_id, group_id, event_id
 `
 
 type CreateGroupPostParams struct {
 	Body    string
+	UserID  uuid.UUID
 	GroupID uuid.NullUUID
 }
 
 func (q *Queries) CreateGroupPost(ctx context.Context, arg CreateGroupPostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, createGroupPost, arg.Body, arg.GroupID)
+	row := q.db.QueryRowContext(ctx, createGroupPost, arg.Body, arg.UserID, arg.GroupID)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -89,7 +93,7 @@ RETURNING id, created_at, updated_at, body, user_id, group_id, event_id
 
 type CreateUserPostParams struct {
 	Body   string
-	UserID uuid.NullUUID
+	UserID uuid.UUID
 }
 
 func (q *Queries) CreateUserPost(ctx context.Context, arg CreateUserPostParams) (Post, error) {
@@ -255,10 +259,11 @@ const getUserPosts = `-- name: GetUserPosts :many
 SELECT id, created_at, updated_at, body, user_id, group_id, event_id
 FROM posts
 WHERE user_id = $1
+AND group_id IS NULL AND event_id IS NULL
 ORDER BY created_at DESC
 `
 
-func (q *Queries) GetUserPosts(ctx context.Context, userID uuid.NullUUID) ([]Post, error) {
+func (q *Queries) GetUserPosts(ctx context.Context, userID uuid.UUID) ([]Post, error) {
 	rows, err := q.db.QueryContext(ctx, getUserPosts, userID)
 	if err != nil {
 		return nil, err

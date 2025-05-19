@@ -225,6 +225,7 @@ nav {
 }
 
 .post {
+    display: flex;
     background-color: white;
     border: 2px solid rgb(28, 73, 26);
     border-radius: 5px;
@@ -233,11 +234,20 @@ nav {
     box-shadow: 1px -1px 4px rgba(0, 0, 0, 0.336);
     width: 20em;
     min-height: 25px;
+    padding: 4px;
 }
 
 .post p {
-    margin: 2px 0;
-    text-align: center;
+    align-self: center;
+    margin: 0 auto;
+}
+
+.fa-xmark {
+    align-self: center;
+}
+
+.fa-xmark:hover {
+    cursor: pointer;
 }
 
 /* edit_profile */

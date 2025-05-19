@@ -22,7 +22,7 @@ export function renderGroup(group) {
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;
-      groupEvents(group);
+      groupEvents(user, group);
     } else {
         document.getElementById('app').innerHTML = `
 <div id="group-box">
@@ -41,7 +41,7 @@ export function renderGroup(group) {
 }
 
 
-export async function groupEvents(group) {
+export async function groupEvents(user, group) {
     const eventBtn = document.getElementById('create-event-btn');
     const postBtn = document.getElementById('post-btn');
     eventBtn.addEventListener('click', () => {
@@ -58,7 +58,7 @@ export async function groupEvents(group) {
         await newPost(data, `/groups/${group.id}`);
         e.target.previousElementSibling.value = '';
     });
-    await displayPosts(group, 'groups');
+    await displayPosts(group, 'groups', user.id);
 }
 
 async function nonAdminPage(user, group) {
@@ -73,7 +73,7 @@ async function nonAdminPage(user, group) {
         memberBtn.innerText = 'Member';
         memberBtn.disabled = true;
     });
-    await displayPosts(group, 'groups');
+    await displayPosts(group, 'groups', user.id);
 }
 
 async function isMember(userID, groupID) {

@@ -10,24 +10,26 @@ VALUES (
 RETURNING *;
 
 -- name: CreateGroupPost :one
-INSERT INTO posts(id, created_at, updated_at, body, group_id)
+INSERT INTO posts(id, created_at, updated_at, body, user_id, group_id)
 VALUES (
     gen_random_uuid(),
     NOW(),
     NOW(),
     $1,
-    $2
+    $2,
+    $3
 )
 RETURNING *;
 
 -- name: CreateEventPost :one
-INSERT INTO posts(id, created_at, updated_at, body, event_id)
+INSERT INTO posts(id, created_at, updated_at, body, user_id, event_id)
 VALUES (
     gen_random_uuid(),
     NOW(),
     NOW(),
     $1,
-    $2
+    $2,
+    $3
 )
 RETURNING *;
 
@@ -45,6 +47,7 @@ WHERE id = $1;
 SELECT *
 FROM posts
 WHERE user_id = $1
+AND group_id IS NULL AND event_id IS NULL
 ORDER BY created_at DESC;
 
 -- name: GetGroupPosts :many
