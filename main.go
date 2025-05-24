@@ -20,6 +20,7 @@ type apiConfig struct {
 	fileserverHits atomic.Int32
 	filepathRoot   string
 	assetsRoot     string
+	migrationsRoot string
 	db             *database.Queries
 	platform       string
 	jwtSecret      string
@@ -35,6 +36,10 @@ func main() {
 	assetsRoot := os.Getenv("ASSETS_ROOT")
 	if assetsRoot == "" {
 		log.Fatal("ASSETS_ROOT environment variable is not set")
+	}
+	migrationsRoot := os.Getenv("MIGRATIONS_ROOT")
+	if migrationsRoot == "" {
+		log.Fatal("MIGRATIONS_ROOT environment variable is not set")
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -64,6 +69,7 @@ func main() {
 		fileserverHits: atomic.Int32{},
 		filepathRoot:   filepathRoot,
 		assetsRoot:     assetsRoot,
+		migrationsRoot: migrationsRoot,
 		db:             dbQueries,
 		platform:       platform,
 		jwtSecret:      jwtSecret,
@@ -72,6 +78,11 @@ func main() {
 	err = apiCfg.ensureAssetsDir()
 	if err != nil {
 		log.Fatalf("Couldn't create assets directory: %v", err)
+	}
+
+	err = apiCfg.runMigrations(db)
+	if err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
 	watcher, err := fsnotify.NewWatcher()
