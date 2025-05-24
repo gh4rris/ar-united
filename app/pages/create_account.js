@@ -54,7 +54,6 @@ export function createAccountEvents() {
           console.error('field error');
           return
         }
-        console.log(user);
         const loginData = {'email': user.email, 'password': data.password}
         await userLogin(loginData);
     })

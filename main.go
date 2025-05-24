@@ -18,6 +18,7 @@ import (
 type apiConfig struct {
 	port           string
 	fileserverHits atomic.Int32
+	apiBaseURL     string
 	filepathRoot   string
 	assetsRoot     string
 	migrationsRoot string
@@ -28,6 +29,11 @@ type apiConfig struct {
 
 func main() {
 	godotenv.Load(".env")
+
+	apiBaseURL := os.Getenv("API_BASE_URL")
+	if apiBaseURL == "" {
+		log.Fatal("API_BASE_URL environment variable is not set")
+	}
 
 	filepathRoot := os.Getenv("FILEPATH_ROOT")
 	if filepathRoot == "" {
@@ -67,6 +73,7 @@ func main() {
 	apiCfg := apiConfig{
 		port:           port,
 		fileserverHits: atomic.Int32{},
+		apiBaseURL:     apiBaseURL,
 		filepathRoot:   filepathRoot,
 		assetsRoot:     assetsRoot,
 		migrationsRoot: migrationsRoot,
@@ -116,7 +123,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	appHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
-	mux.Handle("/app/", apiCfg.middlewareMetricsInc(appHandler))
+	mux.Handle("/app/", noCacheMiddleware(apiCfg.middlewareMetricsInc(appHandler)))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, filepath.Join(filepathRoot, "index.html"))
 	})

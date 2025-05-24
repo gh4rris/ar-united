@@ -55,7 +55,7 @@ func (cfg *apiConfig) handlerProfilePicUpload(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	url := fmt.Sprintf("http://localhost:%s/assets/%s", cfg.port, assetPath)
+	url := fmt.Sprintf("%s/assets/%s", cfg.apiBaseURL, assetPath)
 	err = cfg.db.UpdateProfilePic(r.Context(), database.UpdateProfilePicParams{
 		ID: userID,
 		ProfilePicUrl: sql.NullString{
