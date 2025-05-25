@@ -19,27 +19,27 @@ h1 {
     font-family: "Bowlby One SC", sans-serif;
     color: rgb(28, 73, 26);
     font-weight: 600;
-    font-size: 3.5rem;
+    font-size: 3.8rem;
     text-shadow: 2px 3px 4px rgba(0, 0, 0, 0.699);
 }
 
-#home-h2, #home-login-btn {
-    margin-bottom: .5em;
+#home-h2 {
+    margin-bottom: 1rem;
 }
 
-#home-p {
-    margin-bottom: 1em;
+#home-p, #home-login-btn {
+    margin-bottom: 1.5rem;
 }
 
 .btn {
     color: rgb(28, 73, 26);
     border: 2px solid rgb(28, 73, 26);
     background-color: white;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
-    border-radius: 15px;
-    width: 150px;
-    height: 30px;
+    border-radius: 25px;
+    width: 200px;
+    height: 45px;
     transition: color .3s ease-in-out, background-color .3s ease-in-out;
 }
 
@@ -63,17 +63,17 @@ h1 {
 
 #login-p {
     font-size: 1.1rem;
-    margin-bottom: 1em;
+    margin-bottom: 1.5rem;
 }
 
 #login-form {
-    width: 260px;
+    width: 280px;
 }
 
 .input-box {
     display: flex;
     justify-content: space-between;
-    margin-bottom: .75em;
+    margin-bottom: 1rem;
 }
 
 .label {
@@ -81,13 +81,14 @@ h1 {
 }
 
 .input {
-    height: 20px;
-    width: 170px;
-    border-radius: 4px;
+    height: 30px;
+    width: 190px;
+    border-radius: 6px;
+    padding: 2px 4px;
 }
 
 #submit-btn-login {
-    margin: 1em auto;
+    margin: 1.5rem auto;
     display: block;
 }
 
@@ -103,13 +104,17 @@ h1 {
     margin: 5%;
 }
 
+#create-acc-form {
+    width: 325px;
+}
+
 #create-acc-p {
     text-align: center;
-    margin-bottom: 1em;
+    margin-bottom: 1.5rem;
 }
 
 #submit-btn-create {
-    margin: 1em auto;
+    margin: 1.5rem auto;
     display: block;
 }
 
@@ -122,8 +127,8 @@ h1 {
 
 #search-input {
     width: 55%;
-    height: 25px;
-    border-radius: 4px;
+    height: 30px;
+    border-radius: 6px;
 }
 
 #search-btn {
@@ -132,9 +137,9 @@ h1 {
     background-color: white;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 10px;
+    border-radius: 13px;
     width: 80px;
-    height: 30px;
+    height: 36px;
     transition: color .3s ease-in-out, background-color .3s ease-in-out;
 }
 
@@ -158,6 +163,10 @@ nav {
     display: flex;
     justify-content: space-between;
     margin: 0 5px;
+}
+
+#profile-link {
+    margin-right: 6px;
 }
 
 /* profile */
@@ -188,6 +197,10 @@ nav {
     font-size: 2.3rem;
 }
 
+#profile-email {
+    margin-bottom: .5rem;
+}
+
 #profile-details-box {
     display: flex;
     flex-direction: column;
@@ -202,15 +215,21 @@ nav {
     margin-bottom: 1em;
 }
 
+/* posts */
+
+#post-input {
+    width: 210px;
+}
+
 #post-btn {
     color: rgb(28, 73, 26);
     border: 2px solid rgb(28, 73, 26);
     background-color: white;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 15px;
+    border-radius: 20px;
     width: 70px;
-    height: 30px;
+    height: 38px;
     transition: color .3s ease-in-out, background-color .3s ease-in-out;
 }
 
@@ -228,9 +247,9 @@ nav {
     display: flex;
     background-color: white;
     border: 2px solid rgb(28, 73, 26);
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 2px;
-    margin-top: .5em;
+    margin-top: .7em;
     box-shadow: 1px -1px 4px rgba(0, 0, 0, 0.336);
     width: 20em;
     min-height: 25px;
@@ -265,4 +284,32 @@ nav {
 
 #save-edit-btn {
     margin: 6px 0;
+}
+
+/* allies */
+
+#allies-box {
+    display: flex;
+    flex-direction: column;
+    margin: 5%;
+}
+
+.list-box {
+    margin-bottom: 1rem;
+}
+
+/* user_groups */
+
+#groups-box {
+    display: flex;
+    flex-direction: column;
+    margin: 5%;
+}
+
+/* user_events */
+
+#events-box {
+    display: flex;
+    flex-direction: column;
+    margin: 5%;
 }

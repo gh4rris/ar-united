@@ -4,19 +4,21 @@ export async function renderAllies(activist) {
     const user = JSON.parse(localStorage.user);
     if (user.id === activist.id) {
         document.getElementById('app').innerHTML = `
-        <div id="ally-box">
-            <h2>Allies</h2>
-        </div>
-        <br>
-        <a id="back" href="/activists/${activist.slug}">Back</a>`;
+        <div id="allies-box">
+            <div id="ally-box" class="list-box">
+                <h2>Allies</h2>
+            </div>
+            <a id="back" href="/activists/${activist.slug}">Back</a>
+        </div>`;
         alliesEvents(activist);
     } else {
         document.getElementById('app').innerHTML = `
-        <div id="ally-box">
-            <h2>${activist.first_name}'s allies</h2>
-        </div>
-        <br>
-        <a id="back" href="/activists/${activist.slug}">Back</a>`;
+        <div id="allies-box">
+            <div id="ally-box" class="list-box">
+                <h2>${activist.first_name}'s allies</h2>
+            </div>
+            <a id="back" href="/activists/${activist.slug}">Back</a>
+        </div>`;
         alliesEvents(activist);
     }
 }

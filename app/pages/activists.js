@@ -17,10 +17,10 @@ export async function renderActivist(activist) {
             <p id="profile-bio">${activist.bio}</p>
             <button id="edit-btn" class="btn2">Edit Profile</button>
             <div id="profile-age-box">
-                <div id="allies-box">
+                <div id="profile-allies-box">
                     <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
                 </div>
-                <div id="groups-box">
+                <div id="profile-groups-box">
                     <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
                 </div>
                 <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
