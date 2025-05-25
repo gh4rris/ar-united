@@ -3,17 +3,19 @@ import { API_BASE_URL } from "../config.js";
 
 export function renderCreateGroup() {
     document.getElementById('app').innerHTML = `
-    <form id="create-grp-form">
-        <div id="gname-create-box">
-          <label for="gname-input-create">Group name:</label>
-          <input type="text" name="name" id="gname-input-create" required >
-        </div>
-        <div id="desc-create-box">
-          <label for="desc-input-create">Description:</label>
-          <textarea name="description" id="desc-input-create" rows="5" cols="33" spellcheck="true" required></textarea>
-        </div>
-        <button type="submit" id="submit-btn-create">Create Group</button>
-      </form>`;
+    <div id="create-grp-box">
+      <form id="create-grp-form">
+          <div id="gname-create-box">
+            <label for="gname-input-create">Group name:</label>
+            <input type="text" name="name" id="gname-input-create" class="input" required >
+          </div>
+          <div id="desc-create-box">
+            <label for="desc-input-create">Description:</label>
+            <textarea name="description" id="desc-input-create" class="textarea" rows="6" cols="38" spellcheck="true" required></textarea>
+          </div>
+          <button type="submit" id="submit-btn-create" class="btn">Create Group</button>
+        </form>
+      </div>`;
       createGroupEvents();
 }
 

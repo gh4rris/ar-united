@@ -216,7 +216,6 @@ nav {
 }
 
 /* posts */
-
 #post-input {
     width: 210px;
 }
@@ -277,9 +276,9 @@ nav {
     margin: 5% 10%;
 }
 
-#bio-input-edit {
+.textarea {
     resize: none;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 #save-edit-btn {
@@ -287,7 +286,6 @@ nav {
 }
 
 /* allies */
-
 #allies-box {
     display: flex;
     flex-direction: column;
@@ -299,7 +297,6 @@ nav {
 }
 
 /* user_groups */
-
 #groups-box {
     display: flex;
     flex-direction: column;
@@ -307,9 +304,20 @@ nav {
 }
 
 /* user_events */
-
 #events-box {
     display: flex;
     flex-direction: column;
     margin: 5%;
+}
+
+/* create_group */
+#create-grp-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5%;
+}
+
+#gname-create-box {
+    margin-bottom: 1rem;
 }

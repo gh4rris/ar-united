@@ -23,7 +23,9 @@ export async function renderActivist(activist) {
                 <div id="profile-groups-box">
                     <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
                 </div>
-                <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
+                <div id="profile-events-box">
+                    <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
+                </div>
             </div>
         </div>
         <div id="new-post-box">
@@ -44,13 +46,15 @@ export async function renderActivist(activist) {
             <p id="profile-email">${activist.email}</p>
             <p id="profile-bio">${activist.bio}</p>
             <div id="profile-age-box">
-                <div id="allies-box">
+                <div id="profile-allies-box">
                     <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
                 </div>
-                <div id="groups-box">
+                <div id="profile-groups-box">
                     <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
                 </div>
-                <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
+                <div id="profile-events-box">
+                    <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
+                </div>
             </div>
         </div>
       <div id="posts-box"></div>`;
