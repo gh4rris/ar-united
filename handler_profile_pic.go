@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"io"
 	"mime"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -40,22 +42,25 @@ func (cfg *apiConfig) handlerProfilePicUpload(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	assetPath := getAssetPath(userID, mediaType)
-	assetDiskPath := filepath.Join(cfg.assetsRoot, assetPath)
+	filename := getAssetFilename(userID, mediaType)
 
-	dst, err := os.Create(assetDiskPath)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't create file on server", err)
-		return
+	var url string
+	if cfg.host == "local" {
+		url = fmt.Sprintf("%s/assets/%s", cfg.apiBaseURL, filename)
+		str, err := cfg.uploadLocal(filename, file)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, str, err)
+			return
+		}
+	} else {
+		url = fmt.Sprintf("%s/%s", cfg.supabaseURL, filename)
+		str, err := cfg.uploadSupabase(url, file, header)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, str, err)
+			return
+		}
 	}
-	defer dst.Close()
 
-	if _, err := io.Copy(dst, file); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error saving file", err)
-		return
-	}
-
-	url := fmt.Sprintf("%s/assets/%s", cfg.apiBaseURL, assetPath)
 	err = cfg.db.UpdateProfilePic(r.Context(), database.UpdateProfilePicParams{
 		ID: userID,
 		ProfilePicUrl: sql.NullString{
@@ -65,4 +70,51 @@ func (cfg *apiConfig) handlerProfilePicUpload(w http.ResponseWriter, r *http.Req
 	})
 
 	w.WriteHeader(http.StatusNoContent)
+
+}
+
+func (cfg *apiConfig) uploadLocal(filename string, file multipart.File) (string, error) {
+	assetDiskPath := filepath.Join(cfg.assetsRoot, filename)
+	dst, err := os.Create(assetDiskPath)
+	if err != nil {
+		return "Couldn't create file on server", err
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, file); err != nil {
+		return "Error saving file", err
+	}
+
+	return "", nil
+
+}
+
+func (cfg *apiConfig) uploadSupabase(url string, file multipart.File, header *multipart.FileHeader) (string, error) {
+	var buf bytes.Buffer
+	_, err := io.Copy(&buf, file)
+	if err != nil {
+		return "Failed to read file", err
+	}
+
+	req, err := http.NewRequest("POST", url, &buf)
+	if err != nil {
+		return "Failed to create request", err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+cfg.supabasekey)
+	req.Header.Set("Content-Type", header.Header.Get("Content-Type"))
+	req.Header.Set("x-upsert", "true")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "Upload failed", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 299 {
+		body, _ := io.ReadAll(resp.Body)
+		return "Upload error", fmt.Errorf("Error: %s", string(body))
+	}
+
+	return "", nil
 }

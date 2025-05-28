@@ -9,13 +9,13 @@ import (
 )
 
 func (cfg *apiConfig) ensureAssetsDir() error {
-	if _, err := os.Stat(cfg.assetsRoot); os.IsNotExist(err) {
+	if _, err := os.Stat(cfg.assetsRoot); os.IsNotExist(err) && cfg.host == "local" {
 		return os.Mkdir(cfg.assetsRoot, 0755)
 	}
 	return nil
 }
 
-func getAssetPath(userID uuid.UUID, mediaType string) string {
+func getAssetFilename(userID uuid.UUID, mediaType string) string {
 	var ext string
 	parts := strings.Split(mediaType, "/")
 	if len(parts) != 2 {

@@ -17,7 +17,6 @@ import { renderUserEvents } from './pages/user_events.js';
 import { renderEvent } from './pages/events.js';
 import { renderEventAttendees } from './pages/event_attendees.js';
 
-
 const routes = [
     { pattern: /^\/$/, handler: () => renderHome() , private: false },
     { pattern: /^\/create_account$/, handler: () => renderCreateAccount(), private: false },
@@ -38,7 +37,7 @@ const routes = [
     { pattern: /^\/search$/, handler: () => renderSearch(), private: true }
 ];
 
-const app = document.getElementById('app');
+const appBox = document.getElementById('app');
 const profileLink = document.getElementById('profile-link');
 const createGroupLink = document.getElementById('create-group-link');
 const logout = document.getElementById('logout');
@@ -151,7 +150,7 @@ async function renderPage() {
 }
 
 function renderNotFound() {
-    app.innerHTML = `
+    appBox.innerHTML = `
     <h1>404</h1>
     <p>Page not found</p>`;
     return

@@ -1,6 +1,7 @@
 package main
 
 import (
+	// "context"
 	"database/sql"
 	"log"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gh4rris/ar-united/internal/database"
+
+	// "github.com/jackc/pgx/v5"
 	"github.com/jaschaephraim/lrserver"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -19,11 +22,14 @@ type apiConfig struct {
 	port           string
 	fileserverHits atomic.Int32
 	apiBaseURL     string
+	supabaseURL    string
+	supabasekey    string
 	filepathRoot   string
 	assetsRoot     string
 	migrationsRoot string
 	db             *database.Queries
 	platform       string
+	host           string
 	jwtSecret      string
 }
 
@@ -59,9 +65,21 @@ func main() {
 	if platform == "" {
 		log.Fatal("PLATFORM environment variable is not set")
 	}
+	host := os.Getenv("HOST")
+	if host == "" {
+		log.Fatal("HOST environment variable is not set")
+	}
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		log.Fatal("JWT_SECRET environment variable is not set")
+	}
+	supabaseURL := os.Getenv("SUPABASE_URL")
+	if supabaseURL == "" {
+		log.Fatal("SUPABASE_URL environment variable is not set")
+	}
+	supabaseKey := os.Getenv("SUPABASE_KEY")
+	if supabaseKey == "" {
+		log.Fatal("SUPABASE_Key environment variable is not set")
 	}
 
 	db, err := sql.Open("postgres", dbURL)
@@ -74,18 +92,18 @@ func main() {
 		port:           port,
 		fileserverHits: atomic.Int32{},
 		apiBaseURL:     apiBaseURL,
+		supabaseURL:    supabaseURL,
+		supabasekey:    supabaseKey,
 		filepathRoot:   filepathRoot,
 		assetsRoot:     assetsRoot,
 		migrationsRoot: migrationsRoot,
 		db:             dbQueries,
 		platform:       platform,
+		host:           host,
 		jwtSecret:      jwtSecret,
 	}
 
 	err = apiCfg.ensureAssetsDir()
-	if err != nil {
-		log.Fatalf("Couldn't create assets directory: %v", err)
-	}
 
 	err = apiCfg.runMigrations(db)
 	if err != nil {
