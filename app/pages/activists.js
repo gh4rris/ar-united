@@ -1,5 +1,5 @@
-import { validateToken } from "../app.js";
-import { API_BASE_URL } from "../config.js";
+import { validateToken } from "../loadPage.js";
+import { API_BASE_URL} from "../config.js";
 import { displayPosts, newPost } from "../posts.js";
 
 export async function renderActivist(activist) {

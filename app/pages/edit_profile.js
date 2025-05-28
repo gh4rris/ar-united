@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config.js";
-import { validateToken } from "../app.js";
+import { validateToken } from "../loadPage.js";
 
 export async function renderEditProfile(activist) {
   const user = JSON.parse(localStorage.user);

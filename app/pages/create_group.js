@@ -1,4 +1,4 @@
-import { validateToken } from "../app.js";
+import { validateToken } from "../loadPage.js";
 import { API_BASE_URL } from "../config.js";
 
 export function renderCreateGroup() {
