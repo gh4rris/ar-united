@@ -17,6 +17,25 @@
     <link rel="stylesheet" href="/app/style.css" />
   </head>
   <body>
+    <div id="nav-bar" style="display: none">
+      <div id="search-box">
+        <input type="text" id="search-input" placeholder="search" />
+        <button id="search-btn">Search</button>
+        <select id="search-type">
+          <option value="All">All</option>
+          <option value="Activists">Activists</option>
+          <option value="Groups">Groups</option>
+          <option value="Events">Events</option>
+        </select>
+      </div>
+      <nav>
+        <a href="/groups/create_group" id="create-group-link">Create a group</a>
+        <div id="login-links">
+          <a href="" id="profile-link">Profile</a>
+          <a href="" id="logout">Logout</a>
+        </div>
+      </nav>
+    </div>
     <div id="app"></div>
     <script type="module" src="/app/app.js"></script>
     <script src="http://localhost:35729/livereload.js"></script>

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "./config.js";
-import { renderNavBar } from './navBar.js';
+import { validateToken, revokeRefreshToken } from "./token.js";
 import { renderHome } from './pages/home.js'
 import { renderCreateAccount } from './pages/create_account.js';
 import { renderLogin } from './pages/login.js';
@@ -47,7 +47,13 @@ export async function renderPage() {
     const path = window.location.pathname;
     const validToken = localStorage.accessToken ? await validateToken() : false;
     const user = localStorage.user ? JSON.parse(localStorage.user) : null;
-    if (validToken) renderNavBar();
+    const navBar = document.getElementById('nav-bar');
+
+    if (validToken && navBar.style.display === 'none') {
+        renderNavBar(user, navBar);
+    } else if (!validToken) {
+        navBar.style.display = 'none';
+    }
     
     for (const route of routes) {
         const match = path.match(route.pattern);
@@ -108,6 +114,29 @@ function renderNotFound() {
     return
 }
 
+function renderNavBar(user, navBar) {
+    navBar.style.display = 'block';
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('search-input');
+    const logout = document.getElementById('logout');
+    const profileLink = document.getElementById('profile-link');
+    profileLink.href = `/activists/${user.slug}`;
+    searchBtn.addEventListener('click', async () => {
+        const type = document.getElementById('search-type').value.toLowerCase();
+        const url = `/search?value=${encodeURIComponent(searchInput.value)}&type=${encodeURIComponent(type)}`;
+        await navigateTo(url);
+    });
+    logout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        navBar.style.display = 'none';
+        history.replaceState(null, '', '/');
+        await renderPage();
+        await revokeRefreshToken();
+    })
+}
+
 async function getActivist(slug) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/users/${slug}`);
@@ -144,49 +173,6 @@ async function getEvent(slug) {
         }
         const responseData = await response.json();
         return responseData.event;
-    }
-    catch(error) {
-        console.error(error.message);
-    }
-}
-
-export async function validateToken(retries=1) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/validate-token`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.accessToken}`
-            }
-        });
-        if (retries > 0 && response.status === 401) {
-            await refreshAccessToken();
-            return await validateToken(retries - 1);
-        }
-        if (!response.ok) {
-            localStorage.removeItem('user');
-            localStorage.removeItem('accessToken');
-            throw new Error("invalid access token");
-            
-        }
-        return response.ok;
-    }
-    catch(error) {
-        console.log(error.message);
-    }
-}
-
-export async function refreshAccessToken() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/refresh`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-        if (!response.ok) {
-            throw new Error("couldn't refresh access token");
-        }
-        const responseData = await response.json();
-        localStorage.setItem('accessToken', responseData.token);
-        return
     }
     catch(error) {
         console.error(error.message);

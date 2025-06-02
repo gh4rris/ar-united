@@ -1,4 +1,4 @@
-import { validateToken } from "../loadPage.js";
+import { validateToken } from "../token.js";
 import { API_BASE_URL} from "../config.js";
 import { displayPosts, newPost } from "../posts.js";
 

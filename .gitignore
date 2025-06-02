@@ -1,5 +1,5 @@
 ar-united
 .env
+.vscode
 assets/
 node_modules/
-dist/
