@@ -162,41 +162,41 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
-func (cfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Request) {
-	type parameters struct {
-		Password string `json:"password"`
-	}
+// func (cfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Request) {
+// 	type parameters struct {
+// 		Password string `json:"password"`
+// 	}
 
-	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, msg, err)
-		return
-	}
+// 	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
+// 	if err != nil {
+// 		respondWithError(w, http.StatusUnauthorized, msg, err)
+// 		return
+// 	}
 
-	params := parameters{}
-	decoder := json.NewDecoder(r.Body)
-	if err = decoder.Decode(&params); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
-		return
-	}
+// 	params := parameters{}
+// 	decoder := json.NewDecoder(r.Body)
+// 	if err = decoder.Decode(&params); err != nil {
+// 		respondWithError(w, http.StatusInternalServerError, "Counldn't decode parameters", err)
+// 		return
+// 	}
 
-	hashedPassword, err := auth.HashPassword(params.Password)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
-		return
-	}
+// 	hashedPassword, err := auth.HashPassword(params.Password)
+// 	if err != nil {
+// 		respondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
+// 		return
+// 	}
 
-	err = cfg.db.UpdatePassword(r.Context(), database.UpdatePasswordParams{
-		ID:             userID,
-		HashedPassword: hashedPassword,
-	})
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't update password", err)
-		return
-	}
+// 	err = cfg.db.UpdatePassword(r.Context(), database.UpdatePasswordParams{
+// 		ID:             userID,
+// 		HashedPassword: hashedPassword,
+// 	})
+// 	if err != nil {
+// 		respondWithError(w, http.StatusInternalServerError, "Couldn't update password", err)
+// 		return
+// 	}
 
-	w.WriteHeader(http.StatusNoContent)
-}
+// 	w.WriteHeader(http.StatusNoContent)
+// }
 
 func (cfg *apiConfig) handlerGetUserBySlug(w http.ResponseWriter, r *http.Request) {
 	type response struct {
