@@ -68,6 +68,10 @@ func (cfg *apiConfig) handlerProfilePicUpload(w http.ResponseWriter, r *http.Req
 			Valid:  url != "",
 		},
 	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't update profile pic", err)
+		return
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 
@@ -113,7 +117,7 @@ func (cfg *apiConfig) uploadSupabase(url string, file multipart.File, header *mu
 
 	if resp.StatusCode > 299 {
 		body, _ := io.ReadAll(resp.Body)
-		return "Upload error", fmt.Errorf("Error: %s", string(body))
+		return "Upload error", fmt.Errorf("error: %s", string(body))
 	}
 
 	return "", nil

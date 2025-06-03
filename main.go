@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync/atomic"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gh4rris/ar-united/internal/database"
@@ -40,7 +41,6 @@ func main() {
 	if apiBaseURL == "" {
 		log.Fatal("API_BASE_URL environment variable is not set")
 	}
-
 	filepathRoot := os.Getenv("FILEPATH_ROOT")
 	if filepathRoot == "" {
 		log.Fatal("FILEPATH_ROOT environment variable is not set")
@@ -103,10 +103,11 @@ func main() {
 		jwtSecret:      jwtSecret,
 	}
 
-	err = apiCfg.ensureAssetsDir()
+	if err = apiCfg.ensureAssetsDir(); err != nil {
+		log.Fatalf("Couldn't create assets directory: %v", err)
+	}
 
-	err = apiCfg.runMigrations(db)
-	if err != nil {
+	if err = apiCfg.runMigrations(db); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
@@ -116,12 +117,11 @@ func main() {
 	}
 	defer watcher.Close()
 
-	err = watcher.Add("./app")
-	if err != nil {
+	if err = watcher.Add("./app"); err != nil {
 		log.Fatalln(err)
 	}
-	err = watcher.Add("./app/pages")
-	if err != nil {
+
+	if err = watcher.Add("./app/pages"); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -206,8 +206,9 @@ func main() {
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)
 
 	srv := &http.Server{
-		Handler: mux,
-		Addr:    ":" + port,
+		Handler:           mux,
+		Addr:              ":" + port,
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	log.Printf("Serving on port: %s\n", port)

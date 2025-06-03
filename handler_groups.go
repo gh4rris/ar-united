@@ -107,6 +107,10 @@ func (cfg *apiConfig) handlerJoinGroup(w http.ResponseWriter, r *http.Request) {
 		UserID:  userID,
 		GroupID: groupID,
 	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't create member", err)
+		return
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 }
