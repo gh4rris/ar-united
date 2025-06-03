@@ -2,7 +2,7 @@ import { validateToken } from "../token.js";
 import { API_BASE_URL } from "../config.js";
 
 export function renderCreateEvent(group) {
-    document.getElementById('app').innerHTML = `
+  document.getElementById("app").innerHTML = `
     <form id="create-evnt-form">
         <div id="ename-create-box">
           <label for="ename-input-create">Event name:</label>
@@ -22,43 +22,46 @@ export function renderCreateEvent(group) {
         </div>
         <button type="submit" id="submit-btn-create">Create Event</button>
       </form>`;
-      createEventEvents(group);
+  createEventEvents(group);
 }
 
 export function createEventEvents(group) {
-  const form = document.getElementById('create-evnt-form');
-  form.addEventListener('submit', async (e) => {
+  const form = document.getElementById("create-evnt-form");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const validToken = await validateToken();
-      if (!validToken) {
-        window.location.replace('/');
-        return
+    if (!validToken) {
+      window.location.replace("/");
+      return;
     }
-    const date = e.target[2].value + 'T00:00:00Z';
-    const data = {'name': e.target[0].value, 'location': e.target[1].value,
-      'date': date, 'description': e.target[3].value, 'group_id': group.id
-    }
+    const date = e.target[2].value + "T00:00:00Z";
+    const data = {
+      name: e.target[0].value,
+      location: e.target[1].value,
+      date: date,
+      description: e.target[3].value,
+      group_id: group.id,
+    };
     const event = await newEvent(data);
     window.location.assign(`/events/${event.slug}`);
-  })
+  });
 }
 
 async function newEvent(data) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/events`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${localStorage.accessToken}`
+        Authorization: `Bearer ${localStorage.accessToken}`,
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
     if (!response.ok) {
       throw new Error("couldn't create new event");
     }
     const eventObj = await response.json();
     return eventObj.event;
-  }
-  catch(error) {
+  } catch (error) {
     console.error(error.message);
   }
 }

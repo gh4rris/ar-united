@@ -1,5 +1,5 @@
 export function renderHome() {
-    document.getElementById('app').innerHTML = `
+  document.getElementById("app").innerHTML = `
     <div id="home-box">
         <h1>AR United</h1>
         <h2 id="home-h2">Hub for Animal Rights groups and activists</h2>
@@ -7,16 +7,16 @@ export function renderHome() {
         <button id="home-login-btn" class="btn">Login</button>
         <button id="home-create-btn" class="btn">New user</button>
     </div>`;
-    homeEvents();
+  homeEvents();
 }
 
 export function homeEvents() {
-    const login = document.getElementById('home-login-btn');
-    const createAccount = document.getElementById('home-create-btn');
-    login.addEventListener('click', () => {
-        window.location.assign('/login');
-    })
-    createAccount.addEventListener('click', () => {
-        window.location.assign('/create_account');
-    })
+  const login = document.getElementById("home-login-btn");
+  const createAccount = document.getElementById("home-create-btn");
+  login.addEventListener("click", () => {
+    window.location.assign("/login");
+  });
+  createAccount.addEventListener("click", () => {
+    window.location.assign("/create_account");
+  });
 }

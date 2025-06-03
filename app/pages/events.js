@@ -3,15 +3,15 @@ import { API_BASE_URL } from "../config.js";
 import { displayPosts, newPost } from "../posts.js";
 
 export async function renderEvent(event) {
-    const user = JSON.parse(localStorage.user);
-    const group = await getGroup(event.group_id);
-    if (user.id === group.admin_id) {
-        document.getElementById('app').innerHTML = `
+  const user = JSON.parse(localStorage.user);
+  const group = await getGroup(event.group_id);
+  if (user.id === group.admin_id) {
+    document.getElementById("app").innerHTML = `
     <div id="event-box">
         <h2 id="event-name">${event.name}</h2>
         <p id="event-description">${event.description}</p>
         <p id="event-location">${event.location}</p>
-        <p id="event-date">${event.date.replace('T00:00:00Z', '')}</p>
+        <p id="event-date">${event.date.replace("T00:00:00Z", "")}</p>
         <div id="group-box">
             <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
         </div>
@@ -26,14 +26,14 @@ export async function renderEvent(event) {
             <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>`;
-      eventEvents(event, user.id);
-    } else {
-        document.getElementById('app').innerHTML = `
+    eventEvents(event, user.id);
+  } else {
+    document.getElementById("app").innerHTML = `
     <div id="event-box">
         <h2 id="event-name">${event.name}</h2>
         <p id="event-description">${event.description}</p>
         <p id="event-location">${event.location}</p>
-        <p id="event-date">${event.date.replace('T00:00:00Z', '')}</p>
+        <p id="event-date">${event.date.replace("T00:00:00Z", "")}</p>
         <div id="group-box">
             <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
         </div>
@@ -43,114 +43,110 @@ export async function renderEvent(event) {
         <button id="going-btn">Going</button>
         <button id="not-going-btn">Not Going</button>
       <div id="posts-box"></div>`;
-      goingButtons(event, user.id);
-    }
+    goingButtons(event, user.id);
+  }
 }
 
 async function eventEvents(event, userID) {
-    const postBtn = document.getElementById('post-btn');
-    postBtn.addEventListener('click', async (e) => {
-        const validToken = await validateToken();
-        if (!validToken) {
-                window.location.replace('/');
-                return
-            }
-        const value = e.target.previousElementSibling.value;
-        const data = {'body': value}
-        await newPost(data, `/events/${event.id}`);
-        e.target.previousElementSibling.value = '';
-    });
-    await goingButtons(event, userID);
+  const postBtn = document.getElementById("post-btn");
+  postBtn.addEventListener("click", async (e) => {
+    const validToken = await validateToken();
+    if (!validToken) {
+      window.location.replace("/");
+      return;
+    }
+    const value = e.target.previousElementSibling.value;
+    const data = { body: value };
+    await newPost(data, `/events/${event.id}`);
+    e.target.previousElementSibling.value = "";
+  });
+  await goingButtons(event, userID);
 }
 
 async function goingButtons(event, userID) {
-    const goingBtn = document.getElementById('going-btn');
-    const notGoingBtn = document.getElementById('not-going-btn');
-    const going = await isGoing(event.id);
-    if (going) {
-        goingBtn.disabled = true;
+  const goingBtn = document.getElementById("going-btn");
+  const notGoingBtn = document.getElementById("not-going-btn");
+  const going = await isGoing(event.id);
+  if (going) {
+    goingBtn.disabled = true;
+  }
+  goingBtn.addEventListener("click", async () => {
+    const valid = await validateToken();
+    if (valid) {
+      await addGoing(event.id, goingBtn);
     }
-    goingBtn.addEventListener('click', async () => {
-        const valid = await validateToken();
-        if (valid) {
-            await addGoing(event.id, goingBtn);
-        }
-    });
-    notGoingBtn.addEventListener('click', async () => {
-        const valid = await validateToken();
-        if (valid) {
-            await removeGoing(event.id, goingBtn);
-        }
-    });
-    await displayPosts(event, 'events', userID);
+  });
+  notGoingBtn.addEventListener("click", async () => {
+    const valid = await validateToken();
+    if (valid) {
+      await removeGoing(event.id, goingBtn);
+    }
+  });
+  await displayPosts(event, "events", userID);
 }
 
 async function getGroup(groupID) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/groups/${groupID}`);
-        if (!response.ok) {
-            throw new Error("couldn't get group");
-        }
-        const responseData = await response.json();
-        return responseData.group;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/groups/${groupID}`);
+    if (!response.ok) {
+      throw new Error("couldn't get group");
     }
-    catch(error) {
-        console.error(error.message);
-    }
+    const responseData = await response.json();
+    return responseData.group;
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
 async function isGoing(eventID) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.accessToken}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error("couldn't find if going");
-        }
-        if (response.status === 200) {
-            return await response.json();
-        }
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.accessToken}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("couldn't find if going");
     }
-    catch(error) {
-        console.error(error.message)
+    if (response.status === 200) {
+      return await response.json();
     }
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
 async function addGoing(eventID, button) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.accessToken}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error("couldn't add going");
-        }
-        button.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.accessToken}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("couldn't add going");
     }
-    catch(error) {
-        console.error(error.message)
-    }
+    button.disabled = true;
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
 async function removeGoing(eventID, button) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.accessToken}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error("couldn't add going");
-        }
-        button.disabled = false;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/attendees/${eventID}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.accessToken}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("couldn't add going");
     }
-    catch(error) {
-        console.error(error.message)
-    }
+    button.disabled = false;
+  } catch (error) {
+    console.error(error.message);
+  }
 }

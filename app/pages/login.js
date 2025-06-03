@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config.js";
 
 export function renderLogin() {
-  document.getElementById('app').innerHTML = `
+  document.getElementById("app").innerHTML = `
   <div id="login-box">
     <p id="login-p">Enter your email and password</p>
     <form id="login-form">
@@ -17,38 +17,37 @@ export function renderLogin() {
       </form>
       <a href="/" class="back">Back</a>
     </login>`;
-    loginEvents();
+  loginEvents();
 }
 
 export function loginEvents() {
-    const form = document.getElementById('login-form');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData.entries());
-      await userLogin(data);     
-    });
-  }
+  const form = document.getElementById("login-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    await userLogin(data);
+  });
+}
 
 export async function userLogin(data) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
     if (!response.ok) {
       throw new Error("couldn't fetch login data");
     }
     const responseData = await response.json();
-    localStorage.setItem('user', JSON.stringify(responseData.user));
-    localStorage.setItem('accessToken', responseData.token);
+    localStorage.setItem("user", JSON.stringify(responseData.user));
+    localStorage.setItem("accessToken", responseData.token);
     const slug = JSON.parse(localStorage.user).slug;
     window.location.assign(`/activists/${slug}`);
-  }
-  catch(error) {
+  } catch (error) {
     console.error(error);
   }
 }

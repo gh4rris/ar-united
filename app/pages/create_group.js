@@ -2,7 +2,7 @@ import { validateToken } from "../token.js";
 import { API_BASE_URL } from "../config.js";
 
 export function renderCreateGroup() {
-    document.getElementById('app').innerHTML = `
+  document.getElementById("app").innerHTML = `
     <div id="create-grp-box">
       <form id="create-grp-form">
           <div id="gname-create-box">
@@ -16,19 +16,19 @@ export function renderCreateGroup() {
           <button type="submit" id="submit-btn-create" class="btn">Create Group</button>
         </form>
       </div>`;
-      createGroupEvents();
+  createGroupEvents();
 }
 
 export function createGroupEvents() {
-  const form = document.getElementById('create-grp-form');
-  form.addEventListener('submit', async (e) => {
+  const form = document.getElementById("create-grp-form");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const validToken = await validateToken();
-      if (!validToken) {
-        window.location.replace('/');
-        return
+    if (!validToken) {
+      window.location.replace("/");
+      return;
     }
-    const data = {'name': e.target[0].value, 'description': e.target[1].value};
+    const data = { name: e.target[0].value, description: e.target[1].value };
     const group = await newGroup(data);
     window.location.assign(`/groups/${group.slug}`);
   });
@@ -37,19 +37,18 @@ export function createGroupEvents() {
 async function newGroup(data) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/groups`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${localStorage.accessToken}`
+        Authorization: `Bearer ${localStorage.accessToken}`,
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
     if (!response.ok) {
       throw new Error("couldn't create group");
     }
     const groupObj = await response.json();
     return groupObj.group;
-  }
-  catch(error) {
+  } catch (error) {
     console.error(error.message);
   }
 }

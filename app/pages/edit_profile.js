@@ -5,9 +5,9 @@ export async function renderEditProfile(activist) {
   const user = JSON.parse(localStorage.user);
   if (user.id != activist.id) {
     window.location.replace(`/activists/${user.slug}`);
-    return
+    return;
   }
-  document.getElementById('app').innerHTML = `
+  document.getElementById("app").innerHTML = `
   <div id="edit-profile-box">
     <form id="edit-profile-form">
         <div id="fname-edit-box" class="input-box">
@@ -30,40 +30,44 @@ export async function renderEditProfile(activist) {
       </form>
       <a href="/activists/${activist.slug}" class="back">Back</a>
     </div>`;
-    editProfileEvents(user);
+  editProfileEvents(user);
 }
 
 export function editProfileEvents(user) {
-  const form = document.getElementById('edit-profile-form');
-  form.addEventListener('submit', async (e) => {
+  const form = document.getElementById("edit-profile-form");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     await validateToken();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
     await saveProfileChanges(user, data);
-  })
+  });
 }
 
 async function saveProfileChanges(user, data) {
-  if (user.first_name === data.first_name && user.last_name === data.last_name && user.email === data.email && user.bio === data.bio) {
+  if (
+    user.first_name === data.first_name &&
+    user.last_name === data.last_name &&
+    user.email === data.email &&
+    user.bio === data.bio
+  ) {
     window.location.assign(`/activists/${user.slug}`);
   } else {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${localStorage.accessToken}`
+          Authorization: `Bearer ${localStorage.accessToken}`,
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error("couldn't update user")
+        throw new Error("couldn't update user");
       }
       const responseData = await response.json();
-      localStorage.setItem('user', JSON.stringify(responseData.user));
+      localStorage.setItem("user", JSON.stringify(responseData.user));
       window.location.assign(`/activists/${user.slug}`);
-    }
-    catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }
