@@ -2,23 +2,24 @@ import { API_BASE_URL } from "../config.js";
 
 export async function renderGroupEvents(group) {
   document.getElementById("app").innerHTML = `
-        <div id="event-box">
-            <h2>Events</h2>
-        </div>
-        <br>
-        <a id="back" href="/groups/${group.slug}">Back</a>`;
+  <div id="group-events-box">
+    <div id="events-list-box" class="list-box">
+        <h2>Events</h2>
+    </div>
+    <a id="back" href="/groups/${group.slug}">Back</a>
+  </div>`;
   groupEventEvents(group);
 }
 
 async function groupEventEvents(group) {
-  const eventBox = document.getElementById("event-box");
+  const eventsBox = document.getElementById("events-list-box");
   const events = await getGroupEvents(group.id);
   for (const event of events) {
     const link = document.createElement("a");
     link.href = `/events/${event.slug}`;
     link.innerText = event.name;
-    eventBox.append(link);
-    eventBox.append(document.createElement("br"));
+    eventsBox.append(link);
+    eventsBox.append(document.createElement("br"));
   }
 }
 

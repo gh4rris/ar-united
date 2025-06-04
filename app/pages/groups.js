@@ -7,35 +7,47 @@ export function renderGroup(group) {
   if (user.id === group.admin_id) {
     document.getElementById("app").innerHTML = `
     <div id="group-box">
+      <div id="ndb-box">
         <h2 id="group-name">${group.name}</h2>
         <p id="group-description">${group.description}</p>
-        <button id="member-btn" disabled>Admin</button>
-        <button id="create-event-btn">Create Event</button>
-        <div id="members-box">
+        <div>
+          <button id="member-btn" class="btn2" disabled>Admin</button>
+          <button id="create-event-btn" class="btn2">Create Event</button>
+        </div>
+      </div>
+      <div id="group-me-box">
+        <div id="members-link-box">
             <a id="group-members" href="/groups/${group.slug}/members">Members</a>
         </div>
-        <div id="events-box">
+        <div id="events-link-box">
             <a id="group-events" href="/groups/${group.slug}/events">Events</a>
         </div>
-        <div id="new-post-box">
-            <input type="text" name="post" id="post-input" class="input">
-            <button id="post-btn">Post</button>
       </div>
-      <div id="posts-box"></div>`;
+      <div id="new-post-box">
+          <input type="text" name="post" id="post-input" class="input">
+          <button id="post-btn">Post</button>
+      </div>
+      <div id="posts-box"></div>
+    </div>`;
     groupEvents(user, group);
   } else {
     document.getElementById("app").innerHTML = `
-<div id="group-box">
+    <div id="group-box">
+      <div id="ndb-box">
         <h2 id="group-name">${group.name}</h2>
         <p id="group-description">${group.description}</p>
-        <button id="member-btn">Join Group</button>
-        <div id="members-box">
+        <button id="member-btn" class="btn2">Join Group</button>
+      </div>
+      <div id="group-me-box">
+        <div id="members-link-box">
             <a id="group-members" href="/groups/${group.slug}/members">Members</a>
         </div>
-        <div id="events-box">
+        <div id="events-link-box">
             <a id="group-events" href="/groups/${group.slug}/events">Events</a>
         </div>
-      <div id="posts-box"></div>`;
+      </div>
+      <div id="posts-box"></div>
+    </div>`;
     nonAdminPage(user, group);
   }
 }

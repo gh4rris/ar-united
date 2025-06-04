@@ -3,25 +3,27 @@ import { API_BASE_URL } from "../config.js";
 
 export function renderCreateEvent(group) {
   document.getElementById("app").innerHTML = `
+  <div id="create-evnt-box">
     <form id="create-evnt-form">
-        <div id="ename-create-box">
-          <label for="ename-input-create">Event name:</label>
-          <input type="text" name="name" id="ename-input-create" required >
-        </div>
-        <div id="location-create-box">
-          <label for="location-input-create">Location:</label>
-          <input type="text" name="location" id="location-input-create" required >
-        </div>
-        <div id="date-create-box">
-          <label for="date-input-create">Date:</label>
-          <input type="date" name="date" id="date-input-create" >
-        </div>
-        <div id="desc-create-box">
-          <label for="desc-input-create">Description:</label>
-          <textarea name="description" id="desc-input-create" rows="5" cols="33" spellcheck="true" required></textarea>
-        </div>
-        <button type="submit" id="submit-btn-create">Create Event</button>
-      </form>`;
+      <div id="ename-create-box" class="input-box">
+        <label for="ename-input-create" class="label">Event name:</label>
+        <input type="text" name="name" id="ename-input-create" class="input" required >
+      </div>
+      <div id="location-create-box" class="input-box">
+        <label for="location-input-create" class="label">Location:</label>
+        <input type="text" name="location" id="location-input-create" class="input" required >
+      </div>
+      <div id="date-create-box" class="input-box">
+        <label for="date-input-create" class="label">Date:</label>
+        <input type="date" name="date" id="date-input-create" class="input" >
+      </div>
+      <div id="desc-create-box">
+        <label for="desc-input-create">Description:</label>
+        <textarea name="description" id="desc-input-create" class="textarea" rows="6" cols="38" spellcheck="true" required></textarea>
+      </div>
+      <button type="submit" id="submit-btn-create" class="btn">Create Event</button>
+    </form>
+  </div>`;
   createEventEvents(group);
 }
 

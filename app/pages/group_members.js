@@ -2,14 +2,15 @@ import { API_BASE_URL } from "../config.js";
 
 export async function renderGroupMembers(group) {
   document.getElementById("app").innerHTML = `
-        <div id="admin-box">
-            <h2>Group Admin</h2>
-        </div>
-        <div id="member-box">
-            <h2>Members</h2>
-        </div>
-        <br>
-        <a id="back" href="/groups/${group.slug}">Back</a>`;
+  <div id="group-members-box">
+    <div id="admin-box" class="list-box">
+        <h2>Group Admin</h2>
+    </div>
+    <div id="member-box" class="list-box">
+        <h2>Members</h2>
+    </div>
+    <a id="back" href="/groups/${group.slug}">Back</a>
+  </div>`;
   groupMembersEvents(group);
 }
 

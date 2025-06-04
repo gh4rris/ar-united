@@ -7,12 +7,14 @@ export function renderUploadProfilePic(activist) {
     return;
   }
   document.getElementById("app").innerHTML = `
-    <h2>Upload a profile picture</h2>
+  <div id="upload-box">
+    <h2 id="upload-header">Upload a profile picture</h2>
     <form id="upload-profile-pic-form">
         <input type="file" id="profile-pic" accept="image/*"/>
-        <button type="submit" id="upload-profile-pic-btn">Upload</button>
+        <button type="submit" id="upload-profile-pic-btn" class="btn">Upload</button>
     </form>
-    <a href="/activists/${activist.slug}">back</a>`;
+    <a href="/activists/${activist.slug}">Back</a>
+  </div>`;
   uploadProfilePicEvents(activist);
 }
 

@@ -8,41 +8,51 @@ export async function renderEvent(event) {
   if (user.id === group.admin_id) {
     document.getElementById("app").innerHTML = `
     <div id="event-box">
+      <div id="ndldb-box">
         <h2 id="event-name">${event.name}</h2>
         <p id="event-description">${event.description}</p>
         <p id="event-location">${event.location}</p>
         <p id="event-date">${event.date.replace("T00:00:00Z", "")}</p>
-        <div id="group-box">
+        <button id="member-btn" class="btn2" disabled>Organiser</button>
+        <button id="going-btn" class="btn2">Going</button>
+        <button id="not-going-btn" class="btn2">Not Going</button>
+      </div>
+      <div id="event-ga-box">
+        <div id="event-group-box">
             <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
         </div>
         <div id="attending-box">
             <a id="event-attendees" href="/events/${event.slug}/attending">Attending</a>
         </div>
-        <button id="member-btn" disabled>Organiser</button>
-        <button id="going-btn">Going</button>
-        <button id="not-going-btn">Not Going</button>
-        <div id="new-post-box">
-            <input type="text" name="post" id="post-input" class="input">
-            <button id="post-btn">Post</button>
       </div>
-      <div id="posts-box"></div>`;
+      <div id="new-post-box">
+          <input type="text" name="post" id="post-input" class="input">
+          <button id="post-btn">Post</button>
+      </div>
+      <div id="posts-box"></div>
+    </div>`;
     eventEvents(event, user.id);
   } else {
     document.getElementById("app").innerHTML = `
     <div id="event-box">
+      <div id="ndldb-box">
         <h2 id="event-name">${event.name}</h2>
         <p id="event-description">${event.description}</p>
         <p id="event-location">${event.location}</p>
         <p id="event-date">${event.date.replace("T00:00:00Z", "")}</p>
-        <div id="group-box">
+        <button id="going-btn" class="btn2">Going</button>
+        <button id="not-going-btn" class="btn2">Not Going</button>
+      </div>
+      <div id="event-ga-box">
+        <div id="event-group-box">
             <a id="event-group" href="/groups/${group.slug}">${group.name}</a>
         </div>
         <div id="attending-box">
             <a id="event-attendees" href="/events/${event.slug}/attending">Attending</a>
         </div>
-        <button id="going-btn">Going</button>
-        <button id="not-going-btn">Not Going</button>
-      <div id="posts-box"></div>`;
+      </div>
+      <div id="posts-box"></div>
+    </div>`;
     goingButtons(event, user.id);
   }
 }

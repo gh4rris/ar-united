@@ -108,7 +108,7 @@ h1 {
 }
 
 #create-acc-form {
-  width: 325px;
+  width: 330px;
 }
 
 #create-acc-p {
@@ -189,12 +189,12 @@ nav {
 }
 
 .btn2 {
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
   background-color: white;
   border-radius: 5px;
 }
 
-.btn2:hover {
+.btn2:hover:enabled {
   background-color: rgba(200, 200, 200, 0.733);
 }
 
@@ -217,7 +217,7 @@ nav {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
 }
 
 /* posts */
@@ -286,10 +286,26 @@ nav {
 .textarea {
   resize: none;
   border-radius: 6px;
+  margin-bottom: 6px;
 }
 
-#save-edit-btn {
-  margin: 6px 0;
+/* upload_profile_pic */
+#upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 5% 10%;
+}
+
+#upload-header,
+#profile-pic {
+  margin-bottom: 1rem;
+}
+
+#upload-profile-pic-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
 }
 
 /* allies */
@@ -327,4 +343,85 @@ nav {
 
 #gname-create-box {
   margin-bottom: 1rem;
+}
+
+/* groups */
+#group-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5%;
+}
+
+#ndb-box {
+  align-self: flex-start;
+  padding: 0 1.5rem;
+}
+
+#group-name,
+#group-description {
+  margin-bottom: 1rem;
+}
+
+#group-me-box {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* members */
+#group-members-box {
+  display: flex;
+  flex-direction: column;
+  margin: 5%;
+}
+
+/* group_events */
+#group-events-box {
+  display: flex;
+  flex-direction: column;
+  margin: 5%;
+}
+
+/* create_event */
+#create-evnt-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5%;
+}
+
+/* events */
+#event-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5%;
+}
+
+#ndldb-box {
+  align-self: flex-start;
+  padding: 0 1.5rem;
+}
+
+#event-ga-box {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+#event-name,
+#event-description,
+#event-location,
+#event-date {
+  margin-bottom: 1rem;
+}
+
+/* event_attendees */
+#event-attendees-box {
+  display: flex;
+  flex-direction: column;
+  margin: 5%;
 }

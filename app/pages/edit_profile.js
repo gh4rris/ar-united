@@ -26,7 +26,7 @@ export async function renderEditProfile(activist) {
             <label for="bio-input-edit">Bio:</label>
             <textarea name="bio" id="bio-input-edit" class="textarea" rows="6" cols="35" spellcheck="true">${user.bio}</textarea>
           </div>
-        <button id="save-edit-btn" type="submit">Save changes</button>
+        <button id="save-edit-btn" class="btn2" type="submit">Save changes</button>
       </form>
       <a href="/activists/${activist.slug}" class="back">Back</a>
     </div>`;
