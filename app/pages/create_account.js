@@ -2,7 +2,7 @@ import { API_BASE_URL } from "../config.js";
 import { userLogin } from "./login.js";
 
 export function renderCreateAccount() {
-    document.getElementById('app').innerHTML = `
+  document.getElementById("app").innerHTML = `
     <div id="create-acc-box">
       <p id="create-acc-p">Create an account and join the network of animal rights activists today!</p>
       <form id="create-acc-form">
@@ -33,48 +33,47 @@ export function renderCreateAccount() {
           <button type="submit" id="submit-btn-create" class="btn">Create Account</button>
           <a href="/" class="back">Back</a>
       </form>
-    </div>`
-      createAccountEvents();
+    </div>`;
+  createAccountEvents();
 }
 
 export function createAccountEvents() {
-    const form = document.getElementById('create-acc-form');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-        if (data.password != data.re_password) {
-            console.error('passwords not the same');
-            return
-        }
-        delete(data.re_password);
-        data.dob += 'T00:00:00Z';
-        const user = await newAccount(data);
-        if (!user) {
-          console.error('field error');
-          return
-        }
-        const loginData = {'email': user.email, 'password': data.password}
-        await userLogin(loginData);
-    })
+  const form = document.getElementById("create-acc-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    if (data.password != data.re_password) {
+      console.error("passwords not the same");
+      return;
+    }
+    delete data.re_password;
+    data.dob += "T00:00:00Z";
+    const user = await newAccount(data);
+    if (!user) {
+      console.error("field error");
+      return;
+    }
+    const loginData = { email: user.email, password: data.password };
+    await userLogin(loginData);
+  });
 }
 
 async function newAccount(data) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/users`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-          'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    throw new Error("couldn't create user");
-  }
-  const accountObj = await response.json();
-  return accountObj.user;
-  }
-  catch(error) {
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error("couldn't create user");
+    }
+    const accountObj = await response.json();
+    return accountObj.user;
+  } catch (error) {
     console.error(error);
   }
 }
