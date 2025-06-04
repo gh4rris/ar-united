@@ -41,9 +41,7 @@ h1 {
   border-radius: 25px;
   width: 200px;
   height: 45px;
-  transition:
-    color 0.3s ease-in-out,
-    background-color 0.3s ease-in-out;
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
 .btn:hover {
@@ -125,13 +123,15 @@ h1 {
 #search-box {
   margin: 5px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 #search-input {
-  width: 55%;
+  width: 80%;
+  max-width: 400px;
   height: 30px;
   border-radius: 6px;
+  margin-right: 6px;
 }
 
 #search-btn {
@@ -143,9 +143,8 @@ h1 {
   border-radius: 13px;
   width: 80px;
   height: 36px;
-  transition:
-    color 0.3s ease-in-out,
-    background-color 0.3s ease-in-out;
+  margin-right: 6px;
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
 #search-btn:hover {
@@ -182,6 +181,12 @@ nav {
   margin: 5%;
 }
 
+#img-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 #profile-pic-img {
   border-radius: 30px;
   border: 5px outset grey;
@@ -206,6 +211,10 @@ nav {
   margin-bottom: 0.5rem;
 }
 
+#profile-img-details-box {
+  margin-bottom: 0.5rem;
+}
+
 #profile-details-box {
   display: flex;
   flex-direction: column;
@@ -217,12 +226,21 @@ nav {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
+  max-width: 600px;
   margin-bottom: 1rem;
 }
 
 /* posts */
+#new-post-box {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 #post-input {
-  width: 210px;
+  max-width: 600px;
+  width: 52%;
+  margin-right: 4px;
 }
 
 #post-btn {
@@ -234,9 +252,7 @@ nav {
   border-radius: 20px;
   width: 70px;
   height: 38px;
-  transition:
-    color 0.3s ease-in-out,
-    background-color 0.3s ease-in-out;
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
 #post-btn:hover {
@@ -424,4 +440,24 @@ nav {
   display: flex;
   flex-direction: column;
   margin: 5%;
+}
+
+@media (min-width: 610px) {
+  /* search */
+  #search-box {
+    justify-content: flex-start;
+  }
+
+  /* profile */
+  #profile-img-details-box {
+    display: flex;
+  }
+
+  #img-box {
+    margin-right: 12px;
+  }
+
+  #profile-details-box {
+    max-width: 70%;
+  }
 }
