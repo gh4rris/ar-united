@@ -10,6 +10,7 @@ export async function renderEditProfile(activist) {
   document.getElementById("app").innerHTML = `
   <div id="edit-profile-box">
     <form id="edit-profile-form">
+        <p>Edit profile details</p>
         <div id="fname-edit-box" class="input-box">
           <label for="fname-input-edit" class="label">First name:</label>
           <input type="text" name="first_name" id="fname-input-edit" value="${user.first_name}" class="input" required />
@@ -24,11 +25,11 @@ export async function renderEditProfile(activist) {
         </div>
         <div id="bio-edit-box">
             <label for="bio-input-edit">Bio:</label>
-            <textarea name="bio" id="bio-input-edit" class="textarea" rows="6" cols="35" spellcheck="true">${user.bio}</textarea>
+            <textarea name="bio" id="bio-input-edit" class="textarea" spellcheck="true">${user.bio}</textarea>
           </div>
         <button id="save-edit-btn" class="btn2" type="submit">Save changes</button>
+        <a href="/activists/${activist.slug}" class="back">Back</a>
       </form>
-      <a href="/activists/${activist.slug}" class="back">Back</a>
     </div>`;
   editProfileEvents(user);
 }

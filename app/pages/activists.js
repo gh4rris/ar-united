@@ -33,7 +33,7 @@ export async function renderActivist(activist) {
         </div>
       </div>
       <div id="new-post-box">
-        <input type="text" name="post" id="post-input" class="input">
+        <input type="text" name="post" id="post-input" class="input" placeholder="Share your thoughts...">
         <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>
@@ -49,7 +49,7 @@ export async function renderActivist(activist) {
         <div id="profile-details-box">
           <div id="name-box">
             <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
-            <button id="ally-btn">Add Ally</button>
+            <button id="ally-btn" class="btn2">Add Ally</button>
           </div>
           <p id="profile-email">${activist.email}</p>
           <p id="profile-bio">${activist.bio}</p>
