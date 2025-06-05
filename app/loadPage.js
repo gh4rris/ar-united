@@ -20,77 +20,21 @@ import { renderEventAttendees } from "./pages/event_attendees.js";
 
 const routes = [
   { pattern: /^\/$/, handler: () => renderHome(), private: false },
-  {
-    pattern: /^\/create_account$/,
-    handler: () => renderCreateAccount(),
-    private: false,
-  },
+  { pattern: /^\/create_account$/, handler: () => renderCreateAccount(), private: false, },
   { pattern: /^\/login$/, handler: () => renderLogin(), private: false },
-  {
-    pattern: /^\/(activists)\/([\w-]+)$/,
-    handler: (activist) => renderActivist(activist),
-    private: true,
-  },
-  {
-    pattern: /^\/(activists)\/([\w-]+)\/edit_profile$/,
-    handler: (activist) => renderEditProfile(activist),
-    private: true,
-  },
-  {
-    pattern: /^\/(activists)\/([\w-]+)\/upload_profile_pic$/,
-    handler: (activist) => renderUploadProfilePic(activist),
-    private: true,
-  },
-  {
-    pattern: /^\/(activists)\/([\w-]+)\/allies$/,
-    handler: (activist) => renderAllies(activist),
-    private: true,
-  },
-  {
-    pattern: /^\/groups\/create_group$/,
-    handler: () => renderCreateGroup(),
-    private: true,
-  },
-  {
-    pattern: /^\/(activists)\/([\w-]+)\/groups$/,
-    handler: (activist) => renderUserGroups(activist),
-    private: true,
-  },
-  {
-    pattern: /^\/(groups)\/(\w+)$/,
-    handler: (group) => renderGroup(group),
-    private: true,
-  },
-  {
-    pattern: /^\/(groups)\/(\w+)\/members$/,
-    handler: (group) => renderGroupMembers(group),
-    private: true,
-  },
-  {
-    pattern: /^\/(groups)\/(\w+)\/events$/,
-    handler: (group) => renderGroupEvents(group),
-    private: true,
-  },
-  {
-    pattern: /^\/(groups)\/(\w+)\/create_event$/,
-    handler: (group) => renderCreateEvent(group),
-    private: true,
-  },
-  {
-    pattern: /^\/(activists)\/([\w-]+)\/events$/,
-    handler: (activist) => renderUserEvents(activist),
-    private: true,
-  },
-  {
-    pattern: /^\/(events)\/(\w+)$/,
-    handler: (event) => renderEvent(event),
-    private: true,
-  },
-  {
-    pattern: /^\/(events)\/(\w+)\/attending$/,
-    handler: (event) => renderEventAttendees(event),
-    private: true,
-  },
+  { pattern: /^\/(activists)\/([\w-]+)$/, handler: (activist) => renderActivist(activist), private: true, },
+  { pattern: /^\/(activists)\/([\w-]+)\/edit_profile$/, handler: (activist) => renderEditProfile(activist), private: true, },
+  { pattern: /^\/(activists)\/([\w-]+)\/upload_profile_pic$/, handler: (activist) => renderUploadProfilePic(activist), private: true, },
+  { pattern: /^\/(activists)\/([\w-]+)\/allies$/, handler: (activist) => renderAllies(activist), private: true, },
+  { pattern: /^\/groups\/create_group$/, handler: () => renderCreateGroup(), private: true, },
+  { pattern: /^\/(activists)\/([\w-]+)\/groups$/, handler: (activist) => renderUserGroups(activist), private: true, },
+  { pattern: /^\/(groups)\/(\w+)$/, handler: (group) => renderGroup(group), private: true, },
+  { pattern: /^\/(groups)\/(\w+)\/members$/, handler: (group) => renderGroupMembers(group), private: true, },
+  { pattern: /^\/(groups)\/(\w+)\/events$/, handler: (group) => renderGroupEvents(group), private: true, },
+  { pattern: /^\/(groups)\/(\w+)\/create_event$/, handler: (group) => renderCreateEvent(group), private: true, },
+  { pattern: /^\/(activists)\/([\w-]+)\/events$/, handler: (activist) => renderUserEvents(activist), private: true, },
+  { pattern: /^\/(events)\/(\w+)$/, handler: (event) => renderEvent(event), private: true, },
+  { pattern: /^\/(events)\/(\w+)\/attending$/, handler: (event) => renderEventAttendees(event), private: true, },
   { pattern: /^\/search$/, handler: () => renderSearch(), private: true },
 ];
 

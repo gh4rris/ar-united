@@ -7,30 +7,34 @@ export async function renderActivist(activist) {
   if (user.id === activist.id) {
     document.getElementById("app").innerHTML = `
     <div id="profile-box">
-      <img id="profile-pic-img" src="${activist.profile_pic_url}" alt="profile-pic" width="200">
-      <button id="upload-pic-btn" class="btn2">Upload Profile Picture</button>
-      <div id="profile-details-box"> 
+      <div id="profile-img-details-box">
+        <div id="img-box">
+          <img id="profile-pic-img" src="${activist.profile_pic_url}" alt="profile-pic" width="200">
+          <button id="upload-pic-btn" class="btn2">Upload Profile Picture</button>
+        </div>
+        <div id="profile-details-box"> 
           <div id="name-box">
-              <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
+            <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
           </div>
           <p id="profile-email">${activist.email}</p>
           <p id="profile-bio">${activist.bio}</p>
           <button id="edit-btn" class="btn2">Edit Profile</button>
-          <div id="profile-age-box">
-              <div id="profile-allies-box">
-                  <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
-              </div>
-              <div id="profile-groups-box">
-                  <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
-              </div>
-              <div id="profile-events-box">
-                  <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
-              </div>
-          </div>
+        </div>
+      </div>
+      <div id="profile-age-box">
+        <div id="profile-allies-box">
+            <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
+        </div>
+        <div id="profile-groups-box">
+            <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
+        </div>
+        <div id="profile-events-box">
+            <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
+        </div>
       </div>
       <div id="new-post-box">
-          <input type="text" name="post" id="post-input" class="input">
-          <button id="post-btn">Post</button>
+        <input type="text" name="post" id="post-input" class="input" placeholder="Share your thoughts...">
+        <button id="post-btn">Post</button>
       </div>
       <div id="posts-box"></div>
     </div>`;
@@ -38,25 +42,29 @@ export async function renderActivist(activist) {
   } else {
     document.getElementById("app").innerHTML = `
     <div id="profile-box">
-      <img id="profile-pic-img" src="${activist.profile_pic_url}" alt="profile-pic" width="200">
-      <div id="profile-details-box">
+      <div id="profile-img-details-box">
+        <div id="img-box">
+          <img id="profile-pic-img" src="${activist.profile_pic_url}" alt="profile-pic" width="200">
+        </div>
+        <div id="profile-details-box">
           <div id="name-box">
-              <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
-              <button id="ally-btn">Add Ally</button>
+            <h2 id="profile-name">${activist.first_name} ${activist.last_name}</h2>
+            <button id="ally-btn" class="btn2">Add Ally</button>
           </div>
           <p id="profile-email">${activist.email}</p>
           <p id="profile-bio">${activist.bio}</p>
-          <div id="profile-age-box">
-              <div id="profile-allies-box">
-                  <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
-              </div>
-              <div id="profile-groups-box">
-                  <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
-              </div>
-              <div id="profile-events-box">
-                  <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
-              </div>
-          </div>
+        </div>
+      </div>
+      <div id="profile-age-box">
+        <div id="profile-allies-box">
+          <a id="user-allies" href="/activists/${activist.slug}/allies">Allies</a>
+        </div>
+        <div id="profile-groups-box">
+            <a id="user-groups" href="/activists/${activist.slug}/groups">Groups</a>
+        </div>
+        <div id="profile-events-box">
+            <a id="user-events" href="/activists/${activist.slug}/events">Events</a>
+        </div>
       </div>
       <div id="posts-box"></div>
     </div>`;

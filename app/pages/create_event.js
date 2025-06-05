@@ -5,6 +5,7 @@ export function renderCreateEvent(group) {
   document.getElementById("app").innerHTML = `
   <div id="create-evnt-box">
     <form id="create-evnt-form">
+      <p>Host an activism event for your group!</p>
       <div id="ename-create-box" class="input-box">
         <label for="ename-input-create" class="label">Event name:</label>
         <input type="text" name="name" id="ename-input-create" class="input" required >
@@ -19,7 +20,7 @@ export function renderCreateEvent(group) {
       </div>
       <div id="desc-create-box">
         <label for="desc-input-create">Description:</label>
-        <textarea name="description" id="desc-input-create" class="textarea" rows="6" cols="38" spellcheck="true" required></textarea>
+        <textarea name="description" id="desc-input-create" class="textarea" spellcheck="true" required></textarea>
       </div>
       <button type="submit" id="submit-btn-create" class="btn">Create Event</button>
     </form>
