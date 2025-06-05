@@ -63,4 +63,4 @@ jobs:
         run: npx eslint .
 
       - name: Check formatting
-        uses: npx prettier --check .
+        run: npx prettier --check .
