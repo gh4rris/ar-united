@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	// "github.com/fsnotify/fsn?otify"
+	// "github.com/fsnotify/fsnotify"
 	"github.com/gh4rris/ar-united/internal/database"
 
 	"github.com/jackc/pgx/v5"
