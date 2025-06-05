@@ -231,6 +231,7 @@ nav {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+  max-width: 800px;
 }
 
 #profile-age-box {
@@ -524,10 +525,6 @@ nav {
 
   #img-box {
     margin-right: 12px;
-  }
-
-  #profile-details-box {
-    max-width: 70%;
   }
 
   /* upload_profile_pic */
