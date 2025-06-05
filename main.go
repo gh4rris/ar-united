@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"database/sql"
 	"log"
 	"net/http"
@@ -10,13 +10,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/fsnotify/fsnotify"
+	// "github.com/fsnotify/fsn?otify"
 	"github.com/gh4rris/ar-united/internal/database"
 
-	// "github.com/jackc/pgx/v5"
-	"github.com/jaschaephraim/lrserver"
+	"github.com/jackc/pgx/v5"
+	// "github.com/jaschaephraim/lrserver"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type apiConfig struct {
@@ -82,7 +83,7 @@ func main() {
 		log.Fatal("SUPABASE_Key environment variable is not set")
 	}
 
-	db, err := sql.Open("postgres", dbURL)
+	db, err := sql.Open("pgx", dbURL)
 	if err != nil {
 		log.Fatalf("Error opening database: %s", err)
 	}
@@ -103,6 +104,21 @@ func main() {
 		jwtSecret:      jwtSecret,
 	}
 
+	if host == "nonlocal" {
+		conn, err := pgx.Connect(context.Background(), dbURL)
+		if err != nil {
+			log.Fatalf("Failed to connect to the database: %v", err)
+		}
+		defer conn.Close(context.Background())
+
+		var version string
+		if err := conn.QueryRow(context.Background(), "SELECT version()").Scan(&version); err != nil {
+			log.Fatalf("Query failed: %v", err)
+		}
+
+		log.Println("Connected to:", version)
+	}
+
 	if err = apiCfg.ensureAssetsDir(); err != nil {
 		log.Fatalf("Couldn't create assets directory: %v", err)
 	}
@@ -111,33 +127,33 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer watcher.Close()
+	// watcher, err := fsnotify.NewWatcher()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// defer watcher.Close()
 
-	if err = watcher.Add("./app"); err != nil {
-		log.Fatalln(err)
-	}
+	// if err = watcher.Add("./app"); err != nil {
+	// 	log.Fatalln(err)
+	// }
 
-	if err = watcher.Add("./app/pages"); err != nil {
-		log.Fatalln(err)
-	}
+	// if err = watcher.Add("./app/pages"); err != nil {
+	// 	log.Fatalln(err)
+	// }
 
-	lr := lrserver.New(lrserver.DefaultName, lrserver.DefaultPort)
-	go lr.ListenAndServe()
+	// lr := lrserver.New(lrserver.DefaultName, lrserver.DefaultPort)
+	// go lr.ListenAndServe()
 
-	go func() {
-		for {
-			select {
-			case event := <-watcher.Events:
-				lr.Reload(event.Name)
-			case err := <-watcher.Errors:
-				log.Println(err)
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case event := <-watcher.Events:
+	// 			lr.Reload(event.Name)
+	// 		case err := <-watcher.Errors:
+	// 			log.Println(err)
+	// 		}
+	// 	}
+	// }()
 
 	mux := http.NewServeMux()
 	appHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
@@ -160,6 +176,7 @@ func main() {
 
 	mux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
 	mux.HandleFunc("PUT /api/users", apiCfg.handlerUpdateUser)
+	mux.HandleFunc("PUT /api/users/password", apiCfg.handlerUpdatePassword)
 	mux.HandleFunc("GET /api/users", apiCfg.handlerCheckUsers)
 	mux.HandleFunc("GET /api/users/{slugID}", apiCfg.handlerGetUserBySlug)
 	mux.HandleFunc("GET /api/users/{userID}/allies", apiCfg.handlerUserAllies)
