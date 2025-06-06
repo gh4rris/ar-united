@@ -426,6 +426,7 @@ nav {
 #ndb-box {
   align-self: flex-start;
   padding: 0 2rem;
+  max-width: 800px;
 }
 
 #group-name,
@@ -483,6 +484,7 @@ nav {
 #ndldb-box {
   align-self: flex-start;
   padding: 0 2rem;
+  max-width: 800px;
 }
 
 #event-ga-box {
