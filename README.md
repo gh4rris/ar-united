@@ -1,7 +1,5 @@
 # AR United
 
-<p>hello<p>
-
 A full-stack web application hub for animal rights groups and activists to network. Built with Go, PostgreSQL, and a lightweight HTML/CSS/Javascript frontend. The app is hosted on Render, and the database and filesystem on Supabase.
 
 Create an account, search my profile George Harris and add me as an ally!
