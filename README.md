@@ -6,25 +6,27 @@ Create an account, search my profile George Harris and add me as an ally!
 
 Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.com/)
 
-![home](images/image-1.png)
+![home](/images/image-1.png)
 
 ## Features
 
 - User authentication with JWT
-- Profile creation with image upload
+- Profile creation with image upload (max size 3MB)
 - Add allies and confirm requests
 - Create Groups and host events
 - Search and filtering
 - Responsive design for Mobile and Desktop
 
-![profile](images/image-2.png)
+![profile](/images/image-2.png)
 
 ## Tech Stack
 
-**Frontend** HTML, CSS, Javascript
-**Backend** Go (net/http), Postgresql
-**Database/Storage** Supabase
-**Deployment** Render, Docker
+- **Frontend:** HTML, CSS, Javascript
+- **Backend:** Go (net/http), Postgresql
+- **Database/Storage:** Supabase
+- **Deployment:** Render, Docker
+
+![mobile profile](/images/image-3.png)
 
 ## API Instructions
 
@@ -91,7 +93,7 @@ Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.
 
 ### GET /api/users/{slugID}
 
-Rturns a specific user by the slug in their URL
+Returns a specific user by the slug in their URL
 
 ### GET /api/users/{userID}/allies
 
@@ -124,6 +126,42 @@ Returns a list of all posts
 ### GET /api/posts/{postID}
 
 Returns a specific post by its ID
+
+### POST /api/posts
+
+```json
+{
+  "body": "my post"
+}
+```
+
+**Headers:** Authorization <your_JWT_here>
+
+Creates a post on users profile
+
+### POST /api/posts/groups/{groupID}
+
+```json
+{
+  "body": "my post"
+}
+```
+
+**Headers:** Authorization <your_JWT_here>
+
+Creates a post on the specified group run by the user
+
+### POST /api/posts/events/{eventID}
+
+```json
+{
+  "body": "my post"
+}
+```
+
+**Headers:** Authorization <your_JWT_here>
+
+Creates a post on the specified event run by the user
 
 ### GET /api/groups/{groupID}
 
