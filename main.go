@@ -76,11 +76,19 @@ func main() {
 	}
 	supabaseURL := os.Getenv("SUPABASE_URL")
 	if supabaseURL == "" {
-		log.Fatal("SUPABASE_URL environment variable is not set")
+		if host == "nonlocal" {
+			log.Println("No SUPABASE_URL set")
+		} else {
+			log.Fatal("SUPABASE_URL environment variable is not set")
+		}
 	}
 	supabaseKey := os.Getenv("SUPABASE_KEY")
 	if supabaseKey == "" {
-		log.Fatal("SUPABASE_Key environment variable is not set")
+		if host == "nonlocal" {
+			log.Println("No SUPABASE_KEY set")
+		} else {
+			log.Fatal("SUPABASE_KEY environment variable is not set")
+		}
 	}
 
 	db, err := sql.Open("pgx", dbURL)

@@ -28,6 +28,45 @@ Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.
 
 <img src="images/image-3.png" alt="Example" width="400"/>
 
+## Installation
+
+- Clone the repo and build the app:
+
+```bash
+git clone https://github.com/gh4rris/ar-united.git
+cd ar-united
+go build -o ar-united
+```
+
+- Create a .env file:
+
+```env
+API_BASE_URL="http://localhost:8080"
+FILEPATH_ROOT="./app"
+ASSETS_ROOT="./assets"
+MIGRATIONS_ROOT="./sql/schema"
+PORT="8080"
+DB_URL="postgres://postgres:postgres@localhost:5432/example?sslmode=disable"
+PLATFORM="dev"
+HOST="local"
+JWT_SECRET=""
+```
+
+- Generate a JWT_SECRET and update in the .env file:
+
+```bash
+openssl rand -base64 64
+```
+
+- DB_URL will need to be set to a Postgres database connection string
+- Now run the app:
+
+```bash
+./ar-united
+```
+
+- Open in http://localhost:8080/
+
 ## API Instructions
 
 ### user resource
