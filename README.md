@@ -1,4 +1,6 @@
-# ar-united
+# AR United
+
+<p>hello<p>
 
 A full-stack web application hub for animal rights groups and activists to network. Built with Go, PostgreSQL, and a lightweight HTML/CSS/Javascript frontend. The app is hosted on Render, and the database and filesystem on Supabase.
 
@@ -26,7 +28,7 @@ Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.
 - **Database/Storage:** Supabase
 - **Deployment:** Render, Docker
 
-![mobile profile](/images/image-3.png)
+<img src="images/image-3.png" alt="Example" width="400"/>
 
 ## API Instructions
 
