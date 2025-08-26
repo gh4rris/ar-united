@@ -28,7 +28,8 @@ h1 {
 }
 
 #home-p,
-#home-login-btn {
+#home-login-btn,
+#home-create-btn {
   margin-bottom: 1.5rem;
 }
 

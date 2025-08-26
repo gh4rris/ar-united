@@ -28,7 +28,7 @@ Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.
 
 <img src="images/image-3.png" alt="Example" width="400"/>
 
-## Installation
+## Contributing
 
 - Clone the repo and build the app:
 
@@ -41,7 +41,7 @@ go build -o ar-united
 - Create a .env file:
 
 ```env
-API_BASE_URL="http://localhost:8080"
+API_BASE_URL="http://localhost"
 FILEPATH_ROOT="./app"
 ASSETS_ROOT="./assets"
 MIGRATIONS_ROOT="./sql/schema"
@@ -65,7 +65,7 @@ openssl rand -base64 64
 ./ar-united
 ```
 
-- Open in http://localhost:8080/
+- Open in http://localhost:8080/ or whichever port was used
 
 ## API Instructions
 
