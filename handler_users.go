@@ -191,7 +191,7 @@ func (cfg *apiConfig) handlerDeleteGuest(w http.ResponseWriter, r *http.Request)
 	go func(id uuid.UUID) {
 		timer := time.NewTimer(time.Hour)
 		<-timer.C
-		
+
 		if err := cfg.db.DeleteUser(context.Background(), id); err != nil {
 			log.Printf("Couldn't delete user: %s", err)
 		}
