@@ -4,6 +4,8 @@ A full-stack web application hub for animal rights groups and activists to netwo
 
 Create an account, search my profile George Harris and add me as an ally!
 
+Alternatively view the website as a guest and experience all the same features. Guest accounts will be deleted after 1 hour.
+
 Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.com/)
 
 ![home](/images/image-1.png)
@@ -28,7 +30,7 @@ Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.
 
 <img src="images/image-3.png" alt="Example" width="400"/>
 
-## Contributing
+## Installation
 
 - Clone the repo and build the app:
 
@@ -138,6 +140,12 @@ Returns a specific user by the slug in their URL
 
 Returns a list of the users allies (users)
 
+### DELETE /api/users/
+
+**Headers:** Authorization: Bearer <your_JWT_here>
+
+Deletes specified user account
+
 ### GET /api/users/{userID}/posts
 
 Returns a list of the users posts
@@ -174,7 +182,7 @@ Returns a specific post by its ID
 }
 ```
 
-**Headers:** Authorization <your_JWT_here>
+**Headers:** Authorization: Bearer <your_JWT_here>
 
 Creates a post on users profile
 
@@ -186,7 +194,7 @@ Creates a post on users profile
 }
 ```
 
-**Headers:** Authorization <your_JWT_here>
+**Headers:** Authorization: Bearer <your_JWT_here>
 
 Creates a post on the specified group run by the user
 
@@ -198,7 +206,7 @@ Creates a post on the specified group run by the user
 }
 ```
 
-**Headers:** Authorization <your_JWT_here>
+**Headers:** Authorization: Bearer <your_JWT_here>
 
 Creates a post on the specified event run by the user
 
