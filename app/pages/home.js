@@ -26,16 +26,17 @@ export function homeEvents() {
     window.location.assign("/create_account");
   });
   guest.addEventListener("click", async () => {
-    const n = Math.floor(Math.random() * 1000000);
+    const emailRNG = Math.floor(Math.random() * 1000000);
+    const passwordRNG = Math.floor(Math.random() * 100000000);
     const data = {
       first_name: "Guest",
       last_name: "Account",
       dob: "1970-01-01T00:00:00Z",
-      email: `${n}@guest.com`,
-      password: "Pazzword6",
+      email: `${emailRNG}@guest.com`,
+      password: passwordRNG,
     };
     await newAccount(data);
-    const loginData = { email: `${n}@guest.com`, password: "Pazzword6" };
+    const loginData = { email: data.email, password: data.password };
     await userLogin(loginData);
     await deleteGuest();
   });

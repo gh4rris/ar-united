@@ -76,7 +76,7 @@ func main() {
 	}
 	supabaseURL := os.Getenv("SUPABASE_URL")
 	if supabaseURL == "" {
-		if host == "nonlocal" {
+		if host == "local" {
 			log.Println("No SUPABASE_URL set")
 		} else {
 			log.Fatal("SUPABASE_URL environment variable is not set")
@@ -84,7 +84,7 @@ func main() {
 	}
 	supabaseKey := os.Getenv("SUPABASE_KEY")
 	if supabaseKey == "" {
-		if host == "nonlocal" {
+		if host == "local" {
 			log.Println("No SUPABASE_KEY set")
 		} else {
 			log.Fatal("SUPABASE_KEY environment variable is not set")
