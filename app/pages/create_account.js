@@ -59,7 +59,7 @@ export function createAccountEvents() {
   });
 }
 
-async function newAccount(data) {
+export async function newAccount(data) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/users`, {
       method: "POST",

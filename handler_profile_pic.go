@@ -46,7 +46,7 @@ func (cfg *apiConfig) handlerProfilePicUpload(w http.ResponseWriter, r *http.Req
 
 	var url string
 	if cfg.host == "local" {
-		url = fmt.Sprintf("%s/assets/%s", cfg.apiBaseURL, filename)
+		url = fmt.Sprintf("%s:%s/assets/%s", cfg.apiBaseURL, cfg.port, filename)
 		str, err := cfg.uploadLocal(filename, file)
 		if err != nil {
 			respondWithError(w, http.StatusInternalServerError, str, err)
