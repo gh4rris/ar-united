@@ -27,7 +27,7 @@ export function homeEvents() {
   });
   guest.addEventListener("click", async () => {
     const emailRNG = Math.floor(Math.random() * 1000000);
-    const passwordRNG = Math.floor(Math.random() * 100000000);
+    const passwordRNG = String(Math.floor(Math.random() * 100000000));
     const data = {
       first_name: "Guest",
       last_name: "Account",
