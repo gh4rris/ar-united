@@ -71,6 +71,7 @@ type User struct {
 	Slug           string
 	ProfilePicUrl  sql.NullString
 	HashedPassword string
+	IsGuest        bool
 }
 
 type UsersEvent struct {

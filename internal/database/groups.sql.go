@@ -168,7 +168,7 @@ func (q *Queries) GroupEvents(ctx context.Context, id uuid.UUID) ([]Event, error
 }
 
 const groupMembers = `-- name: GroupMembers :many
-SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password, u.is_guest
 FROM users_groups AS ug
 INNER JOIN users AS u
 ON ug.user_id = u.id
@@ -197,6 +197,7 @@ func (q *Queries) GroupMembers(ctx context.Context, groupID uuid.UUID) ([]User, 
 			&i.Slug,
 			&i.ProfilePicUrl,
 			&i.HashedPassword,
+			&i.IsGuest,
 		); err != nil {
 			return nil, err
 		}

@@ -195,7 +195,6 @@ func main() {
 	mux.HandleFunc("GET /api/users/{userID}/groups/admin", apiCfg.handlerAdminGroups)
 	mux.HandleFunc("GET /api/users/{userID}/events/admin", apiCfg.handlerAdminEvents)
 	mux.HandleFunc("DELETE /api/users", apiCfg.handlerDeleteUser)
-	mux.HandleFunc("DELETE /api/users/guest", apiCfg.handlerDeleteGuest)
 
 	mux.HandleFunc("POST /api/allies/{allyID}", apiCfg.handlerAddAlly)
 	mux.HandleFunc("PUT /api/allies/{allyID}", apiCfg.handlerConfirmAlly)

@@ -1,5 +1,5 @@
 -- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, hashed_password)
+INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, hashed_password, is_guest)
 VALUES (
     gen_random_uuid(),
     $1,
@@ -10,7 +10,8 @@ VALUES (
     $4,
     $5,
     $6,
-    $7
+    $7,
+    $8
 )
 RETURNING *;
 
@@ -61,6 +62,10 @@ WHERE id = $1;
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;
+
+-- name: DeleteGuests :exec
+DELETE FROM users
+WHERE is_guest = true AND created_at < NOW() - INTERVAL '1 hour';
 
 -- name: CheckUsers :one
 SELECT COUNT(id) AS entries

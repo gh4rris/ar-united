@@ -272,7 +272,7 @@ func (q *Queries) SearchEvents(ctx context.Context, dollar_1 sql.NullString) ([]
 }
 
 const usersByEvent = `-- name: UsersByEvent :many
-SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password, u.is_guest
 FROM users_events AS ue
 INNER JOIN users AS u
 ON ue.user_id = u.id
@@ -301,6 +301,7 @@ func (q *Queries) UsersByEvent(ctx context.Context, eventID uuid.UUID) ([]User, 
 			&i.Slug,
 			&i.ProfilePicUrl,
 			&i.HashedPassword,
+			&i.IsGuest,
 		); err != nil {
 			return nil, err
 		}
