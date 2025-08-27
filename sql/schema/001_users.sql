@@ -10,7 +10,8 @@ CREATE TABLE users (
     bio TEXT,
     slug TEXT NOT NULL UNIQUE,
     profile_pic_url TEXT,
-    hashed_password TEXT NOT NULL
+    hashed_password TEXT NOT NULL,
+    is_guest BOOLEAN NOT NULL
 );
 
 -- +goose Down

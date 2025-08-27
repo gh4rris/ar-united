@@ -49,7 +49,7 @@ func (q *Queries) ConfirmAlly(ctx context.Context, arg ConfirmAllyParams) error 
 }
 
 const getAllyRequests = `-- name: GetAllyRequests :many
-SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password, u.is_guest
 FROM users AS u
 INNER JOIN allies AS a
 ON u.id = a.requester_id
@@ -79,6 +79,7 @@ func (q *Queries) GetAllyRequests(ctx context.Context, requesteeID uuid.UUID) ([
 			&i.Slug,
 			&i.ProfilePicUrl,
 			&i.HashedPassword,
+			&i.IsGuest,
 		); err != nil {
 			return nil, err
 		}
@@ -94,7 +95,7 @@ func (q *Queries) GetAllyRequests(ctx context.Context, requesteeID uuid.UUID) ([
 }
 
 const getUserAllies = `-- name: GetUserAllies :many
-SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password
+SELECT u.id, u.first_name, u.last_name, u.dob, u.created_at, u.updated_at, u.email, u.bio, u.slug, u.profile_pic_url, u.hashed_password, u.is_guest
 FROM users AS u
 INNER JOIN allies AS a
 ON (u.id = a.requester_id AND a.requestee_id = $1)
@@ -124,6 +125,7 @@ func (q *Queries) GetUserAllies(ctx context.Context, requesteeID uuid.UUID) ([]U
 			&i.Slug,
 			&i.ProfilePicUrl,
 			&i.HashedPassword,
+			&i.IsGuest,
 		); err != nil {
 			return nil, err
 		}

@@ -49,6 +49,7 @@ export function createAccountEvents() {
     }
     delete data.re_password;
     data.dob += "T00:00:00Z";
+    data.isGuest = false;
     const user = await newAccount(data);
     if (!user) {
       console.error("field error");

@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "../config.js";
 import { newAccount } from "./create_account.js";
 import { userLogin } from "./login.js";
 
@@ -34,26 +33,10 @@ export function homeEvents() {
       dob: "1970-01-01T00:00:00Z",
       email: `${emailRNG}@guest.com`,
       password: passwordRNG,
+      is_guest: true,
     };
     await newAccount(data);
     const loginData = { email: data.email, password: data.password };
     await userLogin(loginData);
-    await deleteGuest();
   });
-}
-
-async function deleteGuest() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/users/guest`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.accessToken}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error("couldn't delete guest");
-    }
-  } catch (error) {
-    console.error(error);
-  }
 }

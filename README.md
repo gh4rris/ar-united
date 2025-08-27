@@ -4,7 +4,7 @@ A full-stack web application hub for animal rights groups and activists to netwo
 
 Create an account, search my profile George Harris and add me as an ally!
 
-Alternatively view the website as a guest and experience all the same features. Guest accounts will be deleted after 1 hour.
+Alternatively view the website as a guest and experience all the same features. Guest accounts will be periodically deleted.
 
 Live Site: [https://https://ar-united.onrender.com/](https://ar-united.onrender.com/)
 
@@ -61,6 +61,12 @@ openssl rand -base64 64
 ```
 
 - DB_URL will need to be set to a Postgres database connection string
+- Create a cronjob for periodic guest account cleanup using the relevant path e.g. 0 \* \* \* \* /bin/bash /home/user/ar-united/scripts/guest_cleanup.sh
+
+```bash
+crontab -e
+```
+
 - Now run the app:
 
 ```bash

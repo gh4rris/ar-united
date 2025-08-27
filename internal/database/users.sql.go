@@ -38,7 +38,7 @@ func (q *Queries) CheckUsers(ctx context.Context) (int64, error) {
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, hashed_password)
+INSERT INTO users (id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, hashed_password, is_guest)
 VALUES (
     gen_random_uuid(),
     $1,
@@ -49,9 +49,10 @@ VALUES (
     $4,
     $5,
     $6,
-    $7
+    $7,
+    $8
 )
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password, is_guest
 `
 
 type CreateUserParams struct {
@@ -62,6 +63,7 @@ type CreateUserParams struct {
 	Bio            sql.NullString
 	Slug           string
 	HashedPassword string
+	IsGuest        bool
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -73,6 +75,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Bio,
 		arg.Slug,
 		arg.HashedPassword,
+		arg.IsGuest,
 	)
 	var i User
 	err := row.Scan(
@@ -87,8 +90,19 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Slug,
 		&i.ProfilePicUrl,
 		&i.HashedPassword,
+		&i.IsGuest,
 	)
 	return i, err
+}
+
+const deleteGuests = `-- name: DeleteGuests :exec
+DELETE FROM users
+WHERE is_guest = true AND created_at < NOW() - INTERVAL '1 hour'
+`
+
+func (q *Queries) DeleteGuests(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteGuests)
+	return err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -102,7 +116,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password, is_guest
 FROM users
 WHERE email = $1
 `
@@ -122,12 +136,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Slug,
 		&i.ProfilePicUrl,
 		&i.HashedPassword,
+		&i.IsGuest,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password, is_guest
 FROM users
 WHERE id = $1
 `
@@ -147,12 +162,13 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.Slug,
 		&i.ProfilePicUrl,
 		&i.HashedPassword,
+		&i.IsGuest,
 	)
 	return i, err
 }
 
 const getUserBySlug = `-- name: GetUserBySlug :one
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password, is_guest
 FROM users
 WHERE slug = $1
 `
@@ -172,6 +188,7 @@ func (q *Queries) GetUserBySlug(ctx context.Context, slug string) (User, error) 
 		&i.Slug,
 		&i.ProfilePicUrl,
 		&i.HashedPassword,
+		&i.IsGuest,
 	)
 	return i, err
 }
@@ -186,7 +203,7 @@ func (q *Queries) Reset(ctx context.Context) error {
 }
 
 const searchUsers = `-- name: SearchUsers :many
-SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password
+SELECT id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password, is_guest
 FROM users
 WHERE first_name ILIKE '%' || $1 || '%'
 OR last_name ILIKE '%' || $1 || '%'
@@ -214,6 +231,7 @@ func (q *Queries) SearchUsers(ctx context.Context, dollar_1 sql.NullString) ([]U
 			&i.Slug,
 			&i.ProfilePicUrl,
 			&i.HashedPassword,
+			&i.IsGuest,
 		); err != nil {
 			return nil, err
 		}
@@ -265,7 +283,7 @@ UPDATE users
 SET first_name = $2, last_name = $3, email = $4,
 bio = $5, updated_at = NOW()
 WHERE id = $1
-RETURNING id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password
+RETURNING id, first_name, last_name, dob, created_at, updated_at, email, bio, slug, profile_pic_url, hashed_password, is_guest
 `
 
 type UpdateUserParams struct {
@@ -297,6 +315,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Slug,
 		&i.ProfilePicUrl,
 		&i.HashedPassword,
+		&i.IsGuest,
 	)
 	return i, err
 }

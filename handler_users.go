@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -42,6 +40,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		DOB       *time.Time `json:"dob"`
 		Email     string     `json:"email"`
 		Password  string     `json:"password"`
+		IsGuest   bool       `json:"is_guest"`
 	}
 	type response struct {
 		User User `json:"user"`
@@ -84,6 +83,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		Email:          params.Email,
 		Slug:           slug,
 		HashedPassword: hashedPassword,
+		IsGuest:        params.IsGuest,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
@@ -177,25 +177,6 @@ func (cfg *apiConfig) handlerDeleteUser(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func (cfg *apiConfig) handlerDeleteGuest(w http.ResponseWriter, r *http.Request) {
-	userID, msg, err := auth.AuthorizeToken(r.Header, cfg.jwtSecret)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, msg, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusAccepted)
-
-	go func(id uuid.UUID) {
-		timer := time.NewTimer(time.Hour)
-		<-timer.C
-
-		if err := cfg.db.DeleteUser(context.Background(), id); err != nil {
-			log.Printf("Couldn't delete user: %s", err)
-		}
-	}(userID)
 }
 
 func (cfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Request) {
