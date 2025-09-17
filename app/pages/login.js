@@ -13,6 +13,7 @@ export function renderLogin() {
           <label for="password-input-login" class="label">Password:</label>
           <input type="password" name="password" id="password-input-login" class="input" required />
         </div>
+        <p id="login-error" hidden>Email and password combination not recognised</p>
         <button type="submit" id="submit-btn-login" class="btn">Submit</button>
         <a href="/" class="back">Back</a>
       </form>
@@ -48,6 +49,7 @@ export async function userLogin(data) {
     const slug = JSON.parse(localStorage.user).slug;
     window.location.assign(`/activists/${slug}`);
   } catch (error) {
+    document.getElementById("login-error").hidden = false;
     console.error(error);
   }
 }
