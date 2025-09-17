@@ -30,6 +30,7 @@ export function renderCreateAccount() {
             <label for="re-password-input-create" class="label">Re-enter password:</label>
             <input type="password" name="re_password" id="re-password-input-create" class="input" required />
           </div>
+          <p id="password-error" hidden>Passwords do not match</p>
           <button type="submit" id="submit-btn-create" class="btn">Create Account</button>
           <a href="/" class="back">Back</a>
       </form>
@@ -44,6 +45,7 @@ export function createAccountEvents() {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
     if (data.password != data.re_password) {
+      document.getElementById("password-error").hidden = false;
       console.error("passwords not the same");
       return;
     }

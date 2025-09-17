@@ -91,6 +91,12 @@ h1 {
   padding: 2px 4px;
 }
 
+#login-error {
+  color: rgb(224, 22, 22);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 #submit-btn-login {
   margin: 1.5rem auto;
   display: block;
@@ -115,6 +121,12 @@ h1 {
 #create-acc-p {
   text-align: center;
   margin-bottom: 1.5rem;
+}
+
+#password-error {
+  color: rgb(224, 22, 22);
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 #submit-btn-create {
